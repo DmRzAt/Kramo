@@ -124,6 +124,16 @@ else
     wp plugin install "$P24_PLUGIN_URL" --activate
 fi
 
+# Official shipping plugins. Best-effort: they need ShipX / Orlen credentials to
+# do anything live, so a missing package must not abort the whole bootstrap.
+for shipping_plugin in inpost-for-woocommerce orlen-paczka; do
+    if wp plugin is-installed "$shipping_plugin" >/dev/null 2>&1; then
+        wp plugin activate "$shipping_plugin" || true
+    elif ! wp plugin install "$shipping_plugin" --activate; then
+        echo "Note: could not install '$shipping_plugin' from wp.org; add it manually with the client's credentials (see docs/dostawa.md)." >&2
+    fi
+done
+
 wp option update woocommerce_currency PLN
 wp option update woocommerce_currency_pos right_space
 wp option update woocommerce_price_thousand_sep ' '
@@ -171,6 +181,48 @@ wp option update woocommerce_myaccount_page_id "$account_id"
 wp option update woocommerce_terms_page_id "$terms_id"
 wp option update wp_page_for_privacy_policy "$privacy_id"
 wp rewrite flush --hard
+
+echo "Configuring the Polish shipping zone..."
+wp eval '
+$zone_name = "Polska";
+$zone_id = 0;
+foreach ( WC_Shipping_Zones::get_zones() as $z ) {
+    if ( $z["zone_name"] === $zone_name ) { $zone_id = (int) $z["zone_id"]; break; }
+}
+$zone = $zone_id ? new WC_Shipping_Zone( $zone_id ) : new WC_Shipping_Zone();
+if ( ! $zone_id ) {
+    $zone->set_zone_name( $zone_name );
+    $zone->set_zone_order( 1 );
+}
+$has_pl = false;
+foreach ( $zone->get_zone_locations() as $loc ) {
+    if ( "country" === $loc->type && "PL" === $loc->code ) { $has_pl = true; }
+}
+if ( ! $has_pl ) { $zone->add_location( "PL", "country" ); }
+$zone->save();
+
+$existing = array();
+foreach ( $zone->get_shipping_methods() as $m ) { $existing[] = $m->get_title(); }
+$want = array(
+    array( "flat_rate", "Paczkomat InPost" ),
+    array( "flat_rate", "Kurier InPost" ),
+    array( "flat_rate", "Orlen Paczka" ),
+    array( "free_shipping", "Darmowa dostawa" ),
+);
+foreach ( $want as $method ) {
+    list( $type, $title ) = $method;
+    if ( in_array( $title, $existing, true ) ) { continue; }
+    $instance_id = $zone->add_shipping_method( $type );
+    $key = "woocommerce_" . $type . "_" . $instance_id . "_settings";
+    $settings = get_option( $key, array() );
+    if ( ! is_array( $settings ) ) { $settings = array(); }
+    $settings["title"] = $title;
+    if ( "flat_rate" === $type ) { $settings["cost"] = "12"; $settings["tax_status"] = "none"; }
+    if ( "free_shipping" === $type ) { $settings["requires"] = "min_amount"; $settings["min_amount"] = "200"; }
+    update_option( $key, $settings );
+}
+echo "Shipping zone ready.\n";
+'
 
 echo
 echo "WordPress is ready: http://localhost:${WP_PORT}"

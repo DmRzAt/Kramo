@@ -161,19 +161,21 @@ $categories = [
     woostarter_demo_category('Dom', 'dom'),
 ];
 
+// Each row: name, base price, primary hex, gallery hex, weight in kg.
+// Weights are required for the weight-based shipping rules in inc/shipping.php.
 $products = [
-    ['Lniana koszula', 159, '#D8C3A5', '#4B5563'],
-    ['Klasyczny T-shirt', 89, '#A8B5A2', '#374151'],
-    ['Bluza z kapturem', 219, '#8D99AE', '#475569'],
-    ['Sweter merino', 279, '#C9ADA7', '#5B4B58'],
-    ['Spodnie chino', 199, '#B7A99A', '#3F4A4A'],
-    ['Lekka kurtka', 349, '#6B7D7D', '#263238'],
-    ['Torba miejska', 189, '#A98467', '#3D342F'],
-    ['Czapka bawełniana', 69, '#CB997E', '#4B3D38'],
-    ['Szalik z wełny', 119, '#9A8C98', '#403845'],
-    ['Poszewka dekoracyjna', 79, '#DDBEA9', '#65534A'],
-    ['Koc bawełniany', 239, '#B7B7A4', '#46463F'],
-    ['Fartuch kuchenny', 109, '#A5A58D', '#393A32'],
+    ['Lniana koszula', 159, '#D8C3A5', '#4B5563', 0.30],
+    ['Klasyczny T-shirt', 89, '#A8B5A2', '#374151', 0.20],
+    ['Bluza z kapturem', 219, '#8D99AE', '#475569', 0.65],
+    ['Sweter merino', 279, '#C9ADA7', '#5B4B58', 0.50],
+    ['Spodnie chino', 199, '#B7A99A', '#3F4A4A', 0.55],
+    ['Lekka kurtka', 349, '#6B7D7D', '#263238', 0.80],
+    ['Torba miejska', 189, '#A98467', '#3D342F', 0.60],
+    ['Czapka bawełniana', 69, '#CB997E', '#4B3D38', 0.15],
+    ['Szalik z wełny', 119, '#9A8C98', '#403845', 0.25],
+    ['Poszewka dekoracyjna', 79, '#DDBEA9', '#65534A', 0.20],
+    ['Koc bawełniany', 239, '#B7B7A4', '#46463F', 1.20],
+    ['Fartuch kuchenny', 109, '#A5A58D', '#393A32', 0.30],
 ];
 
 $colors = ['Beżowy', 'Czarny', 'Niebieski'];
@@ -182,7 +184,7 @@ $color_definition = woostarter_demo_attribute('Kolor', 'kolor', $colors);
 $size_definition = woostarter_demo_attribute('Rozmiar', 'rozmiar', $sizes);
 $product_ids = [];
 
-foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex]) {
+foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight]) {
     $number = $index + 1;
     $product_colors = 0 === $index % 2 ? ['Beżowy', 'Czarny'] : ['Niebieski', 'Czarny'];
     $product_sizes = 0 === $index % 2 ? ['S', 'M'] : ['M', 'L'];
@@ -225,6 +227,7 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex]) {
     $product->set_description('Starannie wykonany produkt do codziennego użytku. Naturalne materiały i wygodny krój.');
     $product->set_short_description('Polska jakość, prosty krój i wygoda na co dzień.');
     $product->set_category_ids([$categories[$index % count($categories)]]);
+    $product->set_weight((string) $weight);
     $product->set_attributes([$color_attribute, $size_attribute]);
     $primary_image_id = woostarter_demo_image($number, $name, $hex);
     $gallery_image_id = woostarter_demo_image($number + 100, $name . ' — wariant', $gallery_hex);
@@ -267,6 +270,7 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex]) {
             $variation->set_regular_price((string) $regular_price);
             $variation->set_sale_price(0 === $index % 4 ? (string) ($regular_price - 20) : '');
             $variation->set_image_id(0 === $color_index ? $primary_image_id : $gallery_image_id);
+            $variation->set_weight((string) $weight);
             $is_unavailable = 0 === $index && 1 === $color_index && 1 === $size_index;
             $variation->set_manage_stock(true);
             $variation->set_stock_quantity($is_unavailable ? 0 : 8 + $color_index + $size_index);

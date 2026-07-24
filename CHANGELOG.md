@@ -33,6 +33,11 @@
 - Environment-only sandbox/live payment configuration with mode-specific credentials and database-write protection.
 - Payment callback readiness checker and Polish production handoff documentation.
 - Early MU-plugin payment bootstrap so gateway runtime clients receive environment overrides before regular plugins load.
+- Polish shipping zone with InPost Paczkomat, InPost Kurier, Orlen Paczka methods and a free-shipping threshold, created idempotently in bootstrap.
+- Code-based weight tiers with a lower parcel-locker profile than courier and paid methods hidden above the free-shipping threshold.
+- Pickup-point visibility in the admin order, customer/admin e-mails and the order-received page, reading a normalized key plus common InPost/Orlen keys via a filter.
+- Best-effort InPost and Orlen Paczka plugin installation in the project bootstrap.
+- Polish shipping handoff documentation (docs/dostawa.md).
 
 ### Changed
 
@@ -41,3 +46,5 @@
 - Demo products now include global filterable attributes, gallery and variation images, sale prices and one unavailable combination.
 - Demo bootstrap disables WooCommerce Coming soon so the seeded catalog is publicly testable.
 - The first demo product now includes required font personalization with a 20-character limit and a 20 zł surcharge.
+- Demo products now carry realistic per-item weights so shipping calculates correctly.
+- The temporary free-shipping stopgap in the rest-of-world zone is replaced by the dedicated Polska shipping zone.

@@ -12,8 +12,9 @@
 | 04 — Presets | Виконано | Коміти `6e2c6a3`, `c15ee6b`; Service вибрано дефолтом |
 | 05 — Catalog | Виконано | Коміт `bada1aa` |
 | 06 — Personalization | Виконано | Модуль `inc/personalization.php` і перевірка `scripts/check-personalization.php` |
+| 07 — Payments | Технічно підготовлено | Потрібні реальні sandbox-акаунти й credentials для транзакцій |
 
-Завдання 07–12 не розпочинались.
+Завдання 08–12 не розпочинались.
 
 ## Результат завдання 06
 
@@ -55,3 +56,14 @@ docker compose --env-file docker/.env -f docker/docker-compose.yml -p woostarter
 - `git diff --check` завершився без помилок.
 
 Окремий сторонній плагін CSV-експорту не встановлювався, тому його конкретний формат я не можу підтвердити. Самі видимі line-item meta збережені та доступні через WooCommerce API.
+
+## Статус завдання 07
+
+- Встановлено офіційний `woo-przelewy24` та `woocommerce-paypal-payments`.
+- Додано розділені sandbox/live credentials через `.env` або `wp-config.php`.
+- Статичні P24 і PayPal credentials не читаються з бази та блокуються перед записом у `wp_options`.
+- Додано польську інструкцію `docs/platnosci.md`.
+- Configuration checker пройшов на окремих фіктивних fixtures для sandbox і live; runtime clients обох плагінів використали правильний комплект без запису секретів у базу.
+- Checkout без credentials відкривається без browser console errors і показує, що доступних методів оплати немає.
+- Реальні оплата, серверна нотифікація та refund ще не підтверджені: для цього потрібні credentials двох sandbox-акаунтів і публічний HTTPS URL.
+- Офіційна інструкція Przelewy24 вимагає спочатку зареєструвати акаунт і прийняти договір; можливість отримати sandbox без działalność я не можу підтвердити.

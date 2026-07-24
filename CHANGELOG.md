@@ -29,6 +29,10 @@
 - Character counter plus client/server personalization validation with multibyte-safe sanitization and truncation.
 - End-to-end personalization metadata in cart, checkout, order details and customer/admin email templates.
 - Reproducible seven-case personalization checker and a project progress report through task 06.
+- Official Przelewy24 and WooCommerce PayPal Payments installation in new project bootstrap.
+- Environment-only sandbox/live payment configuration with mode-specific credentials and database-write protection.
+- Payment callback readiness checker and Polish production handoff documentation.
+- Early MU-plugin payment bootstrap so gateway runtime clients receive environment overrides before regular plugins load.
 
 ### Changed
 

@@ -113,9 +113,16 @@ else
     echo "Child theme files are not present yet; GeneratePress remains active."
 fi
 
-for plugin in woocommerce seo-by-rank-math updraftplus; do
+for plugin in woocommerce seo-by-rank-math updraftplus woocommerce-paypal-payments; do
     wp plugin install "$plugin" --activate
 done
+
+P24_PLUGIN_URL="https://www.przelewy24.pl/do-pobrania/woocommerce-pobierz"
+if wp plugin is-installed woo-przelewy24 >/dev/null 2>&1; then
+    wp plugin activate woo-przelewy24
+else
+    wp plugin install "$P24_PLUGIN_URL" --activate
+fi
 
 wp option update woocommerce_currency PLN
 wp option update woocommerce_currency_pos right_space

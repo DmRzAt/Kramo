@@ -1,0 +1,54 @@
+/*
+ * Craft preset: cool tactile surfaces, broad spacing and unframed product cards.
+ * This file intentionally contains variable overrides only.
+ */
+:root {
+	--color-bg: var(--craft-bg);
+	--color-surface: var(--craft-surface);
+	--color-surface-alt: var(--craft-surface-alt);
+	--color-text: var(--craft-text);
+	--color-text-muted: var(--craft-text-muted);
+	--color-border: var(--craft-border);
+	--color-border-strong: var(--craft-text-muted);
+	--color-primary: var(--craft-primary);
+	--color-primary-hover: var(--craft-primary-hover);
+	--color-on-primary: var(--craft-on-primary);
+	--color-link: var(--craft-primary);
+	--color-link-hover: var(--craft-primary-hover);
+	--color-focus: var(--craft-focus);
+	--color-price: var(--craft-text);
+	--color-sale: var(--craft-sale);
+	--color-on-sale: var(--craft-on-primary);
+	--color-header-bg: var(--craft-surface);
+	--color-footer-bg: var(--craft-surface-alt);
+	--color-card-bg: var(--transparent);
+	--color-card-glow: var(--transparent);
+
+	--font-body: var(--font-family-humanist);
+	--font-display: var(--font-family-humanist);
+	--font-heading-weight: var(--font-weight-semibold);
+	--font-heading-tracking: var(--tracking-tight);
+	--font-body-tracking: var(--tracking-normal);
+	--text-h1: var(--text-hero);
+	--heading-h2-size: var(--text-h2);
+	--section-gap: var(--space-12);
+	--container-max: var(--size-craft-container);
+	--header-padding-block: var(--space-4);
+
+	--card-radius: var(--radius-craft);
+	--card-shadow: var(--shadow-none);
+	--card-border-width: var(--size-0);
+	--card-border-color: var(--transparent);
+	--card-padding: var(--space-0);
+	--card-overflow: var(--overflow-visible);
+	--card-transform-hover: var(--translate-none);
+	--card-glow-height: var(--size-0);
+	--card-glow-opacity: var(--opacity-hidden);
+	--product-image-offset-inline: var(--space-3);
+	--button-radius: var(--radius-craft);
+	--input-radius: var(--radius-craft);
+	--grid-gap: var(--space-6);
+	--nav-indicator-height: var(--size-0);
+	--nav-indicator-color: var(--transparent);
+	--nav-indicator-active-scale: var(--scale-hidden);
+}

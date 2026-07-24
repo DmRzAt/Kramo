@@ -15,3 +15,10 @@
 - Three-layer design-token system for palette, typography, spacing, containers and component overrides.
 - Token-driven base and WooCommerce styles with accessible focus, motion and contrast preferences.
 - Dependency-free WCAG AA contrast checker for key storefront color pairs.
+- Three distinct variable-only visual presets: craft, service and premium.
+- Polish Appearance → Woo Starter preset selector with optional wp-config.php override.
+- Portfolio screenshots of the homepage and product page for every preset.
+
+### Changed
+
+- Contrast checker now validates each preset's token-only structure and color pairs.

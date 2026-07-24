@@ -12,7 +12,58 @@ const tokensPath = path.join(
 	"css",
 	"tokens.css"
 );
-const css = fs.readFileSync(tokensPath, "utf8");
+const presetName = process.argv[2] || "";
+const allowedPresets = new Set(["craft", "service", "premium"]);
+
+if (presetName && !allowedPresets.has(presetName)) {
+	console.error(`Unknown preset "${presetName}". Use craft, service or premium.`);
+	process.exit(1);
+}
+
+const presetPath = presetName
+	? path.join(
+		__dirname,
+		"..",
+		"theme",
+		"woostarter-child",
+		"assets",
+		"css",
+		"presets",
+		`${presetName}.css`
+	)
+	: "";
+const presetCss = presetPath ? fs.readFileSync(presetPath, "utf8") : "";
+
+function validatePresetCss(source) {
+	const withoutComments = source.replace(/\/\*[\s\S]*?\*\//g, "").trim();
+	const rootBlock = withoutComments.match(/^:root\s*\{([\s\S]*)\}$/);
+
+	if (!rootBlock) {
+		throw new Error("Preset CSS must contain one :root block only.");
+	}
+
+	const declarations = rootBlock[1]
+		.split(";")
+		.map((declaration) => declaration.trim())
+		.filter(Boolean);
+
+	for (const declaration of declarations) {
+		if (!/^--[\w-]+\s*:\s*var\(--[\w-]+\)$/.test(declaration)) {
+			throw new Error(
+				`Preset CSS may only override variables with token references: ${declaration}`
+			);
+		}
+	}
+}
+
+if (presetCss) {
+	validatePresetCss(presetCss);
+}
+
+const css = [
+	fs.readFileSync(tokensPath, "utf8"),
+	presetCss,
+].join("\n");
 const tokens = new Map();
 const tokenPattern = /(--[\w-]+)\s*:\s*([^;]+);/g;
 
@@ -78,7 +129,7 @@ function contrastRatio(foreground, background) {
 const minimumRatio = 4.5;
 const pairs = [
 	["Body text on page background", "--color-text", "--color-bg"],
-	["Primary color on white surface", "--color-primary", "--color-surface"],
+	["Primary color on surface", "--color-primary", "--color-surface"],
 	["Button text on primary button", "--color-on-primary", "--color-primary"],
 ];
 
@@ -102,4 +153,6 @@ if (failed) {
 	process.exit(1);
 }
 
-console.log("All required contrast pairs pass WCAG AA.");
+console.log(
+	`All required contrast pairs pass WCAG AA${presetName ? ` for ${presetName}` : ""}.`
+);

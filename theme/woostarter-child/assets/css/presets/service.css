@@ -1,0 +1,53 @@
+/*
+ * Service preset: structured hierarchy, restrained accent and bordered cards.
+ * This file intentionally contains variable overrides only.
+ */
+:root {
+	--color-bg: var(--service-bg);
+	--color-surface: var(--service-surface);
+	--color-surface-alt: var(--service-surface-alt);
+	--color-text: var(--service-text);
+	--color-text-muted: var(--service-text-muted);
+	--color-border: var(--service-border);
+	--color-border-strong: var(--service-text-muted);
+	--color-primary: var(--service-primary);
+	--color-primary-hover: var(--service-primary-hover);
+	--color-on-primary: var(--service-on-primary);
+	--color-link: var(--service-primary);
+	--color-link-hover: var(--service-primary-hover);
+	--color-focus: var(--service-focus);
+	--color-price: var(--service-text);
+	--color-sale: var(--service-sale);
+	--color-on-sale: var(--service-on-primary);
+	--color-header-bg: var(--service-surface);
+	--color-footer-bg: var(--service-surface-alt);
+	--color-card-bg: var(--service-surface);
+	--color-card-glow: var(--transparent);
+
+	--font-heading-weight: var(--font-weight-bold);
+	--font-heading-tracking: var(--tracking-normal);
+	--font-body-tracking: var(--tracking-normal);
+	--text-h1: var(--text-3xl);
+	--heading-h2-size: var(--text-base);
+	--section-gap: var(--space-6);
+	--container-max: var(--size-service-container);
+	--header-padding-block: var(--space-2);
+
+	--card-radius: var(--radius-service);
+	--card-shadow: var(--shadow-none);
+	--card-border-width: var(--border-width);
+	--card-border-color: var(--service-border);
+	--card-padding: var(--space-2);
+	--card-overflow: var(--overflow-hidden);
+	--card-transform-hover: var(--translate-none);
+	--card-glow-height: var(--size-0);
+	--card-glow-opacity: var(--opacity-hidden);
+	--product-image-offset-inline: var(--space-0);
+	--button-radius: var(--radius-service);
+	--input-radius: var(--radius-service);
+	--grid-gap: var(--space-3);
+	--nav-indicator-height: var(--border-width-strong);
+	--nav-indicator-color: var(--service-primary);
+	--nav-indicator-active-scale: var(--scale-visible);
+	--nav-indicator-opacity: var(--opacity-visible);
+}

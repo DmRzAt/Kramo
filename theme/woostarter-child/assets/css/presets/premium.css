@@ -1,0 +1,54 @@
+/*
+ * Premium preset: layered blue-grey surfaces and quiet luminous accents.
+ * This file intentionally contains variable overrides only.
+ */
+:root {
+	--color-bg: var(--premium-bg);
+	--color-surface: var(--premium-surface);
+	--color-surface-alt: var(--premium-surface-raised);
+	--color-text: var(--premium-text);
+	--color-text-muted: var(--premium-text-muted);
+	--color-border: var(--premium-border);
+	--color-border-strong: var(--premium-text-muted);
+	--color-primary: var(--premium-primary);
+	--color-primary-hover: var(--premium-primary-hover);
+	--color-on-primary: var(--premium-on-primary);
+	--color-link: var(--premium-primary);
+	--color-link-hover: var(--premium-primary-hover);
+	--color-focus: var(--premium-focus);
+	--color-price: var(--premium-text);
+	--color-sale: var(--premium-sale);
+	--color-on-sale: var(--premium-on-primary);
+	--color-header-bg: var(--premium-surface);
+	--color-footer-bg: var(--premium-surface);
+	--color-card-bg: var(--premium-surface-raised);
+	--color-card-glow: var(--premium-primary);
+
+	--font-heading-weight: var(--font-weight-regular);
+	--font-heading-tracking: var(--tracking-snug);
+	--font-body-tracking: var(--tracking-wide);
+	--heading-h2-size: var(--text-2xl);
+	--section-gap: var(--space-6);
+	--container-max: var(--size-premium-container);
+	--container-narrow: var(--size-premium-narrow);
+	--header-padding-block: var(--space-2);
+
+	--card-radius: var(--radius-lg);
+	--card-shadow: var(--shadow-premium);
+	--card-border-width: var(--size-0);
+	--card-border-color: var(--transparent);
+	--card-padding: var(--space-3);
+	--card-overflow: var(--overflow-hidden);
+	--card-transform-hover: var(--translate-card-hover);
+	--card-glow-height: var(--border-width);
+	--card-glow-opacity: var(--opacity-hidden);
+	--product-image-offset-inline: var(--space-0);
+	--button-radius: var(--radius-lg);
+	--input-radius: var(--radius-lg);
+	--grid-gap: var(--space-4);
+	--nav-indicator-height: var(--size-0);
+	--nav-indicator-color: var(--transparent);
+	--nav-indicator-active-scale: var(--scale-hidden);
+	--product-summary-bg: var(--premium-surface);
+	--product-summary-padding: var(--space-4);
+}

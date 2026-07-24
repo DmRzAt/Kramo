@@ -555,6 +555,49 @@
 	display: grid;
 }
 
+.woostarter-personalization {
+	display: grid;
+	gap: var(--space-1);
+	margin-block: var(--space-3);
+	padding: var(--space-3);
+	border: var(--border-width) solid var(--color-border);
+	border-radius: var(--input-radius);
+	background: var(--color-surface-alt);
+}
+
+.woostarter-personalization legend {
+	padding-inline: var(--space-1);
+	color: var(--color-text);
+	font-weight: var(--font-weight-semibold);
+}
+
+.woostarter-personalization label {
+	color: var(--color-text);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+}
+
+.woostarter-personalization__input {
+	display: grid;
+	grid-template-columns: minmax(var(--size-0), 1fr) auto;
+	gap: var(--space-1);
+	align-items: center;
+}
+
+.woostarter-personalization__counter {
+	min-width: 4.5rem;
+	color: var(--color-text-muted);
+	font-size: var(--text-sm);
+	text-align: end;
+}
+
+.woostarter-personalization__price {
+	margin: var(--space-1) var(--space-0) var(--space-0);
+	color: var(--color-text);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+}
+
 @media (hover: hover) {
 	.woocommerce ul.products li.product:hover .woostarter-product-image--primary,
 	.woocommerce ul.products li.product:focus-within .woostarter-product-image--primary {

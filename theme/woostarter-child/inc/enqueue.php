@@ -87,6 +87,28 @@ function woostarter_enqueue_assets() {
 				'errorMessage' => __( 'Nie udało się zaktualizować ulubionych.', 'woostarter' ),
 			)
 		);
+
+		$personalization_settings = array();
+		if (
+			function_exists( 'is_product' )
+			&& is_product()
+			&& function_exists( 'woostarter_get_personalization_settings' )
+		) {
+			$personalization_settings = woostarter_get_personalization_settings(
+				get_queried_object_id()
+			);
+		}
+
+		if ( ! empty( $personalization_settings['enabled'] ) ) {
+			wp_enqueue_script(
+				'woostarter-personalization',
+				$theme_uri . '/assets/js/personalization.js',
+				array(),
+				woostarter_asset_version( 'assets/js/personalization.js' ),
+				true
+			);
+			wp_script_add_data( 'woostarter-personalization', 'strategy', 'defer' );
+		}
 	}
 
 	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {

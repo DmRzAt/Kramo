@@ -230,6 +230,16 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex]) {
     $gallery_image_id = woostarter_demo_image($number + 100, $name . ' — wariant', $gallery_hex);
     $product->set_image_id($primary_image_id);
     $product->set_gallery_image_ids([$gallery_image_id]);
+
+    if (0 === $index) {
+        $product->update_meta_data('_ws_personalization_enabled', 'yes');
+        $product->update_meta_data('_ws_personalization_type', 'font');
+        $product->update_meta_data('_ws_personalization_label', 'Imię do haftu');
+        $product->update_meta_data('_ws_personalization_max_length', 20);
+        $product->update_meta_data('_ws_personalization_required', 'yes');
+        $product->update_meta_data('_ws_personalization_surcharge', 20);
+    }
+
     $product_id = $product->save();
     $product_ids[] = $product_id;
 

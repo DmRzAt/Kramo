@@ -25,6 +25,10 @@
 - Plugin-free guest/customer wishlist with an Ulubione shortcode page and login synchronization.
 - Required verified-purchase reviews with Polish storefront labels.
 - Catalog and variable-product browser QA screenshots.
+- Product-level personalization settings for text, font or thread-color choices, required fields and optional surcharges.
+- Character counter plus client/server personalization validation with multibyte-safe sanitization and truncation.
+- End-to-end personalization metadata in cart, checkout, order details and customer/admin email templates.
+- Reproducible seven-case personalization checker and a project progress report through task 06.
 
 ### Changed
 
@@ -32,3 +36,4 @@
 - Service is now the default preset for new installations and invalid preset values.
 - Demo products now include global filterable attributes, gallery and variation images, sale prices and one unavailable combination.
 - Demo bootstrap disables WooCommerce Coming soon so the seeded catalog is publicly testable.
+- The first demo product now includes required font personalization with a 20-character limit and a 20 zł surcharge.

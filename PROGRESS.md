@@ -12,7 +12,7 @@
 | 04 — Presets | Виконано | Коміти `6e2c6a3`, `c15ee6b`; Service вибрано дефолтом |
 | 05 — Catalog | Виконано | Коміт `bada1aa` |
 | 06 — Personalization | Виконано | Модуль `inc/personalization.php` і перевірка `scripts/check-personalization.php` |
-| 07 — Payments | Технічно підготовлено | Потрібні реальні sandbox-акаунти й credentials для транзакцій |
+| 07 — Payments | PayPal підтверджено живим тестом; P24 відкладено | Замовлення #132 через PayPal sandbox → `processing`. P24 — ключами першого клієнта |
 
 Завдання 08–12 не розпочинались.
 
@@ -66,4 +66,16 @@ docker compose --env-file docker/.env -f docker/docker-compose.yml -p woostarter
 - Configuration checker пройшов на окремих фіктивних fixtures для sandbox і live; runtime clients обох плагінів використали правильний комплект без запису секретів у базу.
 - Checkout без credentials відкривається без browser console errors і показує, що доступних методів оплати немає.
 - Реальні оплата, серверна нотифікація та refund ще не підтверджені: для цього потрібні credentials двох sandbox-акаунтів і публічний HTTPS URL.
-- Офіційна інструкція Przelewy24 вимагає спочатку зареєструвати акаунт і прийняти договір; можливість отримати sandbox без działalność я не можу підтвердити.
+- Перевірено на практиці (2026-07-24): sandbox.przelewy24.pl вимагає спочатку **konto produkcyjne**, а воно потребує зареєстрованої działalność gospodarcza. Отримати sandbox без фірми не можна — припущення README про «sandbox без działalność» неактуальне.
+- **Рішення:** 07 лишається «технічно готово». Живий P24 підтверджується ключами першого клієнта (у клієнта є фірма → є продакшн- і sandbox-ключі). Локальний end-to-end прогін checkout робимо через **PayPal sandbox** (безкоштовний, без фірми) — плагін PayPal уже встановлено.
+
+## Живий тест PayPal sandbox (2026-07-24)
+
+End-to-end оплата через PayPal sandbox пройдена й підтверджена з бекенду:
+
+- Ключі PayPal sandbox (client_id / secret / merchant_id / merchant_email) внесені лише в `docker/.env` (gitignored), режим `sandbox`.
+- `woostarter_payment_provider_is_configured('paypal')` = YES; `merchant_connected` / `use_manual_connection` = true; опція `woocommerce-ppcp-data-common` у БД **відсутня** — дані приходять тільки з env-фільтра.
+- Живий токен PayPal з боку WP: HTTP 200.
+- Тестове замовлення **#132**: статус `processing` (Przetwarzanie), `is_paid=yes`, total 138,00 PLN, метод `ppcp-gateway`, transaction ID `2VB97375UV9290240`, PayPal order `90N84173XN833942D`, intent CAPTURE, комісія записана (gross 138 / fee 4,80 / net 133,20).
+- Секрет PayPal у `wp_options` **після** реальної транзакції: 0 збігів.
+- Тимчасово додано метод доставки **Free shipping** у зону за замовчуванням, щоб checkout не блокувався (завдання 08 замінить це реальними InPost/Orlen). P24-гейтвеї лишаються без ключів — очікувано.

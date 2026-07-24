@@ -1,0 +1,50 @@
+@font-face {
+	font-family: "Inter";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("../fonts/InterVariable.woff2") format("woff2");
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: "Inter", system-ui, sans-serif;
+	line-height: 1.5;
+	text-rendering: optimizeLegibility;
+}
+
+img,
+svg,
+video {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+	font: inherit;
+}
+
+.woostarter-container,
+.woostarter-content-area,
+.woostarter-main {
+	width: 100%;
+	min-width: 0;
+}
+
+.woostarter-grid {
+	display: grid;
+}

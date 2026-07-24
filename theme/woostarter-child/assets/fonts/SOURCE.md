@@ -1,0 +1,6 @@
+# Inter Variable
+
+- Project: https://github.com/rsms/inter
+- Source commit: `353b61b9f4430d5f420d56605a6e7993e0941470`
+- File: `docs/font-files/InterVariable.woff2`
+- License: SIL Open Font License 1.1 (`OFL.txt`)

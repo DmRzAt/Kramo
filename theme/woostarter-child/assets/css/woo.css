@@ -1,0 +1,15 @@
+/*
+ * Structural WooCommerce safeguards only.
+ * Catalog presentation is implemented in task 05.
+ */
+
+.woocommerce .woostarter-main,
+.woocommerce-page .woostarter-main {
+	min-width: 0;
+}
+
+.woocommerce img,
+.woocommerce-page img {
+	max-width: 100%;
+	height: auto;
+}

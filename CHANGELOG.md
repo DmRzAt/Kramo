@@ -22,3 +22,4 @@
 ### Changed
 
 - Contrast checker now validates each preset's token-only structure and color pairs.
+- Service is now the default preset for new installations and invalid preset values.

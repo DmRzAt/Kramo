@@ -32,7 +32,7 @@ function woostarter_sanitize_preset( $preset ) {
 	$preset  = sanitize_key( $preset );
 	$presets = woostarter_get_presets();
 
-	return array_key_exists( $preset, $presets ) ? $preset : 'craft';
+	return array_key_exists( $preset, $presets ) ? $preset : 'service';
 }
 
 /**
@@ -45,7 +45,7 @@ function woostarter_sanitize_preset( $preset ) {
 function woostarter_get_active_preset() {
 	$preset = defined( 'WOOSTARTER_PRESET' )
 		? WOOSTARTER_PRESET
-		: get_option( 'WOOSTARTER_PRESET', 'craft' );
+		: get_option( 'WOOSTARTER_PRESET', 'service' );
 	$preset = apply_filters( 'woostarter_active_preset', $preset );
 
 	return woostarter_sanitize_preset( $preset );
@@ -78,7 +78,7 @@ function woostarter_register_preset_setting() {
 		array(
 			'type'              => 'string',
 			'sanitize_callback' => 'woostarter_sanitize_preset',
-			'default'           => 'craft',
+			'default'           => 'service',
 		)
 	);
 }

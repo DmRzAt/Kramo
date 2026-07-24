@@ -5,11 +5,57 @@
 
 .woocommerce .woostarter-main,
 .woocommerce-page .woostarter-main {
-	min-width: 0;
+	min-width: var(--size-0);
 }
 
 .woocommerce img,
 .woocommerce-page img {
-	max-width: 100%;
-	height: auto;
+	max-width: var(--media-max-width);
+	height: var(--media-height);
+}
+
+.woocommerce a {
+	color: var(--color-link);
+}
+
+.woocommerce a:hover {
+	color: var(--color-link-hover);
+}
+
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button {
+	min-height: var(--button-min-height);
+	padding: var(--button-padding-block) var(--button-padding-inline);
+	border: var(--button-border-width) var(--border-style) var(--color-primary);
+	border-radius: var(--button-radius);
+	background-color: var(--color-primary);
+	color: var(--color-on-primary);
+}
+
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover {
+	border-color: var(--color-primary-hover);
+	background-color: var(--color-primary-hover);
+	color: var(--color-on-primary);
+}
+
+.woocommerce div.product p.price,
+.woocommerce div.product span.price,
+.woocommerce ul.products li.product .price {
+	color: var(--color-price);
+}
+
+.woocommerce span.onsale {
+	background-color: var(--color-sale);
+	color: var(--color-on-sale);
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row select,
+.woocommerce form .form-row textarea {
+	border-color: var(--color-border);
+	background-color: var(--color-surface);
+	color: var(--color-text);
 }

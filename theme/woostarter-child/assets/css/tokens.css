@@ -1,3 +1,161 @@
+@font-face {
+	font-family: "Inter Variable";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("../fonts/InterVariable.woff2") format("woff2");
+}
+
 /*
- * Design tokens are defined in task 03.
+ * Layer 1: primitives.
+ * Raw values have no component or usage meaning.
  */
+:root {
+	--white: #ffffff;
+	--black: #000000;
+	--transparent: transparent;
+
+	--gray-50: #f8fafc;
+	--gray-100: #f1f5f9;
+	--gray-200: #e2e8f0;
+	--gray-300: #cbd5e1;
+	--gray-400: #94a3b8;
+	--gray-500: #64748b;
+	--gray-600: #475569;
+	--gray-700: #334155;
+	--gray-800: #1e293b;
+	--gray-900: #0f172a;
+
+	--brand-50: #eff6ff;
+	--brand-100: #dbeafe;
+	--brand-200: #bfdbfe;
+	--brand-300: #93c5fd;
+	--brand-400: #60a5fa;
+	--brand-500: #2563eb;
+	--brand-600: #1d4ed8;
+	--brand-700: #1e40af;
+	--brand-800: #1e3a8a;
+	--brand-900: #172554;
+
+	--accent-500: #7c3aed;
+	--success-500: #15803d;
+	--warning-500: #b45309;
+	--danger-500: #b91c1c;
+
+	--font-family-sans: "Inter Variable", system-ui, sans-serif;
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+
+	--text-xs: 0.75rem;
+	--text-sm: 0.875rem;
+	--text-base: 1rem;
+	--text-lg: 1.125rem;
+	--text-xl: 1.375rem;
+	--text-2xl: 1.75rem;
+	--text-3xl: 2.25rem;
+	--text-4xl: 3rem;
+	--text-hero: clamp(2rem, 5vw + 1rem, 4rem);
+	--text-h1: clamp(var(--text-3xl), 4vw, var(--text-4xl));
+	--text-h2: clamp(var(--text-2xl), 3vw, var(--text-3xl));
+	--text-h3: clamp(var(--text-xl), 2vw, var(--text-2xl));
+
+	--leading-tight: 1.1;
+	--leading-heading: 1.25;
+	--leading-body: 1.6;
+
+	--space-0: 0;
+	--space-unit: 0.5rem;
+	--space-1: calc(var(--space-unit) * 1);
+	--space-2: calc(var(--space-unit) * 2);
+	--space-3: calc(var(--space-unit) * 3);
+	--space-4: calc(var(--space-unit) * 4);
+	--space-6: calc(var(--space-unit) * 6);
+	--space-8: calc(var(--space-unit) * 8);
+	--space-12: calc(var(--space-unit) * 12);
+
+	--size-0: 0;
+	--size-full: 100%;
+	--size-auto: auto;
+	--text-size-adjust: 100%;
+
+	--radius-sm: 0.25rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.75rem;
+	--border-width: 0.0625rem;
+	--border-width-strong: 0.125rem;
+	--border-style: solid;
+
+	--duration-fast: 150ms;
+	--duration-standard: 250ms;
+	--duration-reduced: 0.01ms;
+	--motion-iteration-reduced: 1;
+	--ease-standard: cubic-bezier(0.2, 0, 0, 1);
+	--scroll-behavior-reduced: auto;
+}
+
+/*
+ * Layer 2: semantics.
+ * Values describe roles used throughout the storefront.
+ */
+:root {
+	--color-bg: var(--gray-50);
+	--color-surface: var(--white);
+	--color-text: var(--gray-900);
+	--color-text-muted: var(--gray-600);
+	--color-border: var(--gray-300);
+	--color-border-strong: var(--gray-600);
+	--color-primary: var(--brand-500);
+	--color-primary-hover: var(--brand-600);
+	--color-on-primary: var(--white);
+	--color-link: var(--brand-500);
+	--color-link-hover: var(--brand-700);
+	--color-focus: var(--accent-500);
+	--color-price: var(--gray-900);
+	--color-sale: var(--danger-500);
+	--color-on-sale: var(--white);
+	--color-success: var(--success-500);
+	--color-warning: var(--warning-500);
+	--color-danger: var(--danger-500);
+
+	--font-body: var(--font-family-sans);
+	--font-display: var(--font-body);
+
+	--section-gap: clamp(var(--space-8), 8vw, var(--space-12));
+	--container-max: 1280px;
+	--container-narrow: 720px;
+	--container-pad: clamp(var(--space-2), 4vw, var(--space-4));
+	--content-width: var(--size-full);
+	--media-max-width: var(--size-full);
+	--media-height: var(--size-auto);
+
+	--focus-ring-width: 0.1875rem;
+	--focus-ring-width-contrast: 0.25rem;
+	--focus-ring-offset: 0.125rem;
+	--focus-ring-style: solid;
+}
+
+/*
+ * Layer 3: components.
+ * These values exist only where a component differs from semantic defaults.
+ */
+:root {
+	--card-radius: var(--radius-md);
+	--card-shadow: 0 0.125rem 0.5rem rgb(15 23 42 / 0.08);
+	--button-radius: var(--radius-sm);
+	--button-min-height: 2.75rem;
+	--button-padding-block: var(--space-1);
+	--button-padding-inline: var(--space-3);
+	--button-border-width: var(--border-width);
+	--input-height: 2.75rem;
+	--input-radius: var(--radius-sm);
+	--input-padding-block: var(--space-1);
+	--input-padding-inline: var(--space-2);
+	--input-border-width: var(--border-width);
+	--textarea-min-height: 7.5rem;
+	--link-underline-offset: 0.15em;
+	--grid-gap: var(--space-3);
+	--transition-duration: var(--duration-fast);
+	--transition-easing: var(--ease-standard);
+}

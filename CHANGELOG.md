@@ -12,3 +12,6 @@
 - Self-hosted Inter variable font with preload and SIL Open Font License.
 - Client-focused Polish dashboard guidance and a configurable support footer.
 - Lean public assets with WooCommerce bundles limited to pages that use store features.
+- Three-layer design-token system for palette, typography, spacing, containers and component overrides.
+- Token-driven base and WooCommerce styles with accessible focus, motion and contrast preferences.
+- Dependency-free WCAG AA contrast checker for key storefront color pairs.

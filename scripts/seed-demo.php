@@ -93,6 +93,68 @@ function woostarter_demo_category(string $name, string $slug): int
     return (int) $created['term_id'];
 }
 
+/**
+ * Create a global product attribute and its terms for filterable demo data.
+ *
+ * @return array{id:int,taxonomy:string,terms:array<string,array{id:int,slug:string}>}
+ */
+function woostarter_demo_attribute(string $label, string $slug, array $options): array
+{
+    $attribute_id = wc_attribute_taxonomy_id_by_name($slug);
+
+    if (!$attribute_id) {
+        $attribute_id = wc_create_attribute([
+            'name' => $label,
+            'slug' => $slug,
+            'type' => 'select',
+            'order_by' => 'menu_order',
+            'has_archives' => false,
+        ]);
+
+        if (is_wp_error($attribute_id)) {
+            WP_CLI::error($attribute_id->get_error_message());
+        }
+
+        delete_transient('wc_attribute_taxonomies');
+        wp_cache_delete('woocommerce-attributes', 'woocommerce');
+    }
+
+    $taxonomy = wc_attribute_taxonomy_name($slug);
+    if (!taxonomy_exists($taxonomy)) {
+        register_taxonomy($taxonomy, ['product'], [
+            'hierarchical' => false,
+            'show_ui' => false,
+            'query_var' => true,
+            'rewrite' => false,
+        ]);
+    }
+
+    $terms = [];
+    foreach ($options as $option) {
+        $term = term_exists($option, $taxonomy);
+        if (!$term) {
+            $term = wp_insert_term($option, $taxonomy);
+        }
+
+        if (is_wp_error($term)) {
+            WP_CLI::error($term->get_error_message());
+        }
+
+        $term_id = (int) (is_array($term) ? $term['term_id'] : $term);
+        $term_object = get_term($term_id, $taxonomy);
+        $terms[$option] = [
+            'id' => $term_id,
+            'slug' => $term_object instanceof WP_Term ? $term_object->slug : sanitize_title($option),
+        ];
+    }
+
+    return [
+        'id' => (int) $attribute_id,
+        'taxonomy' => $taxonomy,
+        'terms' => $terms,
+    ];
+}
+
 $categories = [
     woostarter_demo_category('Odzież', 'odziez'),
     woostarter_demo_category('Akcesoria', 'akcesoria'),
@@ -100,26 +162,30 @@ $categories = [
 ];
 
 $products = [
-    ['Lniana koszula', 159, '#D8C3A5'],
-    ['Klasyczny T-shirt', 89, '#A8B5A2'],
-    ['Bluza z kapturem', 219, '#8D99AE'],
-    ['Sweter merino', 279, '#C9ADA7'],
-    ['Spodnie chino', 199, '#B7A99A'],
-    ['Lekka kurtka', 349, '#6B7D7D'],
-    ['Torba miejska', 189, '#A98467'],
-    ['Czapka bawełniana', 69, '#CB997E'],
-    ['Szalik z wełny', 119, '#9A8C98'],
-    ['Poszewka dekoracyjna', 79, '#DDBEA9'],
-    ['Koc bawełniany', 239, '#B7B7A4'],
-    ['Fartuch kuchenny', 109, '#A5A58D'],
+    ['Lniana koszula', 159, '#D8C3A5', '#4B5563'],
+    ['Klasyczny T-shirt', 89, '#A8B5A2', '#374151'],
+    ['Bluza z kapturem', 219, '#8D99AE', '#475569'],
+    ['Sweter merino', 279, '#C9ADA7', '#5B4B58'],
+    ['Spodnie chino', 199, '#B7A99A', '#3F4A4A'],
+    ['Lekka kurtka', 349, '#6B7D7D', '#263238'],
+    ['Torba miejska', 189, '#A98467', '#3D342F'],
+    ['Czapka bawełniana', 69, '#CB997E', '#4B3D38'],
+    ['Szalik z wełny', 119, '#9A8C98', '#403845'],
+    ['Poszewka dekoracyjna', 79, '#DDBEA9', '#65534A'],
+    ['Koc bawełniany', 239, '#B7B7A4', '#46463F'],
+    ['Fartuch kuchenny', 109, '#A5A58D', '#393A32'],
 ];
 
-$colors = ['Beżowy', 'Czarny'];
-$sizes = ['S', 'M'];
+$colors = ['Beżowy', 'Czarny', 'Niebieski'];
+$sizes = ['S', 'M', 'L'];
+$color_definition = woostarter_demo_attribute('Kolor', 'kolor', $colors);
+$size_definition = woostarter_demo_attribute('Rozmiar', 'rozmiar', $sizes);
 $product_ids = [];
 
-foreach ($products as $index => [$name, $base_price, $hex]) {
+foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex]) {
     $number = $index + 1;
+    $product_colors = 0 === $index % 2 ? ['Beżowy', 'Czarny'] : ['Niebieski', 'Czarny'];
+    $product_sizes = 0 === $index % 2 ? ['S', 'M'] : ['M', 'L'];
     $sku = sprintf('DEMO-%02d', $number);
     $product_id = wc_get_product_id_by_sku($sku);
     $product = $product_id ? wc_get_product($product_id) : new WC_Product_Variable();
@@ -130,17 +196,23 @@ foreach ($products as $index => [$name, $base_price, $hex]) {
     }
 
     $color_attribute = new WC_Product_Attribute();
-    $color_attribute->set_id(0);
-    $color_attribute->set_name('Kolor');
-    $color_attribute->set_options($colors);
+    $color_attribute->set_id($color_definition['id']);
+    $color_attribute->set_name($color_definition['taxonomy']);
+    $color_attribute->set_options(array_map(
+        static fn (string $color): int => $color_definition['terms'][$color]['id'],
+        $product_colors
+    ));
     $color_attribute->set_position(0);
     $color_attribute->set_visible(true);
     $color_attribute->set_variation(true);
 
     $size_attribute = new WC_Product_Attribute();
-    $size_attribute->set_id(0);
-    $size_attribute->set_name('Rozmiar');
-    $size_attribute->set_options($sizes);
+    $size_attribute->set_id($size_definition['id']);
+    $size_attribute->set_name($size_definition['taxonomy']);
+    $size_attribute->set_options(array_map(
+        static fn (string $size): int => $size_definition['terms'][$size]['id'],
+        $product_sizes
+    ));
     $size_attribute->set_position(1);
     $size_attribute->set_visible(true);
     $size_attribute->set_variation(true);
@@ -154,12 +226,16 @@ foreach ($products as $index => [$name, $base_price, $hex]) {
     $product->set_short_description('Polska jakość, prosty krój i wygoda na co dzień.');
     $product->set_category_ids([$categories[$index % count($categories)]]);
     $product->set_attributes([$color_attribute, $size_attribute]);
-    $product->set_image_id(woostarter_demo_image($number, $name, $hex));
+    $primary_image_id = woostarter_demo_image($number, $name, $hex);
+    $gallery_image_id = woostarter_demo_image($number + 100, $name . ' — wariant', $gallery_hex);
+    $product->set_image_id($primary_image_id);
+    $product->set_gallery_image_ids([$gallery_image_id]);
     $product_id = $product->save();
     $product_ids[] = $product_id;
 
-    foreach ($colors as $color_index => $color) {
-        foreach ($sizes as $size_index => $size) {
+    $desired_variation_ids = [];
+    foreach ($product_colors as $color_index => $color) {
+        foreach ($product_sizes as $size_index => $size) {
             $variation_sku = sprintf(
                 '%s-%s-%s',
                 $sku,
@@ -174,15 +250,28 @@ foreach ($products as $index => [$name, $base_price, $hex]) {
             $variation->set_parent_id($product_id);
             $variation->set_sku($variation_sku);
             $variation->set_attributes([
-                'kolor' => $color,
-                'rozmiar' => $size,
+                $color_definition['taxonomy'] => $color_definition['terms'][$color]['slug'],
+                $size_definition['taxonomy'] => $size_definition['terms'][$size]['slug'],
             ]);
-            $variation->set_regular_price((string) ($base_price + ($size_index * 10)));
+            $regular_price = $base_price + ($size_index * 10);
+            $variation->set_regular_price((string) $regular_price);
+            $variation->set_sale_price(0 === $index % 4 ? (string) ($regular_price - 20) : '');
+            $variation->set_image_id(0 === $color_index ? $primary_image_id : $gallery_image_id);
+            $is_unavailable = 0 === $index && 1 === $color_index && 1 === $size_index;
             $variation->set_manage_stock(true);
-            $variation->set_stock_quantity(8 + $color_index + $size_index);
-            $variation->set_stock_status('instock');
+            $variation->set_stock_quantity($is_unavailable ? 0 : 8 + $color_index + $size_index);
+            $variation->set_stock_status($is_unavailable ? 'outofstock' : 'instock');
             $variation->set_status('publish');
-            $variation->save();
+            $desired_variation_ids[] = $variation->save();
+        }
+    }
+
+    foreach ($product->get_children() as $child_id) {
+        if (!in_array($child_id, $desired_variation_ids, true)) {
+            $obsolete = wc_get_product($child_id);
+            if ($obsolete instanceof WC_Product_Variation) {
+                $obsolete->delete(true);
+            }
         }
     }
 
@@ -242,6 +331,9 @@ $coupon->set_amount(10);
 $coupon->set_individual_use(false);
 $coupon->set_usage_limit(100);
 $coupon->save();
+
+update_option('woocommerce_coming_soon', 'no');
+update_option('woocommerce_store_pages_only', 'no');
 
 WP_CLI::success(sprintf(
     'Demo content ready: %d variable products, %d categories, %d reviews and coupon START10.',

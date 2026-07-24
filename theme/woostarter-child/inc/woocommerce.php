@@ -117,6 +117,7 @@ function woostarter_needs_woocommerce_assets() {
 		'product_page',
 		'product_category',
 		'product_categories',
+		'woostarter_wishlist',
 		'woocommerce_cart',
 		'woocommerce_checkout',
 		'woocommerce_my_account',

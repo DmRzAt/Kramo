@@ -18,8 +18,17 @@
 - Three distinct variable-only visual presets: craft, service and premium.
 - Polish Appearance → Woo Starter preset selector with optional wp-config.php override.
 - Portfolio screenshots of the homepage and product page for every preset.
+- Responsive WooCommerce catalog cards with 4:5 media, gallery hover, sale badges, color swatches and native lazy-loading priorities.
+- Shareable category, price, color and size filters with AJAX updates, reset and browser history.
+- Product-page variation swatches, side thumbnails, Buy now action, responsive tabs/accordion and four related products.
+- Lazy YouTube, Vimeo and MP4 product-gallery video field with a WordPress media picker.
+- Plugin-free guest/customer wishlist with an Ulubione shortcode page and login synchronization.
+- Required verified-purchase reviews with Polish storefront labels.
+- Catalog and variable-product browser QA screenshots.
 
 ### Changed
 
 - Contrast checker now validates each preset's token-only structure and color pairs.
 - Service is now the default preset for new installations and invalid preset values.
+- Demo products now include global filterable attributes, gallery and variation images, sale prices and one unavailable combination.
+- Demo bootstrap disables WooCommerce Coming soon so the seeded catalog is publicly testable.

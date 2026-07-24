@@ -53,6 +53,61 @@ function woostarter_enqueue_assets() {
 			woostarter_asset_version( 'assets/css/woo.css' )
 		);
 		$preset_dependencies = array( 'woostarter-woocommerce' );
+
+		wp_enqueue_script(
+			'woostarter-catalog',
+			$theme_uri . '/assets/js/catalog.js',
+			array(),
+			woostarter_asset_version( 'assets/js/catalog.js' ),
+			true
+		);
+		wp_script_add_data( 'woostarter-catalog', 'strategy', 'defer' );
+
+		wp_enqueue_script(
+			'woostarter-wishlist',
+			$theme_uri . '/assets/js/wishlist.js',
+			array(),
+			woostarter_asset_version( 'assets/js/wishlist.js' ),
+			true
+		);
+		wp_script_add_data( 'woostarter-wishlist', 'strategy', 'defer' );
+		wp_localize_script(
+			'woostarter-wishlist',
+			'wooStarterWishlist',
+			array(
+				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'woostarter_wishlist' ),
+				'isLoggedIn'   => is_user_logged_in(),
+				'serverIds'    => is_user_logged_in()
+					? woostarter_get_customer_wishlist( get_current_user_id() )
+					: array(),
+				'addLabel'     => __( 'Dodaj do ulubionych', 'woostarter' ),
+				'removeLabel'  => __( 'Usuń z ulubionych', 'woostarter' ),
+				'emptyMessage' => __( 'Nie masz jeszcze ulubionych produktów.', 'woostarter' ),
+				'errorMessage' => __( 'Nie udało się zaktualizować ulubionych.', 'woostarter' ),
+			)
+		);
+	}
+
+	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+		wp_enqueue_script(
+			'woostarter-filters',
+			$theme_uri . '/assets/js/filters.js',
+			array(),
+			woostarter_asset_version( 'assets/js/filters.js' ),
+			true
+		);
+		wp_script_add_data( 'woostarter-filters', 'strategy', 'defer' );
+		wp_localize_script(
+			'woostarter-filters',
+			'wooStarterFilters',
+			array(
+				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'woostarter_catalog' ),
+				'loadingText'  => __( 'Ładowanie produktów…', 'woostarter' ),
+				'errorMessage' => __( 'Nie udało się załadować produktów.', 'woostarter' ),
+			)
+		);
 	}
 
 	$preset_path = woostarter_get_active_preset_stylesheet();

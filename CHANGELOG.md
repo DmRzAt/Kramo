@@ -38,6 +38,11 @@
 - Pickup-point visibility in the admin order, customer/admin e-mails and the order-received page, reading a normalized key plus common InPost/Orlen keys via a filter.
 - Best-effort InPost and Orlen Paczka plugin installation in the project bootstrap.
 - Polish shipping handoff documentation (docs/dostawa.md).
+- Rank Math base configuration without the wizard: sitemap enabled with tags and authors excluded, breadcrumbs on and the Organization knowledge graph set.
+- Structured data in inc/schema.php: LocalBusiness with areaServed and FAQPage, plus Organization, Open Graph and canonical fallbacks that step aside when Rank Math is active, and an hreflang stub.
+- Product FAQ field with a front-end accordion tab that also feeds FAQPage schema.
+- Local-service page template (page-local-service.php) with an editor meta box for service/city landing pages.
+- Polish SEO and local-page documentation (docs/seo-lokalne.md).
 
 ### Changed
 
@@ -48,3 +53,5 @@
 - The first demo product now includes required font personalization with a 20-character limit and a 20 zł surcharge.
 - Demo products now carry realistic per-item weights so shipping calculates correctly.
 - The temporary free-shipping stopgap in the rest-of-world zone is replaced by the dedicated Polska shipping zone.
+- The bootstrap script exports MSYS_NO_PATHCONV so Windows Git Bash no longer corrupts the permalink structure or container paths.
+- Demo content now includes a product FAQ and an example local-service landing page for Katowice.

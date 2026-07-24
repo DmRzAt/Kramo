@@ -2,6 +2,12 @@
 
 set -eu
 
+# On Windows Git Bash, MSYS rewrites leading-slash arguments into Windows paths,
+# which corrupts values like '/%postname%/' and container paths like '/scripts'.
+# Disabling that conversion is a no-op on Linux/macOS.
+export MSYS_NO_PATHCONV=1
+export MSYS2_ARG_CONV_EXCL='*'
+
 if [ "$#" -ne 1 ] || [ -z "$1" ]; then
     echo "Usage: $0 <project-name>" >&2
     exit 1
@@ -222,6 +228,46 @@ foreach ( $want as $method ) {
     update_option( $key, $settings );
 }
 echo "Shipping zone ready.\n";
+'
+
+echo "Configuring Rank Math (no wizard)..."
+wp eval '
+update_option( "rank_math_wizard_completed", true );
+update_option( "rank_math_registration_skip", true );
+
+$general = get_option( "rank-math-options-general", array() );
+if ( ! is_array( $general ) ) { $general = array(); }
+$general["breadcrumbs"] = "on";
+update_option( "rank-math-options-general", $general );
+
+$sitemap = get_option( "rank-math-options-sitemap", array() );
+if ( ! is_array( $sitemap ) ) { $sitemap = array(); }
+$sitemap["authors_sitemap"]        = "off";
+$sitemap["tax_post_tag_sitemap"]   = "off";
+$sitemap["tax_product_tag_sitemap"] = "off";
+update_option( "rank-math-options-sitemap", $sitemap );
+
+$titles = get_option( "rank-math-options-titles", array() );
+if ( ! is_array( $titles ) ) { $titles = array(); }
+$titles["disable_author_archives"] = "on";
+$titles["knowledgegraph_type"]     = "company";
+if ( empty( $titles["knowledgegraph_name"] ) ) {
+    $titles["knowledgegraph_name"] = get_bloginfo( "name" );
+}
+update_option( "rank-math-options-titles", $titles );
+
+$modules = (array) get_option( "rank_math_modules", array() );
+if ( ! in_array( "sitemap", $modules, true ) ) { $modules[] = "sitemap"; }
+update_option( "rank_math_modules", $modules );
+
+// Register the Rank Math sitemap rewrite in this process, then flush so
+// /sitemap_index.xml resolves without visiting wp-admin.
+if ( class_exists( "\\RankMath\\Sitemap\\Router" ) ) {
+    new \RankMath\Sitemap\Router();
+    do_action( "init" );
+}
+flush_rewrite_rules( true );
+echo "Rank Math configured.\n";
 '
 
 echo

@@ -14,8 +14,9 @@
 | 06 — Personalization | Виконано | Модуль `inc/personalization.php` і перевірка `scripts/check-personalization.php` |
 | 07 — Payments | PayPal підтверджено живим тестом; P24 відкладено | Замовлення #132 через PayPal sandbox → `processing`. P24 — ключами першого клієнта |
 | 08 — Shipping | Локальна частина виконана; живий geowidget відкладено | Зона «Polska», вагові тарифи, поріг безкоштовної, точка видачі в адмінці/листах |
+| 09 — SEO & Schema | Виконано | Rank Math (sitemap без тегів/авторів, breadcrumbs), LocalBusiness/FAQPage, шаблон локальної сторінки |
 
-Завдання 09–12 не розпочинались.
+Завдання 10–12 не розпочинались.
 
 ## Результат завдання 06
 
@@ -99,3 +100,25 @@ End-to-end оплата через PayPal sandbox пройдена й підтв
 - Симуляція мета точки (`_ws_shipping_point` і плагінний `_inpost_point_id`) → «Punkt odbioru:» рендериться в адмінці та листах.
 
 Відкладено (як P24): живий **Geowidget InPost** і віджет **Orlen** для вибору точки на checkout + друк етикеток — потребують ShipX/Orlen credentials, які дає клієнт. Тому реальний вибір пачкомату на checkout поки не тестувався end-to-end.
+
+## Результат завдання 09 (SEO і структуровані дані)
+
+Реалізовано й перевірено локально:
+
+- **Rank Math** сконфігуровано без візарда (в `new-project.sh`): sitemap під `/sitemap_index.xml` (індекс містить лише page + product, теги й автори виключені), breadcrumbs увімкнено, Organization/knowledge graph = назва сайту. Ключ активації фронт-sitemap — прапорець `rank_math_wizard_completed`.
+- **`inc/schema.php`** — JSON-LD через `wp_head`, додає лише те, чого Rank Math не робить: `LocalBusiness` з `areaServed` (на локальному шаблоні), `FAQPage` (товар + локальна сторінка), заглушка `hreflang`. Organization/OG/canonical — лише як fallback, коли Rank Math **не** активний (без дублювання).
+- **`inc/product-faq.php`** — поле FAQ у товарі (формат `Pytanie :: Odpowiedź`), фронт-таб-акордеон, живить FAQPage.
+- **`inc/local-service.php` + `page-local-service.php`** — шаблон «Usługa lokalna (SEO)» з мета-боксом: H1 «послуга + місто», секції (ціна, обшар обслуговування, FAQ, CTA). Копіювання під нове місто = зміна двох полів.
+- Демо: FAQ на товарі Czapka + приклад локальної сторінки «Mycie kostki brukowej Katowice».
+- `docs/seo-lokalne.md` — польська інструкція (як додати місто, FAQ, hreflang).
+
+Виправлено супутній баг: `new-project.sh` через MSYS-конвертацію Git Bash псував permalink-структуру (`/%postname%/` → Windows-шлях) і ламав sitemap; додано `export MSYS_NO_PATHCONV=1`.
+
+Перевірки:
+
+- `sitemap_index.xml` → `Content-Type: text/xml`, підмапи page + product, без авторів/тегів.
+- Сторінка товару: валідний `FAQPage`, Product від Rank Math, наш Organization-fallback не дублюється.
+- Локальна сторінка: валідні `LocalBusiness` (з areaServed: Sosnowiec/Gliwice/Chorzów) + `FAQPage`, H1 «Mycie kostki brukowej Katowice», CTA.
+- Усі JSON-LD блоки парсяться без помилок (валідація Node).
+
+Примітка: повний **Rich Results Test** Google запускається на публічній домені (localhost недоступний інструменту) — крок після деплою на сервер клієнта.

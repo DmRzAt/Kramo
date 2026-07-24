@@ -662,3 +662,68 @@
 		left: calc(var(--gallery-thumbnail-width) + var(--space-3));
 	}
 }
+
+/* FAQ accordion — used on product tabs and local-service pages. */
+.woostarter-faq {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
+
+.woostarter-faq__item {
+	border: var(--border-width) var(--border-style) var(--color-border);
+	border-radius: var(--card-radius);
+	padding: var(--space-2);
+	background: var(--color-surface);
+}
+
+.woostarter-faq__question {
+	cursor: pointer;
+	font-weight: var(--font-weight-semibold);
+	color: var(--color-text);
+}
+
+.woostarter-faq__answer {
+	margin-top: var(--space-1);
+	color: var(--color-text-muted);
+	line-height: var(--leading-body);
+}
+
+/* Local-service landing page. */
+.woostarter-local-service {
+	max-width: var(--container-max);
+	margin-inline: auto;
+	padding-inline: var(--container-pad);
+}
+
+.woostarter-local-service__title {
+	font-size: var(--text-hero);
+	line-height: var(--leading-tight);
+}
+
+.woostarter-local-service__price {
+	color: var(--color-text-muted);
+	font-size: var(--text-lg);
+}
+
+.woostarter-local-service > * + *,
+.woostarter-local-service__article > * + * {
+	margin-top: var(--section-gap);
+}
+
+.woostarter-local-service__area ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1) var(--space-2);
+	list-style: none;
+	padding: var(--space-0);
+}
+
+.woostarter-local-service__cta-button {
+	display: inline-block;
+	background: var(--color-primary);
+	color: var(--color-on-primary);
+	padding: var(--button-padding-block) var(--button-padding-inline);
+	border-radius: var(--button-radius);
+	min-height: var(--button-min-height);
+}

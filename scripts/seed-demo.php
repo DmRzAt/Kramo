@@ -243,6 +243,15 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight
         $product->update_meta_data('_ws_personalization_surcharge', 20);
     }
 
+    if (7 === $index) {
+        // Demonstrates the FAQ field feeding FAQPage schema on the product page.
+        $product->update_meta_data(
+            '_ws_faq',
+            "Czy czapka jest ciepła? :: Tak, gruba bawełna z domieszką elastanu.\n"
+                . 'Jak prać? :: Ręcznie lub w pralce w 30 stopniach.'
+        );
+    }
+
     $product_id = $product->save();
     $product_ids[] = $product_id;
 
@@ -345,6 +354,37 @@ $coupon->set_amount(10);
 $coupon->set_individual_use(false);
 $coupon->set_usage_limit(100);
 $coupon->save();
+
+// Example local-service landing page (LocalBusiness + FAQPage schema).
+// Duplicate it and change service + city fields to target another city.
+$local_slug = 'mycie-kostki-brukowej-katowice';
+$local_existing = get_page_by_path($local_slug);
+$local_id = $local_existing
+    ? $local_existing->ID
+    : wp_insert_post([
+        'post_type' => 'page',
+        'post_status' => 'publish',
+        'post_name' => $local_slug,
+        'post_title' => 'Mycie kostki brukowej Katowice',
+        'post_content' => 'Profesjonalne mycie i impregnacja kostki brukowej. Dojazd na terenie całej aglomeracji, wycena tego samego dnia.',
+    ]);
+
+if (!is_wp_error($local_id) && $local_id) {
+    update_post_meta($local_id, '_wp_page_template', 'page-local-service.php');
+    update_post_meta($local_id, '_ws_ls_service', 'Mycie kostki brukowej');
+    update_post_meta($local_id, '_ws_ls_city', 'Katowice');
+    update_post_meta($local_id, '_ws_ls_area', 'Katowice, Sosnowiec, Gliwice, Chorzów');
+    update_post_meta($local_id, '_ws_ls_price', '20–40 zł/m²');
+    update_post_meta($local_id, '_ws_ls_phone', '+48 500 600 700');
+    update_post_meta($local_id, '_ws_ls_cta_text', 'Zamów wycenę');
+    update_post_meta($local_id, '_ws_ls_cta_url', 'tel:+48500600700');
+    update_post_meta(
+        $local_id,
+        '_ws_ls_faq',
+        "Ile trwa usługa? :: Zwykle jeden dzień dla typowego podjazdu.\n"
+            . 'Czy impregnacja jest w cenie? :: Tak, w pakiecie podstawowym.'
+    );
+}
 
 update_option('woocommerce_coming_soon', 'no');
 update_option('woocommerce_store_pages_only', 'no');

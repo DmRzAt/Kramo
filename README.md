@@ -1,15 +1,15 @@
 # Kramo
 
-Стартовий комплект під польський e-commerce на WooCommerce. Мета — типове
-замовлення з 85–119 годин звести до 30–40 годин адаптації під клієнта.
+A WooCommerce starter kit for the Polish e-commerce market. It exists to turn a
+typical store project from 85–119 hours into 30–40 hours of adaptation.
 
-GeneratePress + дочірня тема `kramo-child`, три візуальні пресети, польська
-локалізація, платежі й доставка під ринок PL, RODO-банер, який реально блокує
-аналітику до згоди.
+GeneratePress plus the `kramo-child` theme, three visual presets, Polish
+localisation, payments and shipping built for the PL market, and a consent
+banner that genuinely withholds analytics until the visitor agrees.
 
-## Швидкий старт
+## Quick start
 
-Потрібні Docker і Docker Compose.
+Requires Docker and Docker Compose.
 
 ```sh
 cp docker/.env.example docker/.env
@@ -17,139 +17,146 @@ make fresh
 make demo
 ```
 
-Через кілька хвилин на `localhost:8080` стоїть польський магазин із 12
-варіативними товарами. phpMyAdmin — `localhost:8081`. Жодної ручної дії в
-браузері не треба.
+A few minutes later `localhost:8080` serves a Polish store with 12 variable
+products. phpMyAdmin runs on `localhost:8081`. No manual step in the browser is
+needed.
 
-Інші команди:
+Other commands:
 
 ```sh
-make up                      # підняти
-make down                    # зупинити
-make wp CMD="plugin list"    # довільна wp-cli команда
+make up                      # start
+make down                    # stop
+make wp CMD="plugin list"    # any wp-cli command
 make logs
 ```
 
-## Структура
+## Layout
 
 ```
 kramo/
-├── docker/                  docker-compose.yml + .env.example
-├── mu-plugins/              ранній бутстрап платежів (до звичайних плагінів)
-├── scripts/                 розгортання, демо-контент, перевірки, subset шрифту
-├── theme/kramo-child/       дочірня тема, текстдомен kramo
-│   ├── inc/                 одна функція — один файл
+├── docker/                  docker-compose.yml and .env.example
+├── mu-plugins/              payment bootstrap, loaded before regular plugins
+├── scripts/                 provisioning, demo data, checks, font subset
+├── theme/kramo-child/       child theme, text domain kramo
+│   ├── inc/                 one concern per file
 │   └── assets/css|js|fonts
-└── docs/                    документи для клієнта (польською) + заміри
+└── docs/                    Polish client documents and measurements
 ```
 
-## Що всередині
+## What is inside
 
-**Дизайн.** Три шари токенів у `assets/css/tokens.css`; хардкод кольору поза
-цим файлом заборонений. Три пресети — `craft`, `service`, `premium` —
-перемикаються в **Wygląd → Kramo** без правки коду. Пресет перевизначає тільки
-змінні; `scripts/check-contrast.js` падає, якщо контраст нижчий за WCAG AA.
+**Design.** Three token layers in `assets/css/tokens.css`; hard-coded colours
+outside that file are not allowed. Three presets — `craft`, `service`,
+`premium` — switch under **Wygląd → Kramo** without touching code. A preset may
+only override variables, and `scripts/check-contrast.js` fails the build when a
+pair drops below WCAG AA.
 
-**Каталог і товар.** Сітка 2/3/4 колонки, свотчі варіантів, hover на друге
-фото, wishlist без плагіна (гість — localStorage, залогінений — user meta),
-фільтри на `pre_get_posts` з `pushState` і станом у URL, відео в галереї,
-відгуки лише від покупців.
+**Catalog and product.** A 2/3/4 column grid, variant swatches, hover to the
+second photo, a plugin-free wishlist (localStorage for guests, user meta once
+logged in), filters on `pre_get_posts` with `pushState` and shareable URLs,
+video in the gallery, and reviews restricted to verified buyers.
 
-**Персоналізація.** Поле під гравіювання/вишивку проходить весь ланцюг
-товар → кошик → замовлення → лист клієнту → лист адміну → адмінка. Два
-однакові товари з різним текстом — окремі позиції. Перевірено сімома
-тест-кейсами (`scripts/check-personalization.php`).
+**Personalization.** An engraving or embroidery field travels the whole chain:
+product → cart → order → customer e-mail → admin e-mail → order screen. Two
+identical products with different text stay separate line items. Covered by
+seven test cases in `scripts/check-personalization.php`.
 
-**Платежі.** Przelewy24 і PayPal. Ключі читаються тільки з `.env` або
-`wp-config.php` і **не потрапляють у базу** — запис у `wp_options`
-заблокований фільтрами. Режим перемикається `KRAMO_PAYMENT_MODE`.
+**Payments.** Przelewy24 and PayPal. Keys are read only from `.env` or
+`wp-config.php` and **never reach the database** — writes to `wp_options` are
+blocked by filters. `KRAMO_PAYMENT_MODE` switches between sandbox and live.
 
-**Доставка.** Зона «Polska»: Paczkomat InPost, Kurier InPost, Orlen Paczka,
-безкоштовна від порогу. Тарифи за вагою в коді, пачкомат завжди дешевший за
-курʼєра. Вибрана точка видачі показується в адмінці, листах і на сторінці
-подяки.
+**Shipping.** A "Polska" zone with InPost Paczkomat, InPost Kurier, Orlen
+Paczka and free delivery above a threshold. Weight tiers live in code and a
+parcel locker always costs less than a courier. The chosen pickup point appears
+in the admin order, in e-mails and on the order-received page.
 
-**SEO.** Rank Math налаштований без візарда (sitemap без тегів і авторів,
-хлібні крихти). Тема додає лише те, чого Rank Math не дає: `LocalBusiness` з
-`areaServed`, `FAQPage`, заглушка `hreflang`. Шаблон **«Usługa lokalna (SEO)»**
-під замовлення «послуга + місто»: копіювання під нове місто = зміна двох полів.
+**SEO.** Rank Math is configured without its wizard (sitemap without tags and
+authors, breadcrumbs on). The theme adds only what Rank Math does not:
+`LocalBusiness` with `areaServed`, `FAQPage` and an `hreflang` stub. The
+**"Usługa lokalna (SEO)"** template targets "service + city" jobs — copying a
+page to a new city is a two-field change.
 
-**Швидкість.** Критичний CSS інлайном, платіжні скрипти лише на checkout
-(головна 56 → 11 файлів JS), WebP, зображення 4:5, один LCP-хінт на сторінку,
-шрифт урізаний під польську (352 KB → 56,6 KB).
+**Performance.** Critical CSS inlined, payment scripts limited to checkout
+(home page went from 56 to 11 JS files), WebP images in the 4:5 ratio the grid
+expects, exactly one LCP hint per view, and the variable font subset to Latin
+plus Polish (352 KB → 56.6 KB).
 
-Lighthouse на демо-контенті **без кешу сторінок**:
+Lighthouse on demo content **without a page cache**:
 
-| Сторінка | Desktop | Mobile | CLS | TBT |
+| Page | Desktop | Mobile | CLS | TBT |
 |---|---|---|---|---|
-| Товар | 97 | 91 | 0 | 10 ms |
-| Каталог | 98 | 93 | 0 | 10 ms |
-| Головна | 100 | 97 | 0 | 0 ms |
+| Product | 97 | 91 | 0 | 10 ms |
+| Catalog | 98 | 93 | 0 | 10 ms |
+| Home | 100 | 97 | 0 | 0 ms |
 
-**Безпека і RODO.** Заголовки безпеки, прихована версія WP, XML-RPC 403,
-`DISALLOW_FILE_EDIT`, ліміт спроб входу, антиспам honeypot + час (без
-reCAPTCHA — це скрипти Google і зайвий RODO-ризик). GA4 і Meta Pixel
-**фізично відсутні в HTML** до згоди, а не «завантажені й заблоковані».
+**Security and GDPR.** Security headers, hidden WordPress version, XML-RPC
+answering 403, `DISALLOW_FILE_EDIT`, login attempt limits, and a honeypot plus
+timing trap instead of reCAPTCHA (which would mean Google scripts on every page
+and an extra GDPR question). GA4 and Meta Pixel are **absent from the HTML**
+until consent, rather than loaded and then blocked.
 
-**Бекапи.** UpdraftPlus: база щодня, файли щотижня. Відновлення перевірене —
-видалений товар із варіантами повернувся з архіву без втрат.
+**Backups.** UpdraftPlus keeps the database daily and files weekly. Restore is
+proven, not assumed: a deleted product with four variations came back intact
+from the archive.
 
-## Потребує даних клієнта
+## Needs the client's own accounts
 
-Ці три речі не можна закрити без акаунтів замовника:
+Three things cannot be finished without credentials the shop owner holds:
 
-- **Przelewy24 бойові ключі** — sandbox P24 видають лише власникам
-  продакшн-акаунта, тобто зареєстрованої фірми.
-- **InPost ShipX / Orlen токени** — без них не працює віджет вибору пачкомату
-  й друк етикеток.
-- **PageSpeed Insights** — інструмент не бачить `localhost`, міряється після
-  деплою на домен.
+- **Przelewy24 live keys** — even a P24 sandbox requires a production account,
+  which requires a registered business.
+- **InPost ShipX and Orlen tokens** — without them the parcel-point widget and
+  label printing stay inactive.
+- **PageSpeed Insights** — the tool cannot reach `localhost`, so the official
+  score is measured after deployment.
 
-Код під них готовий: щойно зʼявляються ключі, все вмикається без правок.
+The code for all three is in place and starts working as soon as keys exist.
 
-## Документи для клієнта
+## Client documentation
 
-Польською, з полями `{{ }}` під підстановку:
+Written in Polish with `{{ }}` placeholders:
 
-| Файл | Про що |
+| File | Covers |
 |---|---|
-| `docs/instrukcja-klienta.md` | інструкція для нетехнічної людини, 9 розділів |
-| `docs/handoff-checklist.md` | чек-лист передачі проєкту |
-| `docs/platnosci.md` | перемикання платежів на бойові ключі |
-| `docs/dostawa.md` | що вписати для InPost і Orlen |
-| `docs/seo-lokalne.md` | як додати сторінку під нове місто |
-| `docs/bezpieczenstwo-kopie.md` | безпека і відновлення копій |
-| `docs/polityka-prywatnosci.md`, `docs/regulamin.md` | шаблони (клієнт перевіряє з юристом) |
-| `docs/performance.md` | заміри швидкості як аргумент до оферти |
+| `docs/instrukcja-klienta.md` | manual for a non-technical owner, 9 chapters |
+| `docs/handoff-checklist.md` | project handover checklist |
+| `docs/platnosci.md` | switching payments to live keys |
+| `docs/dostawa.md` | what to fill in for InPost and Orlen |
+| `docs/seo-lokalne.md` | adding a landing page for another city |
+| `docs/bezpieczenstwo-kopie.md` | security and restoring backups |
+| `docs/polityka-prywatnosci.md`, `docs/regulamin.md` | legal templates for the client's lawyer to review |
+| `docs/performance.md` | performance figures to quote in offers |
 
-PDF з інструкції: `sh scripts/make-manual.sh` (потрібен pandoc і PDF-engine).
+Build the manual as PDF with `sh scripts/make-manual.sh` (needs pandoc and a
+PDF engine).
 
-## Скрипти
+## Scripts
 
-| Скрипт | Що робить |
+| Script | Purpose |
 |---|---|
-| `scripts/new-project.sh` | ідемпотентне розгортання проєкту з нуля |
-| `scripts/seed-demo.sh` | демо-контент: 12 товарів, категорії, відгуки, промокод |
-| `scripts/check-contrast.js` | перевірка WCAG для токенів і пресетів |
-| `scripts/check-personalization.php` | сім тест-кейсів персоналізації |
-| `scripts/check-payments.php` | перевірка конфігурації платежів |
-| `scripts/subset-font.sh` | перезбірка шрифту під латиницю + польську |
-| `scripts/make-manual.sh` | markdown → PDF |
+| `scripts/new-project.sh` | idempotent provisioning from scratch |
+| `scripts/seed-demo.sh` | demo data: 12 products, categories, reviews, coupon |
+| `scripts/check-contrast.js` | WCAG check for tokens and every preset |
+| `scripts/check-personalization.php` | seven personalization test cases |
+| `scripts/check-payments.php` | payment configuration check |
+| `scripts/subset-font.sh` | rebuild the font subset for Latin and Polish |
+| `scripts/make-manual.sh` | markdown to PDF |
 
-## Зафіксовані рішення
+## Settled decisions
 
-GeneratePress + дочірня тема · нативні блоки Gutenberg, без Elementor у ядрі ·
-Przelewy24 + PayPal · InPost і Orlen Paczka · Rank Math free · кеш
-абстрагований (LiteSpeed / WP Rocket / W3TC — під хостинг клієнта) ·
-UpdraftPlus · локально Docker + wp-cli. Платних плагінів немає.
+GeneratePress with a child theme · native Gutenberg blocks, no Elementor in the
+core · Przelewy24 and PayPal · InPost and Orlen Paczka · Rank Math free · a
+cache layer abstracted across LiteSpeed, WP Rocket and W3TC so the choice
+follows the client's hosting · UpdraftPlus · Docker and wp-cli locally. No paid
+plugins.
 
-## Правила розробки
+## Development rules
 
-- Кожна функція теми — в окремому файлі в `inc/`, не купою в `functions.php`
-- Усі рядки через `__()` з текстдоменом `kramo`
-- Польська в інтерфейсі клієнта, англійська в коді
-- Ядро WooCommerce не чіпати — тільки хуки й фільтри
-- Після кожного завдання оновити `CHANGELOG.md`
+- One concern per file in `inc/`, never a pile in `functions.php`
+- All strings through `__()` with the `kramo` text domain
+- Polish in the client-facing interface, English in code
+- Never patch WooCommerce core — hooks and filters only
+- Update `CHANGELOG.md` with every task
 
-Секрети в репозиторій не потрапляють: `docker/.env` у `.gitignore`, у
-`.env.example` лише порожні поля.
+Secrets stay out of the repository: `docker/.env` is git-ignored and
+`.env.example` ships with empty fields.

@@ -140,9 +140,46 @@ function woostarter_render_settings_page() {
 						</p>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row">
+						<label for="woostarter-ga4"><?php echo esc_html__( 'Google Analytics 4', 'woostarter' ); ?></label>
+					</th>
+					<td>
+						<input
+							type="text"
+							id="woostarter-ga4"
+							name="woostarter_ga4_id"
+							class="regular-text"
+							placeholder="G-XXXXXXXXXX"
+							value="<?php echo esc_attr( get_option( 'woostarter_ga4_id', '' ) ); ?>"
+						>
+						<p class="description">
+							<?php echo esc_html__( 'Zostaw puste, aby nie zbierać statystyk. Skrypt ładuje się dopiero po zgodzie na cookie.', 'woostarter' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="woostarter-pixel"><?php echo esc_html__( 'Meta Pixel', 'woostarter' ); ?></label>
+					</th>
+					<td>
+						<input
+							type="text"
+							id="woostarter-pixel"
+							name="woostarter_pixel_id"
+							class="regular-text"
+							value="<?php echo esc_attr( get_option( 'woostarter_pixel_id', '' ) ); ?>"
+						>
+						<p class="description">
+							<?php echo esc_html__( 'Identyfikator pikselu Meta. Również ładowany dopiero po zgodzie.', 'woostarter' ); ?>
+						</p>
+					</td>
+				</tr>
 			</table>
 			<?php if ( ! $is_locked ) : ?>
-				<?php submit_button( __( 'Zapisz preset', 'woostarter' ) ); ?>
+				<?php submit_button( __( 'Zapisz ustawienia', 'woostarter' ) ); ?>
+			<?php else : ?>
+				<?php submit_button( __( 'Zapisz ustawienia', 'woostarter' ) ); ?>
 			<?php endif; ?>
 		</form>
 	</div>

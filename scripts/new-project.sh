@@ -119,7 +119,7 @@ else
     echo "Child theme files are not present yet; GeneratePress remains active."
 fi
 
-for plugin in woocommerce seo-by-rank-math updraftplus woocommerce-paypal-payments webp-uploads; do
+for plugin in woocommerce seo-by-rank-math updraftplus woocommerce-paypal-payments webp-uploads limit-login-attempts-reloaded; do
     wp plugin install "$plugin" --activate
 done
 
@@ -234,6 +234,18 @@ foreach ( $want as $method ) {
 }
 echo "Shipping zone ready.\n";
 '
+
+echo "Hardening WordPress..."
+wp config set DISALLOW_FILE_EDIT true --raw --type=constant
+wp config set WP_AUTO_UPDATE_CORE minor --type=constant
+
+# Files weekly, database daily. Remote storage stays unset on purpose: backups
+# belong on the account of the shop owner, not on the server being backed up.
+echo "Scheduling UpdraftPlus backups (database daily, files weekly)..."
+wp option update updraft_interval weekly
+wp option update updraft_interval_database daily
+wp option update updraft_retain 14
+wp option update updraft_retain_db 30
 
 echo "Configuring Rank Math (no wizard)..."
 wp eval '

@@ -48,6 +48,10 @@
 - Latin and Polish font subset script (scripts/subset-font.sh) cutting the variable font from 352 KB to 56.6 KB.
 - WebP conversion through the Modern Image Formats plugin, configured in bootstrap.
 - Performance measurements and cache handover notes (docs/performance.md).
+- Plugin-free hardening in inc/security.php: security headers, hidden WordPress version, XML-RPC turned off behind a filter, generic login errors, user-enumeration blocking and a honeypot plus timing trap for forms.
+- Limit Login Attempts Reloaded and the DISALLOW_FILE_EDIT constant in bootstrap, with UpdraftPlus scheduled for daily database and weekly file backups.
+- Consent-gated analytics in inc/consent.php: GA4 and Meta Pixel identifiers are entered in Appearance, Woo Starter and the scripts reach the browser only after the visitor accepts.
+- Polish privacy policy, terms and security/backup handover templates in docs/.
 
 ### Changed
 

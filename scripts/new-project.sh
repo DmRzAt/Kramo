@@ -119,9 +119,14 @@ else
     echo "Child theme files are not present yet; GeneratePress remains active."
 fi
 
-for plugin in woocommerce seo-by-rank-math updraftplus woocommerce-paypal-payments; do
+for plugin in woocommerce seo-by-rank-math updraftplus woocommerce-paypal-payments webp-uploads; do
     wp plugin install "$plugin" --activate
 done
+
+# Modern Image Formats defaults to AVIF, which older Safari cannot read. WebP
+# covers every browser in current use and still cuts image weight sharply.
+wp option update perflab_modern_image_format webp
+wp option update perflab_generate_webp_and_jpeg 0
 
 P24_PLUGIN_URL="https://www.przelewy24.pl/do-pobrania/woocommerce-pobierz"
 if wp plugin is-installed woo-przelewy24 >/dev/null 2>&1; then

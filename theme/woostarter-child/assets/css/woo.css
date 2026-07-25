@@ -663,6 +663,50 @@
 	}
 }
 
+/* Reserve the gallery box before flexslider initialises: without this the
+   stacked slides collapse into one on init and push the page up. */
+.woocommerce div.product div.images .woocommerce-product-gallery__wrapper {
+	aspect-ratio: var(--catalog-media-ratio);
+	overflow: var(--overflow-hidden);
+}
+
+.woocommerce div.product div.images .flex-viewport {
+	aspect-ratio: var(--catalog-media-ratio);
+}
+
+/* Mobile galleries are swipe-driven, so the thumbnail strip flexslider injects
+   after load would only push the summary down and cost CLS. Desktop keeps the
+   side thumbnails defined in the 64rem breakpoint above. */
+@media (max-width: 63.999rem) {
+	.woocommerce div.product div.images .flex-control-thumbs {
+		display: none;
+	}
+
+	/* Reserve the gallery box on the container that exists both before and
+	   after flexslider initialises, so the summary below never moves. */
+	.woocommerce div.product div.images {
+		aspect-ratio: var(--catalog-media-ratio);
+		overflow: var(--overflow-hidden);
+	}
+}
+
+/* Keep the variation summary and reset link from resizing the form when
+   WooCommerce injects price and availability after selection. */
+.woocommerce div.product form.cart .woocommerce-variation {
+	min-height: var(--variation-summary-min-height);
+}
+
+.woocommerce div.product form.cart .reset_variations {
+	display: inline-block;
+	min-height: var(--text-lg);
+	visibility: hidden;
+}
+
+.woocommerce div.product form.cart .reset_variations[style*="visible"],
+.woocommerce div.product form.cart .reset_variations:focus-visible {
+	visibility: visible;
+}
+
 /* FAQ accordion — used on product tabs and local-service pages. */
 .woostarter-faq {
 	display: flex;

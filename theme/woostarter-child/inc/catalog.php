@@ -48,14 +48,22 @@ function woostarter_loop_product_thumbnail() {
 	);
 
 	if ( $is_priority ) {
-		$image_attributes['loading']       = 'eager';
-		$image_attributes['fetchpriority'] = 'high';
+		$image_attributes['loading'] = 'eager';
 	} else {
 		$image_attributes['loading'] = 'lazy';
 	}
 
 	$size       = apply_filters( 'single_product_archive_thumbnail_size', 'woocommerce_thumbnail' );
 	$primary    = $product->get_image( $size, $image_attributes );
+
+	// WordPress recomputes loading and priority attributes, so the LCP hint is
+	// written onto the finished markup instead of passed as an attribute. Only
+	// the first tile gets it; spreading the hint over several images cancels it.
+	$is_catalog_screen = function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() );
+
+	if ( 1 === $position && $is_catalog_screen && false === strpos( $primary, 'fetchpriority' ) ) {
+		$primary = preg_replace( '/<img /', '<img fetchpriority="high" ', $primary, 1 );
+	}
 	$gallery    = $product->get_gallery_image_ids();
 	$secondary  = '';
 	$second_id  = $gallery ? (int) reset( $gallery ) : 0;

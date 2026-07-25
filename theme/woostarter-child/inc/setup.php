@@ -32,3 +32,37 @@ function woostarter_setup() {
 	);
 }
 add_action( 'after_setup_theme', 'woostarter_setup', 20 );
+
+/**
+ * Serve catalog and single-product images in the 4:5 ratio the grid expects.
+ *
+ * WooCommerce defaults to square thumbnails at 300px, which both breaks the
+ * card proportions and ships a smaller file than the grid slot renders.
+ *
+ * @param array<string,mixed> $size Image size arguments.
+ * @return array<string,mixed>
+ */
+function woostarter_woocommerce_thumbnail_size( $size ) {
+	$size['width']  = 400;
+	$size['height'] = 500;
+	$size['crop']   = 1;
+
+	return $size;
+}
+add_filter( 'woocommerce_get_image_size_thumbnail', 'woostarter_woocommerce_thumbnail_size' );
+
+/**
+ * Match the single-product image to the registered 4:5 gallery size.
+ *
+ * @param array<string,mixed> $size Image size arguments.
+ * @return array<string,mixed>
+ */
+function woostarter_woocommerce_single_size( $size ) {
+	$size['width']  = 800;
+	$size['height'] = 1000;
+	$size['crop']   = 1;
+
+	return $size;
+}
+add_filter( 'woocommerce_get_image_size_single', 'woostarter_woocommerce_single_size' );
+add_filter( 'woocommerce_get_image_size_gallery_thumbnail', 'woostarter_woocommerce_thumbnail_size' );

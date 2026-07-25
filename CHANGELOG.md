@@ -43,6 +43,11 @@
 - Product FAQ field with a front-end accordion tab that also feeds FAQPage schema.
 - Local-service page template (page-local-service.php) with an editor meta box for service/city landing pages.
 - Polish SEO and local-page documentation (docs/seo-lokalne.md).
+- Host-agnostic cache layer in inc/cache.php that detects LiteSpeed, WP Rocket or W3TC, keeps cart, checkout and account pages out of shared caches and purges product pages on stock or price changes.
+- Delivery tuning in inc/performance.php: inlined critical CSS, asynchronous non-critical styles, payment assets limited to cart and checkout, and priority hints allowed through kses.
+- Latin and Polish font subset script (scripts/subset-font.sh) cutting the variable font from 352 KB to 56.6 KB.
+- WebP conversion through the Modern Image Formats plugin, configured in bootstrap.
+- Performance measurements and cache handover notes (docs/performance.md).
 
 ### Changed
 
@@ -55,3 +60,5 @@
 - The temporary free-shipping stopgap in the rest-of-world zone is replaced by the dedicated Polska shipping zone.
 - The bootstrap script exports MSYS_NO_PATHCONV so Windows Git Bash no longer corrupts the permalink structure or container paths.
 - Demo content now includes a product FAQ and an example local-service landing page for Katowice.
+- Catalog and product images now use the 4:5 ratio the grid expects (400x500 and 800x1000) instead of WooCommerce's square 300px default.
+- The product gallery reserves its aspect ratio before flexslider initialises, and mobile hides the thumbnail strip, removing the layout shift that followed page load.

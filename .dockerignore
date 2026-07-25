@@ -1,0 +1,7 @@
+.git
+.github
+.claude
+docker/.env
+docs/screenshots
+node_modules
+*.log

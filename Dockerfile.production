@@ -1,0 +1,52 @@
+FROM wordpress:cli-php8.3 AS wpcli
+
+FROM wordpress:php8.3-apache
+
+ARG WOOCOMMERCE_VERSION=10.9.4
+ARG RANK_MATH_VERSION=1.0.274.1
+ARG UPDRAFTPLUS_VERSION=1.26.6
+ARG PAYPAL_VERSION=4.1.1
+ARG WEBP_UPLOADS_VERSION=2.7.1
+ARG LIMIT_LOGIN_VERSION=2.26.24
+ARG GENERATEPRESS_VERSION=3.6.1
+
+COPY --from=wpcli /usr/local/bin/wp /usr/local/bin/wp
+
+RUN set -eux; \
+	for plugin in \
+		"woocommerce:${WOOCOMMERCE_VERSION}" \
+		"seo-by-rank-math:${RANK_MATH_VERSION}" \
+		"updraftplus:${UPDRAFTPLUS_VERSION}" \
+		"woocommerce-paypal-payments:${PAYPAL_VERSION}" \
+		"webp-uploads:${WEBP_UPLOADS_VERSION}" \
+		"limit-login-attempts-reloaded:${LIMIT_LOGIN_VERSION}"; do \
+		slug="${plugin%%:*}"; version="${plugin##*:}"; \
+		curl -fL "https://downloads.wordpress.org/plugin/${slug}.${version}.zip" -o "/tmp/${slug}.zip"; \
+		php -r '$zip = new ZipArchive(); exit(true === $zip->open($argv[1]) && $zip->extractTo($argv[2]) ? 0 : 1);' "/tmp/${slug}.zip" /usr/src/wordpress/wp-content/plugins; \
+		rm "/tmp/${slug}.zip"; \
+	done; \
+	curl -fL "https://downloads.wordpress.org/theme/generatepress.${GENERATEPRESS_VERSION}.zip" -o /tmp/generatepress.zip; \
+	php -r '$zip = new ZipArchive(); exit(true === $zip->open($argv[1]) && $zip->extractTo($argv[2]) ? 0 : 1);' /tmp/generatepress.zip /usr/src/wordpress/wp-content/themes; \
+	rm /tmp/generatepress.zip
+
+COPY --chown=www-data:www-data theme/kramo-child /usr/src/wordpress/wp-content/themes/kramo-child
+COPY --chown=www-data:www-data mu-plugins/kramo-payments-bootstrap.php /usr/src/wordpress/wp-content/mu-plugins/kramo-payments-bootstrap.php
+COPY --chown=www-data:www-data scripts /scripts
+COPY deployment/production-entrypoint.sh /usr/local/bin/kramo-production-entrypoint
+COPY deployment/kramo-health.conf /etc/apache2/conf-available/kramo-health.conf
+
+RUN set -eux; \
+	chmod 0755 /usr/local/bin/kramo-production-entrypoint /scripts/setup-production.sh; \
+	a2dismod mpm_event mpm_worker || true; \
+	a2enmod mpm_prefork; \
+	a2enconf kramo-health
+
+ENV PORT=80 \
+	WORDPRESS_DEBUG=0 \
+	WORDPRESS_CONFIG_EXTRA="if ( isset( \$_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === \$_SERVER['HTTP_X_FORWARDED_PROTO'] ) { \$_SERVER['HTTPS'] = 'on'; } define( 'FORCE_SSL_ADMIN', true ); define( 'DISALLOW_FILE_EDIT', true ); define( 'WP_ENVIRONMENT_TYPE', 'production' ); define( 'WP_AUTO_UPDATE_CORE', 'minor' );" \
+	WP_CLI_CACHE_DIR=/tmp/wp-cli-cache
+
+EXPOSE 80
+
+ENTRYPOINT ["kramo-production-entrypoint"]
+CMD ["apache2-foreground"]

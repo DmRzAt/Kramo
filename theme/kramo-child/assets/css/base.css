@@ -297,3 +297,18 @@ textarea {
 	color: var(--color-text);
 	border: var(--border-width) var(--border-style) var(--color-border);
 }
+
+.kramo-demo-badge {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	padding: var(--space-1) var(--container-pad);
+	background: var(--color-primary);
+	color: var(--color-on-primary);
+	font-size: var(--text-sm);
+	text-align: center;
+}
+
+.kramo-demo-badge strong {
+	margin-inline-end: var(--space-1);
+}

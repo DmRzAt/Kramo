@@ -30,6 +30,18 @@ make wp CMD="plugin list"    # any wp-cli command
 make logs
 ```
 
+## Public demo
+
+`Dockerfile.production` and `railway.json` deploy the real store — catalog,
+filters, variants, personalization, cart, shipping calculation and checkout all
+work, backed by a managed MySQL service and a volume for uploads. The first
+boot provisions and seeds everything without a single click in the browser, and
+Railway only routes traffic once `/kramo-health` reports success.
+
+`KRAMO_DEMO=1` adds a demo ribbon and disables outgoing e-mail, and cash on
+delivery keeps checkout completable without live gateway keys. Steps and
+variables: [`docs/deployment.md`](docs/deployment.md).
+
 ## Layout
 
 ```

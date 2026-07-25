@@ -32,7 +32,7 @@ całkowicie.
 - **Skrypty płatności** (PayPal SDK, Przelewy24) ładują się wyłącznie w koszyku,
   zamówieniu i koncie. Efekt: strona główna 56 → 11 plików JS, katalog 57 → 12,
   strona produktu 67 → 20. Przywrócenie ich gdzie indziej: filtr
-  `woostarter_load_payment_assets`.
+  `kramo_load_payment_assets`.
 - JS ładowany z `defer`.
 
 ### Obrazy

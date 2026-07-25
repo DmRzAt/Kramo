@@ -32,10 +32,24 @@ if [ -z "$COMPOSE_PROJECT_NAME" ]; then
     COMPOSE_PROJECT_NAME="$PROJECT_NAME"
 fi
 
+# Path conversion is disabled above so that wp-cli arguments such as
+# '/%postname%/' survive, which means Docker must be handed paths it can read
+# on its own. On Windows that is the native form; elsewhere nothing changes.
+to_host_path() {
+    if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$1"
+    else
+        printf '%s' "$1"
+    fi
+}
+
+ENV_FILE_ARG="$(to_host_path "$ENV_FILE")"
+COMPOSE_FILE_ARG="$(to_host_path "$ROOT_DIR/docker/docker-compose.yml")"
+
 compose() {
     docker compose \
-        --env-file "$ENV_FILE" \
-        -f "$ROOT_DIR/docker/docker-compose.yml" \
+        --env-file "$ENV_FILE_ARG" \
+        -f "$COMPOSE_FILE_ARG" \
         -p "$COMPOSE_PROJECT_NAME" \
         "$@"
 }
@@ -113,8 +127,8 @@ wp rewrite structure '/%postname%/' --hard
 echo "Installing the approved theme and plugins..."
 wp theme install generatepress --activate
 
-if compose exec -T wpcli test -f wp-content/themes/woostarter-child/style.css; then
-    wp theme activate woostarter-child
+if compose exec -T wpcli test -f wp-content/themes/kramo-child/style.css; then
+    wp theme activate kramo-child
 else
     echo "Child theme files are not present yet; GeneratePress remains active."
 fi

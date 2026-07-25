@@ -7,7 +7,7 @@ const tokensPath = path.join(
 	__dirname,
 	"..",
 	"theme",
-	"woostarter-child",
+	"kramo-child",
 	"assets",
 	"css",
 	"tokens.css"
@@ -25,7 +25,7 @@ const presetPath = presetName
 		__dirname,
 		"..",
 		"theme",
-		"woostarter-child",
+		"kramo-child",
 		"assets",
 		"css",
 		"presets",

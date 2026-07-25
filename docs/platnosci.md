@@ -2,7 +2,7 @@
 
 ## Zasada bezpieczeństwa
 
-Tryb płatności jest kontrolowany przez `WOOSTARTER_PAYMENT_MODE`:
+Tryb płatności jest kontrolowany przez `KRAMO_PAYMENT_MODE`:
 
 - `sandbox` — wyłącznie dane testowe;
 - `live` — wyłącznie dane produkcyjne.
@@ -20,7 +20,7 @@ Projekt instaluje:
 
 Instalację dla nowego projektu wykonuje `scripts/new-project.sh`.
 
-Plik `mu-plugins/woostarter-payments-bootstrap.php` ładuje environment override przed zwykłymi wtyczkami. Przy wdrożeniu poza Dockerem skopiuj go do `wp-content/mu-plugins/`; bez tego PayPal może zbudować konfigurację przed załadowaniem motywu.
+Plik `mu-plugins/kramo-payments-bootstrap.php` ładuje environment override przed zwykłymi wtyczkami. Przy wdrożeniu poza Dockerem skopiuj go do `wp-content/mu-plugins/`; bez tego PayPal może zbudować konfigurację przed załadowaniem motywu.
 
 ## Konto testowe Przelewy24
 
@@ -37,16 +37,16 @@ W panelu sandbox dodaj publiczny adres IP serwera w `Moje dane → API i konfigu
 Uzupełnij `docker/.env`:
 
 ```dotenv
-WOOSTARTER_PAYMENT_MODE=sandbox
-WOOSTARTER_P24_SANDBOX_MERCHANT_ID=
-WOOSTARTER_P24_SANDBOX_CRC_KEY=
-WOOSTARTER_P24_SANDBOX_REPORTS_KEY=
+KRAMO_PAYMENT_MODE=sandbox
+KRAMO_P24_SANDBOX_MERCHANT_ID=
+KRAMO_P24_SANDBOX_CRC_KEY=
+KRAMO_P24_SANDBOX_REPORTS_KEY=
 ```
 
 Po zmianie `.env` odtwórz kontenery:
 
 ```sh
-docker compose --env-file docker/.env -f docker/docker-compose.yml -p woostarter up -d --force-recreate wordpress wpcli
+docker compose --env-file docker/.env -f docker/docker-compose.yml -p kramo up -d --force-recreate wordpress wpcli
 ```
 
 Moduł sam przekazuje dynamiczny adres powrotu i powiadomienia oparty o:
@@ -69,10 +69,10 @@ Utwórz testową aplikację w PayPal Developer:
 Uzupełnij:
 
 ```dotenv
-WOOSTARTER_PAYPAL_SANDBOX_CLIENT_ID=
-WOOSTARTER_PAYPAL_SANDBOX_CLIENT_SECRET=
-WOOSTARTER_PAYPAL_SANDBOX_MERCHANT_ID=
-WOOSTARTER_PAYPAL_SANDBOX_MERCHANT_EMAIL=
+KRAMO_PAYPAL_SANDBOX_CLIENT_ID=
+KRAMO_PAYPAL_SANDBOX_CLIENT_SECRET=
+KRAMO_PAYPAL_SANDBOX_MERCHANT_ID=
+KRAMO_PAYPAL_SANDBOX_MERCHANT_EMAIL=
 ```
 
 Oficjalna wtyczka rejestruje webhook pod adresem:
@@ -86,7 +86,7 @@ https://twoja-domena.pl/wp-json/paypal/v1/incoming
 Po uzupełnieniu credentials uruchom kontrolę konfiguracji:
 
 ```sh
-docker compose --env-file docker/.env -f docker/docker-compose.yml -p woostarter \
+docker compose --env-file docker/.env -f docker/docker-compose.yml -p kramo \
   exec -T wpcli wp eval-file ../../../scripts/check-payments.php
 ```
 
@@ -110,7 +110,7 @@ W zamówieniu wybierz `Zwrot`, wpisz kwotę i użyj przycisku zwrotu przez wybra
 
 1. Zrób kopię bazy i plików.
 2. Uzupełnij wyłącznie zmienne `*_LIVE_*`.
-3. Ustaw `WOOSTARTER_PAYMENT_MODE=live`.
+3. Ustaw `KRAMO_PAYMENT_MODE=live`.
 4. Odtwórz procesy PHP/kontenery, aby wczytały nowe środowisko.
 5. Sprawdź, czy panel pokazuje tryb produkcyjny.
 6. Zarejestruj produkcyjne webhooki i domenę Apple Pay, jeśli jest używana.

@@ -9,7 +9,7 @@ produkcyjnej**, nie na środowisku testowym.
 
 - [ ] Klucze produkcyjne Przelewy24 wpisane w `wp-config.php` lub `.env`
       (nigdy w bazie, nigdy w repozytorium)
-- [ ] `WOOSTARTER_PAYMENT_MODE` ustawiony na `live`
+- [ ] `KRAMO_PAYMENT_MODE` ustawiony na `live`
 - [ ] Klucze PayPal produkcyjne wpisane
 - [ ] **Testowe zamówienie na bojowych kluczach** przeszło do statusu
       „Przetwarzanie"

@@ -10,7 +10,7 @@ export MSYS2_ARG_CONV_EXCL='*'
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-FONT_DIR="$ROOT_DIR/theme/woostarter-child/assets/fonts"
+FONT_DIR="$ROOT_DIR/theme/kramo-child/assets/fonts"
 SOURCE="$FONT_DIR/InterVariable-full.woff2"
 TARGET="$FONT_DIR/InterVariable.woff2"
 

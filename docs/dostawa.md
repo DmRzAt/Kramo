@@ -14,7 +14,7 @@ Strefa wysyłki **Polska** (kraj: PL) z metodami:
 | Orlen Paczka | punkt odbioru | 12 zł |
 | Darmowa dostawa | od 200 zł | 0 zł |
 
-Zasady liczone w kodzie (`theme/woostarter-child/inc/shipping.php`):
+Zasady liczone w kodzie (`theme/kramo-child/inc/shipping.php`):
 
 - **Waga.** Pierwszy 1 kg w cenie bazowej; każdy rozpoczęty kolejny kilogram
   dolicza 2 zł (punkt odbioru) lub 3 zł (kurier).
@@ -22,7 +22,7 @@ Zasady liczone w kodzie (`theme/woostarter-child/inc/shipping.php`):
 - **Darmowa dostawa od 200 zł** — powyżej progu klient widzi tylko darmową
   wysyłkę, płatne metody są ukrywane.
 
-Próg i stawki zmienia się w jednym miejscu — filtr `woostarter_shipping_config`
+Próg i stawki zmienia się w jednym miejscu — filtr `kramo_shipping_config`
 lub bezpośrednio w `inc/shipping.php`.
 
 > **Waga produktów jest wymagana.** Bez wagi dopłaty się nie policzą. Dane demo
@@ -66,7 +66,7 @@ Jeśli konkretna wersja wtyczki zapisuje punkt pod innym kluczem, wystarczy doda
 go filtrem:
 
 ```php
-add_filter( 'woostarter_pickup_point_meta_keys', function ( $keys ) {
+add_filter( 'kramo_pickup_point_meta_keys', function ( $keys ) {
     $keys[] = '_moj_klucz_punktu';
     return $keys;
 } );

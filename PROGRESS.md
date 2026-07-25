@@ -1,4 +1,4 @@
-# Прогрес Woo Starter
+# Прогрес Kramo
 
 Оновлено після завершення завдання 06.
 
@@ -35,7 +35,7 @@
 Відтворювана команда:
 
 ```sh
-docker compose --env-file docker/.env -f docker/docker-compose.yml -p woostarter \
+docker compose --env-file docker/.env -f docker/docker-compose.yml -p kramo \
   exec -T wpcli wp eval-file ../../../scripts/check-personalization.php
 ```
 
@@ -56,7 +56,7 @@ docker compose --env-file docker/.env -f docker/docker-compose.yml -p woostarter
 - порожня необов’язкова персоналізація не блокує додавання товару;
 - браузерний лічильник показав `14 / 20` для `Zażółć & Gęślą`;
 - у реальному кошику одночасно відобразилися `Zażółć & Gęślą / Klasyczny` та `Anna / Nowoczesny`;
-- `node --check theme/woostarter-child/assets/js/personalization.js` завершився без помилок;
+- `node --check theme/kramo-child/assets/js/personalization.js` завершився без помилок;
 - `node scripts/check-contrast.js` підтвердив усі обов’язкові пари WCAG AA;
 - `git diff --check` завершився без помилок.
 
@@ -79,7 +79,7 @@ docker compose --env-file docker/.env -f docker/docker-compose.yml -p woostarter
 End-to-end оплата через PayPal sandbox пройдена й підтверджена з бекенду:
 
 - Ключі PayPal sandbox (client_id / secret / merchant_id / merchant_email) внесені лише в `docker/.env` (gitignored), режим `sandbox`.
-- `woostarter_payment_provider_is_configured('paypal')` = YES; `merchant_connected` / `use_manual_connection` = true; опція `woocommerce-ppcp-data-common` у БД **відсутня** — дані приходять тільки з env-фільтра.
+- `kramo_payment_provider_is_configured('paypal')` = YES; `merchant_connected` / `use_manual_connection` = true; опція `woocommerce-ppcp-data-common` у БД **відсутня** — дані приходять тільки з env-фільтра.
 - Живий токен PayPal з боку WP: HTTP 200.
 - Тестове замовлення **#132**: статус `processing` (Przetwarzanie), `is_paid=yes`, total 138,00 PLN, метод `ppcp-gateway`, transaction ID `2VB97375UV9290240`, PayPal order `90N84173XN833942D`, intent CAPTURE, комісія записана (gross 138 / fee 4,80 / net 133,20).
 - Секрет PayPal у `wp_options` **після** реальної транзакції: 0 збігів.
@@ -92,7 +92,7 @@ End-to-end оплата через PayPal sandbox пройдена й підтв
 - **Ваги** додані всім 12 демо-товарам (`scripts/seed-demo.php`) — без ваги розрахунок не працює.
 - **Зона «Polska»** (PL) з методами: Paczkomat InPost, Kurier InPost, Orlen Paczka, Darmowa dostawa (від 200 zł). Створюється ідемпотентно в `new-project.sh`; тимчасовий free_shipping із зони «rest of world» прибрано.
 - **`inc/shipping.php`** — правила в коді: вагові тарифи (перший 1 кг у базі, далі +2 zł локер / +3 zł курʼєр за кожен розпочатий кг), локер дешевший за курʼєра, безкоштовна від порогу (платні методи ховаються).
-- **Точка видачі** показується в адмінці замовлення, у листах клієнту/адміну і на сторінці подяки; читається наш ключ `_ws_shipping_point` + типові ключі InPost/Orlen (розширюється фільтром `woostarter_pickup_point_meta_keys`).
+- **Точка видачі** показується в адмінці замовлення, у листах клієнту/адміну і на сторінці подяки; читається наш ключ `_ws_shipping_point` + типові ключі InPost/Orlen (розширюється фільтром `kramo_pickup_point_meta_keys`).
 - Офіційні плагіни InPost/Orlen ставляться в bootstrap (best-effort).
 - `docs/dostawa.md` — польська інструкція: що клієнт вписує (ShipX-токен InPost, дані Orlen), щоб активувати живий вибір точки й друк етикеток.
 
@@ -167,7 +167,7 @@ End-to-end оплата через PayPal sandbox пройдена й підтв
 | Ліміт спроб входу | Limit Login Attempts Reloaded |
 | Антиспам | honeypot + перевірка часу, без reCAPTCHA (RODO) |
 
-**RODO** — `inc/consent.php` + `assets/js/consent.js`. Принцип: скрипти аналітики **не з'являються в HTML** до згоди (не «вантажаться й блокуються», а фізично відсутні). Перевірено в браузері: до згоди **нуль** запитів до `googletagmanager.com`; після кліку «Akceptuję» — `gtag` визначено і скрипт вантажиться з правильним ID. Cookie `ws_consent` на 180 днів, `SameSite=Lax`, `Secure` на HTTPS. GA4/Pixel вводяться в Wygląd → Woo Starter; санітизація відкидає спроби вставити `<script>`.
+**RODO** — `inc/consent.php` + `assets/js/consent.js`. Принцип: скрипти аналітики **не з'являються в HTML** до згоди (не «вантажаться й блокуються», а фізично відсутні). Перевірено в браузері: до згоди **нуль** запитів до `googletagmanager.com`; після кліку «Akceptuję» — `gtag` визначено і скрипт вантажиться з правильним ID. Cookie `ws_consent` на 180 днів, `SameSite=Lax`, `Secure` на HTTPS. GA4/Pixel вводяться в Wygląd → Kramo; санітизація відкидає спроби вставити `<script>`.
 
 **Бекапи** — UpdraftPlus: база щодня (30 копій), файли щотижня (14). Місце зберігання свідомо не задано — має бути Google Drive / Dropbox **клієнта**, не той самий сервер.
 
@@ -183,7 +183,7 @@ End-to-end оплата через PayPal sandbox пройдена й підтв
 ## Результат завдання 12 (передача клієнту)
 
 - **`docs/instrukcja-klienta.md`** — польською, для нетехнічної людини, 9 розділів: логін, додавання товару, варіанти, персоналізація, підготовка фото, замовлення, купони, копії, «що робити коли не працює». Поля для підстановки `{{ }}`, frontmatter під PDF.
-- **`scripts/make-manual.sh`** — markdown → PDF через pandoc: сам шукає доступний engine (xelatex/lualatex/pdflatex/weasyprint/wkhtmltopdf), додає зміст і нумерацію, підставляє логотип клієнта якщо є `docs/logo.png` (або `WOOSTARTER_LOGO`). Без pandoc падає з інструкцією зі встановлення, не мовчки.
+- **`scripts/make-manual.sh`** — markdown → PDF через pandoc: сам шукає доступний engine (xelatex/lualatex/pdflatex/weasyprint/wkhtmltopdf), додає зміст і нумерацію, підставляє логотип клієнта якщо є `docs/logo.png` (або `KRAMO_LOGO`). Без pandoc падає з інструкцією зі встановлення, не мовчки.
 - **`docs/handoff-checklist.md`** — чек-лист на 9 блоків: платежі (бойові ключі + тестове замовлення + refund), доставка, документи, аналітика й RODO (окремий пункт: перевірити відсутність запитів до Google до згоди), безпека й копії, SEO, продуктивність (окремо: кошик не кешується — перевірити двома браузерами), доступи, документація. З місцем на підписи.
 - **`docs/screenshots/instrukcja/README.md`** — план з 11 скріншотів під інструкцію: знімаються на сайті клієнта, бо власні товари читаються краще за демо.
 

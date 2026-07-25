@@ -9,7 +9,7 @@ SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 SOURCE="$ROOT_DIR/docs/instrukcja-klienta.md"
 OUTPUT="${1:-$ROOT_DIR/docs/instrukcja-klienta.pdf}"
-LOGO="${WOOSTARTER_LOGO:-$ROOT_DIR/docs/logo.png}"
+LOGO="${KRAMO_LOGO:-$ROOT_DIR/docs/logo.png}"
 
 if ! command -v pandoc >/dev/null 2>&1; then
     cat >&2 <<'MSG'
@@ -59,7 +59,7 @@ if [ -f "$LOGO" ]; then
     set -- "$@" --variable=titlegraphic:"$LOGO"
     echo "Using logo: $LOGO"
 else
-    echo "No logo at $LOGO (set WOOSTARTER_LOGO to override); building without it."
+    echo "No logo at $LOGO (set KRAMO_LOGO to override); building without it."
 fi
 
 pandoc "$@"

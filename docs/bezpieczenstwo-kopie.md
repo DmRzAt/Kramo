@@ -23,12 +23,12 @@ stronie i dodatkowy wątek RODO.
 Aby włączyć XML-RPC (np. gdy klient korzysta z aplikacji mobilnej WordPress):
 
 ```php
-add_filter( 'woostarter_enable_xmlrpc', '__return_true' );
+add_filter( 'kramo_enable_xmlrpc', '__return_true' );
 ```
 
 ## RODO — zgoda na cookie
 
-Baner pojawia się tylko wtedy, gdy w **Wygląd → Woo Starter** wpisano
+Baner pojawia się tylko wtedy, gdy w **Wygląd → Kramo** wpisano
 identyfikator GA4 lub Meta Pixel.
 
 Kluczowa zasada: **skrypty analityczne nie są w ogóle wysyłane do przeglądarki

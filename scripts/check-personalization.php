@@ -4,8 +4,8 @@ if ( ! defined( 'ABSPATH' ) || ! class_exists( 'WooCommerce' ) ) {
 	WP_CLI::error( 'WooCommerce is not loaded.' );
 }
 
-if ( ! function_exists( 'woostarter_get_personalization_settings' ) ) {
-	WP_CLI::error( 'WooStarter personalization module is not loaded.' );
+if ( ! function_exists( 'kramo_get_personalization_settings' ) ) {
+	WP_CLI::error( 'Kramo personalization module is not loaded.' );
 }
 
 /**
@@ -15,7 +15,7 @@ if ( ! function_exists( 'woostarter_get_personalization_settings' ) ) {
  * @param string        $label     Test label.
  * @param array<string> $failures  Failure list.
  */
-function woostarter_personalization_check( $condition, $label, &$failures ) {
+function kramo_personalization_check( $condition, $label, &$failures ) {
 	if ( $condition ) {
 		WP_CLI::log( '[PASS] ' . $label );
 		return;
@@ -92,14 +92,14 @@ try {
 	$display_data  = apply_filters( 'woocommerce_get_item_data', array(), $first_item );
 	$display_texts = wp_list_pluck( $display_data, 'value', 'key' );
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		isset( $display_texts['Imię do haftu'] )
 			&& 'Zażółć & Gęślą' === $display_texts['Imię do haftu'],
 		'1. Tekst personalizacji jest widoczny w koszyku',
 		$failures
 	);
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		$first_key
 			&& $second_key
 			&& $first_key !== $second_key
@@ -111,7 +111,7 @@ try {
 	WC()->cart->calculate_totals();
 	$cart       = WC()->cart->get_cart();
 	$first_item = $cart[ $first_key ];
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		abs( (float) $first_item['data']->get_price() - ( $base_price + 20 ) ) < 0.001,
 		'Dopłata personalizacji jest doliczona dokładnie raz',
 		$failures
@@ -152,7 +152,7 @@ try {
 	$customer_email->object = $order;
 	$customer_html = $customer_email->get_content_html();
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		false !== strpos( $customer_html, 'Zażółć' )
 			&& false !== strpos( $customer_html, 'Gęślą' ),
 		'3. Tekst jest w HTML wiadomości klienta',
@@ -163,7 +163,7 @@ try {
 	$admin_email->object = $order;
 	$admin_html = $admin_email->get_content_html();
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		false !== strpos( $admin_html, 'Zażółć' )
 			&& false !== strpos( $admin_html, 'Gęślą' ),
 		'4. Tekst jest w HTML wiadomości administratora',
@@ -180,22 +180,22 @@ try {
 		);
 	}
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		isset( $visible_meta['Imię do haftu'] )
 			&& 'Zażółć & Gęślą' === $visible_meta['Imię do haftu'],
 		'5. Tekst jest widoczny w metadanych pozycji zamówienia',
 		$failures
 	);
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		isset( $first_item['_ws_personalization_text'] )
 			&& 'Zażółć & Gęślą' === $first_item['_ws_personalization_text'],
 		'6. Polskie litery i znaki specjalne przechodzą sanitizację',
 		$failures
 	);
 
-	woostarter_personalization_check(
-		'Zażółć g' === woostarter_sanitize_personalization_text(
+	kramo_personalization_check(
+		'Zażółć g' === kramo_sanitize_personalization_text(
 			'Zażółć gęślą jaźń',
 			8
 		),
@@ -216,7 +216,7 @@ try {
 		$variation_id
 	);
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		false === $required_result && wc_notice_count( 'error' ) > 0,
 		'7. Puste pole obowiązkowe jest odrzucane przez serwer',
 		$failures
@@ -237,7 +237,7 @@ try {
 		$variation_id
 	);
 
-	woostarter_personalization_check(
+	kramo_personalization_check(
 		true === $optional_result && 0 === wc_notice_count( 'error' ),
 		'Pusta opcjonalna personalizacja nie blokuje dodania produktu',
 		$failures

@@ -7,7 +7,7 @@ if (!defined('ABSPATH') || !class_exists('WooCommerce')) {
 /**
  * Build a valid solid-color RGB PNG without an image-library dependency.
  */
-function woostarter_demo_png(int $width, int $height, string $hex): string
+function kramo_demo_png(int $width, int $height, string $hex): string
 {
     $hex = ltrim($hex, '#');
     $rgb = hex2bin($hex);
@@ -30,7 +30,7 @@ function woostarter_demo_png(int $width, int $height, string $hex): string
 /**
  * Create or return a deterministic 1200x1500 demo attachment.
  */
-function woostarter_demo_image(int $index, string $product_name, string $hex): int
+function kramo_demo_image(int $index, string $product_name, string $hex): int
 {
     $key = sprintf('product-%02d', $index);
     $existing = get_posts([
@@ -38,7 +38,7 @@ function woostarter_demo_image(int $index, string $product_name, string $hex): i
         'post_status' => 'inherit',
         'posts_per_page' => 1,
         'fields' => 'ids',
-        'meta_key' => '_woostarter_demo_image_key',
+        'meta_key' => '_kramo_demo_image_key',
         'meta_value' => $key,
     ]);
 
@@ -46,8 +46,8 @@ function woostarter_demo_image(int $index, string $product_name, string $hex): i
         return (int) $existing[0];
     }
 
-    $filename = sprintf('woostarter-%02d.png', $index);
-    $upload = wp_upload_bits($filename, null, woostarter_demo_png(1200, 1500, $hex));
+    $filename = sprintf('kramo-%02d.png', $index);
+    $upload = wp_upload_bits($filename, null, kramo_demo_png(1200, 1500, $hex));
 
     if (!empty($upload['error'])) {
         WP_CLI::error($upload['error']);
@@ -70,7 +70,7 @@ function woostarter_demo_image(int $index, string $product_name, string $hex): i
     }
 
     update_post_meta($attachment_id, '_wp_attachment_image_alt', $product_name);
-    update_post_meta($attachment_id, '_woostarter_demo_image_key', $key);
+    update_post_meta($attachment_id, '_kramo_demo_image_key', $key);
 
     return (int) $attachment_id;
 }
@@ -78,7 +78,7 @@ function woostarter_demo_image(int $index, string $product_name, string $hex): i
 /**
  * Return an existing term ID or create the term.
  */
-function woostarter_demo_category(string $name, string $slug): int
+function kramo_demo_category(string $name, string $slug): int
 {
     $term = term_exists($slug, 'product_cat');
     if ($term) {
@@ -98,7 +98,7 @@ function woostarter_demo_category(string $name, string $slug): int
  *
  * @return array{id:int,taxonomy:string,terms:array<string,array{id:int,slug:string}>}
  */
-function woostarter_demo_attribute(string $label, string $slug, array $options): array
+function kramo_demo_attribute(string $label, string $slug, array $options): array
 {
     $attribute_id = wc_attribute_taxonomy_id_by_name($slug);
 
@@ -156,9 +156,9 @@ function woostarter_demo_attribute(string $label, string $slug, array $options):
 }
 
 $categories = [
-    woostarter_demo_category('Odzież', 'odziez'),
-    woostarter_demo_category('Akcesoria', 'akcesoria'),
-    woostarter_demo_category('Dom', 'dom'),
+    kramo_demo_category('Odzież', 'odziez'),
+    kramo_demo_category('Akcesoria', 'akcesoria'),
+    kramo_demo_category('Dom', 'dom'),
 ];
 
 // Each row: name, base price, primary hex, gallery hex, weight in kg.
@@ -180,8 +180,8 @@ $products = [
 
 $colors = ['Beżowy', 'Czarny', 'Niebieski'];
 $sizes = ['S', 'M', 'L'];
-$color_definition = woostarter_demo_attribute('Kolor', 'kolor', $colors);
-$size_definition = woostarter_demo_attribute('Rozmiar', 'rozmiar', $sizes);
+$color_definition = kramo_demo_attribute('Kolor', 'kolor', $colors);
+$size_definition = kramo_demo_attribute('Rozmiar', 'rozmiar', $sizes);
 $product_ids = [];
 
 foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight]) {
@@ -229,8 +229,8 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight
     $product->set_category_ids([$categories[$index % count($categories)]]);
     $product->set_weight((string) $weight);
     $product->set_attributes([$color_attribute, $size_attribute]);
-    $primary_image_id = woostarter_demo_image($number, $name, $hex);
-    $gallery_image_id = woostarter_demo_image($number + 100, $name . ' — wariant', $gallery_hex);
+    $primary_image_id = kramo_demo_image($number, $name, $hex);
+    $gallery_image_id = kramo_demo_image($number + 100, $name . ' — wariant', $gallery_hex);
     $product->set_image_id($primary_image_id);
     $product->set_gallery_image_ids([$gallery_image_id]);
 
@@ -318,7 +318,7 @@ foreach ($reviews as $review_index => [$product_index, $author, $content, $ratin
     $existing = get_comments([
         'post_id' => $product_ids[$product_index],
         'count' => true,
-        'meta_key' => '_woostarter_demo_review',
+        'meta_key' => '_kramo_demo_review',
         'meta_value' => $review_key,
     ]);
 
@@ -336,7 +336,7 @@ foreach ($reviews as $review_index => [$product_index, $author, $content, $ratin
         'comment_meta' => [
             'rating' => $rating,
             'verified' => 1,
-            '_woostarter_demo_review' => $review_key,
+            '_kramo_demo_review' => $review_key,
         ],
     ]);
 

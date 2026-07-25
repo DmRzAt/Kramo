@@ -42,7 +42,7 @@ W produkcie zakładka **FAQ** → pola w formacie `Pytanie :: Odpowiedź`
 Domyślnie wyłączony. Gdy dojdą języki, mapę alternatyw ustawia filtr:
 
 ```php
-add_filter( 'woostarter_hreflang_alternates', function ( $map ) {
+add_filter( 'kramo_hreflang_alternates', function ( $map ) {
     $map['en'] = 'https://example.com/en/...';
     return $map;
 } );

@@ -52,6 +52,10 @@
 - Limit Login Attempts Reloaded and the DISALLOW_FILE_EDIT constant in bootstrap, with UpdraftPlus scheduled for daily database and weekly file backups.
 - Consent-gated analytics in inc/consent.php: GA4 and Meta Pixel identifiers are entered in Appearance, Woo Starter and the scripts reach the browser only after the visitor accepts.
 - Polish privacy policy, terms and security/backup handover templates in docs/.
+- Polish client manual covering login, products, variations, personalization, photos, orders, coupons, backups and first-aid troubleshooting.
+- PDF build script (scripts/make-manual.sh) that detects pandoc and an available engine, adds a table of contents and an optional client logo, and explains what to install when either is missing.
+- Handover checklist covering payments, shipping, legal pages, analytics consent, security, backups, SEO, performance, access and documentation.
+- Screenshot plan for the manual so each project ships images from the client's own shop.
 
 ### Changed
 

@@ -75,3 +75,5 @@
 - Catalog and product images now use the 4:5 ratio the grid expects (400x500 and 800x1000) instead of WooCommerce's square 300px default.
 - The product gallery reserves its aspect ratio before flexslider initialises, and mobile hides the thumbnail strip, removing the layout shift that followed page load.
 - The service preset moves to the warm paper and amaranth palette from DESIGN.md, with Bricolage Grotesque for display type instead of Inter.
+- Demo products and categories now ship real Pexels-licensed photography from `scripts/demo-assets` (a primary and a distinct gallery/hover image per product, plus a thumbnail per category) instead of generated solid-colour blocks; the generated PNG stays as a fallback when the assets are absent.
+- The demo image seed is namespaced to `photo-*` keys and deletes the legacy `product-*` placeholder attachments on run, so re-seeding an existing demo database swaps in the photos and leaves no orphans.

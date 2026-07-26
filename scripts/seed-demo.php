@@ -27,12 +27,34 @@ function kramo_demo_png(int $width, int $height, string $hex): string
         . $chunk('IEND', '');
 }
 
+function kramo_demo_asset(int $index): ?string
+{
+    if ($index > 100) {
+        $product_number = $index - 100;
+        $candidates = [
+            sprintf('product-%02d-alt.jpg', $product_number),
+            sprintf('product-%02d.jpg', $product_number),
+        ];
+    } else {
+        $candidates = [sprintf('product-%02d.jpg', $index)];
+    }
+
+    foreach ($candidates as $candidate) {
+        $file = sprintf('%s/demo-assets/%s', __DIR__, $candidate);
+        if (is_readable($file)) {
+            return $file;
+        }
+    }
+
+    return null;
+}
+
 /**
  * Create or return a deterministic 1200x1500 demo attachment.
  */
 function kramo_demo_image(int $index, string $product_name, string $hex): int
 {
-    $key = sprintf('product-%02d', $index);
+    $key = sprintf('photo-%02d', $index);
     $existing = get_posts([
         'post_type' => 'attachment',
         'post_status' => 'inherit',
@@ -46,15 +68,23 @@ function kramo_demo_image(int $index, string $product_name, string $hex): int
         return (int) $existing[0];
     }
 
-    $filename = sprintf('kramo-%02d.png', $index);
-    $upload = wp_upload_bits($filename, null, kramo_demo_png(1200, 1500, $hex));
+    $asset = kramo_demo_asset($index);
+    if (null !== $asset) {
+        $mime = 'image/jpeg';
+        $filename = sprintf('kramo-%02d.jpg', $index);
+        $upload = wp_upload_bits($filename, null, file_get_contents($asset));
+    } else {
+        $mime = 'image/png';
+        $filename = sprintf('kramo-%02d.png', $index);
+        $upload = wp_upload_bits($filename, null, kramo_demo_png(1200, 1500, $hex));
+    }
 
     if (!empty($upload['error'])) {
         WP_CLI::error($upload['error']);
     }
 
     $attachment_id = wp_insert_attachment([
-        'post_mime_type' => 'image/png',
+        'post_mime_type' => $mime,
         'post_title' => $product_name,
         'post_status' => 'inherit',
     ], $upload['file']);
@@ -155,11 +185,53 @@ function kramo_demo_attribute(string $label, string $slug, array $options): arra
     ];
 }
 
-$categories = [
-    kramo_demo_category('Odzież', 'odziez'),
-    kramo_demo_category('Akcesoria', 'akcesoria'),
-    kramo_demo_category('Dom', 'dom'),
+function kramo_demo_category_image(int $term_id, string $slug): void
+{
+    if (get_term_meta($term_id, 'thumbnail_id', true)) {
+        return;
+    }
+
+    $file = sprintf('%s/demo-assets/category-%s.jpg', __DIR__, $slug);
+    if (!is_readable($file)) {
+        return;
+    }
+
+    $upload = wp_upload_bits(sprintf('kramo-cat-%s.jpg', $slug), null, file_get_contents($file));
+    if (!empty($upload['error'])) {
+        return;
+    }
+
+    $attachment_id = wp_insert_attachment([
+        'post_mime_type' => 'image/jpeg',
+        'post_title' => sprintf('Kategoria %s', $slug),
+        'post_status' => 'inherit',
+    ], $upload['file']);
+
+    if (is_wp_error($attachment_id)) {
+        return;
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    $metadata = wp_generate_attachment_metadata($attachment_id, $upload['file']);
+    if (!is_wp_error($metadata) && $metadata) {
+        wp_update_attachment_metadata($attachment_id, $metadata);
+    }
+
+    update_term_meta($term_id, 'thumbnail_id', $attachment_id);
+}
+
+$category_definitions = [
+    ['Odzież', 'odziez'],
+    ['Akcesoria', 'akcesoria'],
+    ['Dom', 'dom'],
 ];
+
+$categories = [];
+foreach ($category_definitions as [$category_name, $category_slug]) {
+    $category_id = kramo_demo_category($category_name, $category_slug);
+    kramo_demo_category_image($category_id, $category_slug);
+    $categories[] = $category_id;
+}
 
 // Each row: name, base price, primary hex, gallery hex, weight in kg.
 // Weights are required for the weight-based shipping rules in inc/shipping.php.
@@ -300,6 +372,20 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight
 
     WC_Product_Variable::sync($product_id);
     wc_delete_product_transients($product_id);
+}
+
+$legacy_images = get_posts([
+    'post_type' => 'attachment',
+    'post_status' => 'inherit',
+    'posts_per_page' => -1,
+    'fields' => 'ids',
+    'meta_key' => '_kramo_demo_image_key',
+    'meta_value' => 'product-',
+    'meta_compare' => 'LIKE',
+]);
+
+foreach ($legacy_images as $legacy_id) {
+    wp_delete_attachment((int) $legacy_id, true);
 }
 
 $reviews = [

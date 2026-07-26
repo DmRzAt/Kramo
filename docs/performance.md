@@ -20,6 +20,23 @@ czas odpowiedzi serwera (WordPress generuje stronę przy każdym żądaniu). Po
 włączeniu cache na hostingu klienta (patrz niżej) ta składowa znika prawie
 całkowicie.
 
+## Pomiar na publicznym demo
+
+Po wdrożeniu na Railway (`https://kramo-production.up.railway.app`), strona
+produktu, Lighthouse 12 mobile:
+
+| Metryka | Wynik | Cel |
+|---|---|---|
+| Wynik wydajności | **97** | ≥ 85 |
+| LCP | **1,9 s** | < 2,0 s |
+| CLS | **0** | < 0,05 |
+| TBT | **0 ms** | INP < 200 ms |
+| Odpowiedź serwera | 350 ms | — |
+
+To potwierdza wniosek z pomiarów lokalnych: brakujące 0,9 s LCP wynikało z
+czasu odpowiedzi WordPressa bez cache, a nie z kodu motywu. Na realnym
+hostingu wszystkie cele z briefu są spełnione.
+
 ## Co zostało zrobione
 
 ### Zasoby

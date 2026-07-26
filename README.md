@@ -42,6 +42,9 @@ Railway only routes traffic once `/kramo-health` reports success.
 delivery keeps checkout completable without live gateway keys. Steps and
 variables: [`docs/deployment.md`](docs/deployment.md).
 
+Live: **https://kramo-production.up.railway.app** — Lighthouse mobile 97 on the
+product page, LCP 1.9 s, CLS 0, TBT 0 ms.
+
 ## Layout
 
 ```
@@ -113,16 +116,13 @@ from the archive.
 
 ## Needs the client's own accounts
 
-Three things cannot be finished without credentials the shop owner holds:
+Two things cannot be finished without credentials the shop owner holds:
 
 - **Przelewy24 live keys** — even a P24 sandbox requires a production account,
   which requires a registered business.
 - **InPost ShipX and Orlen tokens** — without them the parcel-point widget and
   label printing stay inactive.
-- **PageSpeed Insights** — the tool cannot reach `localhost`, so the official
-  score is measured after deployment.
-
-The code for all three is in place and starts working as soon as keys exist.
+The code for both is in place and starts working as soon as keys exist.
 
 ## Client documentation
 

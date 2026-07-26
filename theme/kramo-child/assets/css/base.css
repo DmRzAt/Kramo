@@ -346,27 +346,23 @@ textarea {
 
 .kramo-hero {
 	padding-block: var(--section-gap);
-	text-align: center;
 }
 
 .kramo-hero h1 {
-	max-width: 20ch;
-	margin-inline: auto;
+	max-width: 18ch;
 	font-size: var(--text-hero);
 	line-height: var(--leading-tight);
 	letter-spacing: var(--font-heading-tracking);
 }
 
 .kramo-hero p {
-	max-width: 52ch;
-	margin-inline: auto;
+	max-width: 48ch;
 	color: var(--color-text-muted);
 	font-size: var(--text-lg);
 	line-height: var(--leading-body);
 }
 
 .kramo-hero .wp-block-buttons {
-	justify-content: center;
 	margin-top: var(--space-3);
 }
 
@@ -400,4 +396,65 @@ textarea {
 .wp-block-button.is-style-outline .wp-block-button__link:hover {
 	border-color: var(--color-primary);
 	color: var(--color-primary);
+}
+
+.kramo-trust {
+	border-bottom: var(--border-width) var(--border-style) var(--color-border);
+	background: var(--color-surface);
+}
+
+.kramo-trust__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1) var(--space-4);
+	justify-content: center;
+	max-width: var(--container-max);
+	margin-inline: auto;
+	padding: var(--space-1) var(--container-pad);
+	list-style: none;
+}
+
+.kramo-trust__item {
+	display: inline-flex;
+	gap: var(--space-1);
+	align-items: center;
+	color: var(--color-text-muted);
+	font-size: var(--text-sm);
+}
+
+.kramo-trust__item strong {
+	color: var(--color-text);
+	font-weight: var(--font-weight-semibold);
+}
+
+.kramo-trust__item svg {
+	width: 1.125rem;
+	height: 1.125rem;
+	flex: none;
+	color: var(--color-trust, var(--color-primary));
+}
+
+.kramo-reveal {
+	opacity: var(--opacity-hidden);
+	transform: var(--translate-rise);
+	transition:
+		opacity var(--duration-standard) var(--ease-out),
+		transform var(--duration-standard) var(--ease-out);
+}
+
+.kramo-reveal.is-visible {
+	opacity: var(--opacity-visible);
+	transform: var(--translate-none);
+}
+
+.site-header {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	background: var(--color-header-bg);
+	transition: box-shadow var(--duration-standard) var(--ease-standard);
+}
+
+.site-header.is-stuck {
+	box-shadow: var(--shadow-soft);
 }

@@ -158,11 +158,13 @@ add_action( 'wp_enqueue_scripts', 'kramo_enqueue_assets', 20 );
  * Preload the primary local font.
  */
 function kramo_preload_primary_font() {
-	$font_url = get_stylesheet_directory_uri() . '/assets/fonts/InterVariable.woff2';
+	$base = get_stylesheet_directory_uri() . '/assets/fonts/';
 
-	printf(
-		'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
-		esc_url( $font_url )
-	);
+	foreach ( array( 'InstrumentSans.woff2', 'BricolageGrotesque.woff2' ) as $file ) {
+		printf(
+			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
+			esc_url( $base . $file )
+		);
+	}
 }
 add_action( 'wp_head', 'kramo_preload_primary_font', 1 );

@@ -56,6 +56,10 @@
 - PDF build script (scripts/make-manual.sh) that detects pandoc and an available engine, adds a table of contents and an optional client logo, and explains what to install when either is missing.
 - Handover checklist covering payments, shipping, legal pages, analytics consent, security, backups, SEO, performance, access and documentation.
 - Screenshot plan for the manual so each project ships images from the client's own shop.
+- Design system of record in DESIGN.md, grounded in research on two Polish market leaders, plus a CLAUDE.md rule that ties future UI work to it.
+- Trust strip under the header carrying BLIK, InPost and Orlen pickup, the live free-delivery threshold, 14-day returns and Polish workshop.
+- Scroll reveal, sticky-header shadow and hover choreography, all governed by the reduced-motion rule.
+- Self-hosted Bricolage Grotesque and Instrument Sans under SIL OFL, subset to Latin and Polish, with axis pinning in the subset script.
 
 ### Changed
 
@@ -70,3 +74,4 @@
 - Demo content now includes a product FAQ and an example local-service landing page for Katowice.
 - Catalog and product images now use the 4:5 ratio the grid expects (400x500 and 800x1000) instead of WooCommerce's square 300px default.
 - The product gallery reserves its aspect ratio before flexslider initialises, and mobile hides the thumbnail strip, removing the layout shift that followed page load.
+- The service preset moves to the warm paper and amaranth palette from DESIGN.md, with Bricolage Grotesque for display type instead of Inter.

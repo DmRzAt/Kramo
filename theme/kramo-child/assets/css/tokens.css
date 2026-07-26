@@ -1,4 +1,20 @@
 @font-face {
+	font-family: "Bricolage Grotesque";
+	font-style: normal;
+	font-weight: 200 800;
+	font-display: swap;
+	src: url("../fonts/BricolageGrotesque.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "Instrument Sans";
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url("../fonts/InstrumentSans.woff2") format("woff2");
+}
+
+@font-face {
 	font-family: "Inter Variable";
 	font-style: normal;
 	font-weight: 100 900;
@@ -62,17 +78,18 @@
 	--craft-focus: #7a3651;
 	--craft-sale: #8a3655;
 
-	--service-bg: #fbfcfd;
+	--service-bg: #f7f5f2;
 	--service-surface: #ffffff;
-	--service-surface-alt: #f1f5f8;
-	--service-text: #16202e;
-	--service-text-muted: #5a6879;
-	--service-border: #dde4ec;
-	--service-primary: #12596e;
-	--service-primary-hover: #0c4557;
+	--service-surface-alt: #f1eeea;
+	--service-text: #1c1a17;
+	--service-text-muted: #5d5850;
+	--service-border: #e2ddd6;
+	--service-primary: #a32d4f;
+	--service-primary-hover: #86213f;
 	--service-on-primary: #ffffff;
-	--service-focus: #176b87;
-	--service-sale: #a12d43;
+	--service-focus: #a32d4f;
+	--service-sale: #a32d4f;
+	--service-pine: #2f4f3f;
 
 	--premium-bg: #101827;
 	--premium-surface: #182235;
@@ -86,7 +103,8 @@
 	--premium-focus: #b7c9ec;
 	--premium-sale: #e68ba0;
 
-	--font-family-sans: "Inter Variable", system-ui, sans-serif;
+	--font-family-sans: "Instrument Sans", "Inter Variable", system-ui, sans-serif;
+	--font-family-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
 	--font-family-humanist: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
 	--font-weight-regular: 400;
 	--font-weight-medium: 500;
@@ -207,7 +225,7 @@
 	--color-swatch-default: var(--color-border);
 
 	--font-body: var(--font-family-sans);
-	--font-display: var(--font-body);
+	--font-display: var(--font-family-display);
 	--font-heading-weight: var(--font-weight-bold);
 	--font-heading-tracking: var(--tracking-snug);
 	--font-body-tracking: var(--tracking-normal);

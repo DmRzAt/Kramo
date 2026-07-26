@@ -25,6 +25,8 @@
 	--color-card-glow: var(--transparent);
 
 	--font-heading-weight: var(--font-weight-bold);
+	--font-display: var(--font-family-display);
+	--color-trust: var(--service-pine);
 	--font-heading-tracking: var(--tracking-normal);
 	--font-body-tracking: var(--tracking-normal);
 	--text-h1: var(--text-3xl);

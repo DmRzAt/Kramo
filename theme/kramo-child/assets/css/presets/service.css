@@ -28,7 +28,7 @@
 	--font-heading-tracking: var(--tracking-normal);
 	--font-body-tracking: var(--tracking-normal);
 	--text-h1: var(--text-3xl);
-	--heading-h2-size: var(--text-base);
+	--heading-h2-size: var(--text-xl);
 	--section-gap: var(--space-6);
 	--container-max: var(--size-service-container);
 	--header-padding-block: var(--space-2);

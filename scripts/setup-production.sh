@@ -60,6 +60,8 @@ fi
 wp option update siteurl "${WORDPRESS_SITE_URL}"
 wp option update home "${WORDPRESS_SITE_URL}"
 wp language core install pl_PL --activate || true
+wp language plugin install --all pl_PL || true
+wp language theme install --all pl_PL || true
 wp option update timezone_string Europe/Warsaw
 wp rewrite structure '/%postname%/' --hard
 

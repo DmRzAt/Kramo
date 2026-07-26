@@ -386,6 +386,75 @@ if (!is_wp_error($local_id) && $local_id) {
     );
 }
 
+
+// Storefront home page: hero, featured products, categories and a local-service
+// call to action, all in native blocks so the client can edit them.
+$home_slug = 'strona-glowna';
+$home_content = <<<'HTML'
+<!-- wp:group {"tagName":"section","className":"kramo-hero","layout":{"type":"constrained"}} -->
+<section class="wp-block-group kramo-hero"><!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">Polskie rzemiosło na co dzień</h1>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p>Naturalne materiały, prosty krój i wysyłka w 24 godziny. Personalizacja z imieniem lub własnym napisem dostępna przy każdym produkcie.</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button -->
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/sklep/">Zobacz sklep</a></div>
+<!-- /wp:button -->
+<!-- wp:button {"className":"is-style-outline"} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/mycie-kostki-brukowej-katowice/">Usługi lokalne</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></section>
+<!-- /wp:group -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Nowości w sklepie</h2>
+<!-- /wp:heading -->
+<!-- wp:shortcode -->
+[products limit="4" columns="4" orderby="date"]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Kategorie</h2>
+<!-- /wp:heading -->
+<!-- wp:shortcode -->
+[product_categories number="3" columns="3"]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Na prezent</h2>
+<!-- /wp:heading -->
+<!-- wp:shortcode -->
+[products limit="4" columns="4" on_sale="true"]
+<!-- /wp:shortcode -->
+HTML;
+
+$home = get_page_by_path($home_slug);
+$home_id = $home
+    ? $home->ID
+    : wp_insert_post([
+        'post_type' => 'page',
+        'post_status' => 'publish',
+        'post_name' => $home_slug,
+        'post_title' => 'Strona główna',
+        'post_content' => $home_content,
+    ]);
+
+if (!is_wp_error($home_id) && $home_id) {
+    wp_update_post(['ID' => $home_id, 'post_content' => $home_content]);
+    update_option('show_on_front', 'page');
+    update_option('page_on_front', $home_id);
+}
+
+// The storefront reads better full width; GeneratePress defaults to a sidebar.
+$generate_settings = get_option('generate_settings', []);
+$generate_settings = is_array($generate_settings) ? $generate_settings : [];
+$generate_settings['layout_setting'] = 'no-sidebar';
+$generate_settings['single_layout_setting'] = 'no-sidebar';
+$generate_settings['post_content'] = 'excerpt';
+update_option('generate_settings', $generate_settings);
+
 update_option('woocommerce_coming_soon', 'no');
 update_option('woocommerce_store_pages_only', 'no');
 

@@ -312,3 +312,92 @@ textarea {
 .kramo-demo-badge strong {
 	margin-inline-end: var(--space-1);
 }
+
+.kramo-branding {
+	display: inline-flex;
+	align-items: center;
+	color: var(--color-text);
+	text-decoration: none;
+	transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.kramo-branding:hover {
+	opacity: 0.75;
+}
+
+.kramo-branding svg {
+	display: block;
+	width: auto;
+	height: 2.25rem;
+}
+
+.site-header .inside-header {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: space-between;
+	padding-block: var(--header-padding-block);
+}
+
+.main-navigation .main-nav ul li a {
+	transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.kramo-hero {
+	padding-block: var(--section-gap);
+	text-align: center;
+}
+
+.kramo-hero h1 {
+	max-width: 20ch;
+	margin-inline: auto;
+	font-size: var(--text-hero);
+	line-height: var(--leading-tight);
+	letter-spacing: var(--font-heading-tracking);
+}
+
+.kramo-hero p {
+	max-width: 52ch;
+	margin-inline: auto;
+	color: var(--color-text-muted);
+	font-size: var(--text-lg);
+	line-height: var(--leading-body);
+}
+
+.kramo-hero .wp-block-buttons {
+	justify-content: center;
+	margin-top: var(--space-3);
+}
+
+.wp-block-button__link {
+	min-height: var(--button-min-height);
+	padding: var(--button-padding-block) var(--button-padding-inline);
+	border-radius: var(--button-radius);
+	background-color: var(--color-primary);
+	color: var(--color-on-primary);
+	transition:
+		background-color var(--duration-fast) var(--ease-standard),
+		box-shadow var(--duration-fast) var(--ease-standard),
+		transform var(--duration-fast) var(--ease-standard);
+}
+
+.wp-block-button__link:hover {
+	background-color: var(--color-primary-hover);
+	box-shadow: var(--shadow-soft);
+}
+
+.wp-block-button__link:active {
+	transform: var(--scale-press);
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link {
+	border: var(--border-width) var(--border-style) var(--color-border-strong);
+	background-color: var(--transparent);
+	color: var(--color-text);
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link:hover {
+	border-color: var(--color-primary);
+	color: var(--color-primary);
+}

@@ -118,6 +118,58 @@ if ( class_exists( '\\RankMath\\Sitemap\\Router' ) ) {
 	do_action( 'init' );
 }
 
+
+// Without an assigned menu WordPress lists every page in the header, which on
+// a store means the legal pages and the account screens all shout at once.
+$menu_spec = array(
+	'primary' => array( 'Menu główne', array( 'sklep', 'ulubione', 'mycie-kostki-brukowej-katowice' ) ),
+	'footer'  => array( 'Menu w stopce', array( 'regulamin', 'polityka-prywatnosci', 'moje-konto' ) ),
+);
+
+$locations = get_theme_mod( 'nav_menu_locations', array() );
+$locations = is_array( $locations ) ? $locations : array();
+
+foreach ( $menu_spec as $location => $spec ) {
+	list( $menu_name, $slugs ) = $spec;
+
+	$menu = wp_get_nav_menu_object( $menu_name );
+	if ( $menu ) {
+		$menu_id = (int) $menu->term_id;
+		foreach ( (array) wp_get_nav_menu_items( $menu_id ) as $item ) {
+			wp_delete_post( $item->ID, true );
+		}
+	} else {
+		$menu_id = wp_create_nav_menu( $menu_name );
+	}
+
+	if ( is_wp_error( $menu_id ) ) {
+		continue;
+	}
+
+	foreach ( $slugs as $slug ) {
+		$page = get_page_by_path( $slug );
+		if ( ! $page instanceof WP_Post ) {
+			continue;
+		}
+
+		wp_update_nav_menu_item(
+			$menu_id,
+			0,
+			array(
+				'menu-item-title'     => $page->post_title,
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $page->ID,
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
+			)
+		);
+	}
+
+	$locations[ $location ] = (int) $menu_id;
+}
+
+set_theme_mod( 'nav_menu_locations', $locations );
+
 update_option( 'updraft_interval', 'weekly' );
 update_option( 'updraft_interval_database', 'daily' );
 

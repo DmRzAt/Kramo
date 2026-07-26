@@ -49,4 +49,19 @@ update_option( 'woocommerce_myaccount_page_id', $ids['account'] );
 update_option( 'woocommerce_terms_page_id', $ids['terms'] );
 update_option( 'wp_page_for_privacy_policy', $ids['privacy'] );
 
-WP_CLI::success( sprintf( 'Store pages ready (%d).', count( $ids ) ) );
+// WordPress and WooCommerce create their own English pages on activation.
+// They duplicate the Polish set above and clutter the generated menu.
+$removed = 0;
+foreach ( array( 'shop', 'cart', 'checkout', 'my-account', 'refund_returns', 'privacy-policy' ) as $slug ) {
+	$duplicate = get_page_by_path( $slug );
+	if ( ! $duplicate instanceof WP_Post ) {
+		continue;
+	}
+	if ( in_array( (int) $duplicate->ID, array_map( 'intval', $ids ), true ) ) {
+		continue;
+	}
+	wp_delete_post( $duplicate->ID, true );
+	$removed++;
+}
+
+WP_CLI::success( sprintf( 'Store pages ready (%d), duplicates removed (%d).', count( $ids ), $removed ) );

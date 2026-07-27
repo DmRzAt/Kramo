@@ -64,7 +64,7 @@ function kramo_wishlist_button( $product_id, $context = 'card' ) {
 		aria-pressed="<?php echo $is_saved ? 'true' : 'false'; ?>"
 		aria-label="<?php echo esc_attr( $label ); ?>"
 	>
-		<span aria-hidden="true">♡</span>
+		<span class="kramo-wishlist-toggle__icon" aria-hidden="true"></span>
 		<span class="screen-reader-text"><?php echo esc_html( $label ); ?></span>
 	</button>
 	<?php
@@ -93,6 +93,39 @@ function kramo_single_wishlist_button() {
 	}
 }
 add_action( 'woocommerce_single_product_summary', 'kramo_single_wishlist_button', 35 );
+
+/**
+ * Return the wishlist page ID, or 0 when the page is missing.
+ *
+ * @return int
+ */
+function kramo_wishlist_page_id() {
+	$page = get_page_by_path( 'ulubione' );
+
+	return $page instanceof WP_Post ? (int) $page->ID : 0;
+}
+
+/**
+ * Append a live counter to menu links pointing at the wishlist page.
+ *
+ * @param string $title Menu item title.
+ * @param object $item  Menu item.
+ * @return string
+ */
+function kramo_wishlist_menu_counter( $title, $item ) {
+	$page_id = kramo_wishlist_page_id();
+
+	if ( ! $page_id || ! isset( $item->object_id ) || (int) $item->object_id !== $page_id ) {
+		return $title;
+	}
+
+	if ( 'post_type' !== $item->type || 'page' !== $item->object ) {
+		return $title;
+	}
+
+	return $title . ' <span class="kramo-wishlist-count" data-wishlist-count hidden></span>';
+}
+add_filter( 'nav_menu_item_title', 'kramo_wishlist_menu_counter', 10, 2 );
 
 /**
  * Persist a logged-in customer's merged wishlist.

@@ -121,9 +121,27 @@ if ( class_exists( '\\RankMath\\Sitemap\\Router' ) ) {
 
 // Without an assigned menu WordPress lists every page in the header, which on
 // a store means the legal pages and the account screens all shout at once.
+// The primary menu carries shop navigation only. The local-service landing page
+// demonstrates a kit template rather than shop content, so it sits in the footer
+// under a label that explains what it is instead of shouting about paving stones
+// between the linen shirts.
 $menu_spec = array(
-	'primary' => array( 'Menu główne', array( 'sklep', 'ulubione', 'mycie-kostki-brukowej-katowice' ) ),
-	'footer'  => array( 'Menu w stopce', array( 'regulamin', 'polityka-prywatnosci', 'moje-konto' ) ),
+	'primary' => array(
+		'Menu główne',
+		array(
+			'sklep'    => null,
+			'ulubione' => null,
+		),
+	),
+	'footer'  => array(
+		'Menu w stopce',
+		array(
+			'regulamin'                       => null,
+			'polityka-prywatnosci'            => null,
+			'moje-konto'                      => null,
+			'mycie-kostki-brukowej-katowice'  => 'Przykład strony usługowej',
+		),
+	),
 );
 
 $locations = get_theme_mod( 'nav_menu_locations', array() );
@@ -146,7 +164,7 @@ foreach ( $menu_spec as $location => $spec ) {
 		continue;
 	}
 
-	foreach ( $slugs as $slug ) {
+	foreach ( $slugs as $slug => $label ) {
 		$page = get_page_by_path( $slug );
 		if ( ! $page instanceof WP_Post ) {
 			continue;
@@ -156,7 +174,7 @@ foreach ( $menu_spec as $location => $spec ) {
 			$menu_id,
 			0,
 			array(
-				'menu-item-title'     => $page->post_title,
+				'menu-item-title'     => null === $label ? $page->post_title : $label,
 				'menu-item-object'    => 'page',
 				'menu-item-object-id' => $page->ID,
 				'menu-item-type'      => 'post_type',

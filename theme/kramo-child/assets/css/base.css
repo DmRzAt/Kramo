@@ -434,6 +434,28 @@ textarea {
 	color: var(--color-trust, var(--color-primary));
 }
 
+@media (max-width: 47.999rem) {
+	.kramo-trust__list {
+		gap: var(--space-1) var(--space-2);
+		justify-content: flex-start;
+	}
+
+	.kramo-trust__item {
+		font-size: var(--text-xs);
+	}
+
+	.kramo-trust__item svg {
+		width: 1rem;
+		height: 1rem;
+	}
+}
+
+.kramo-wishlist-count {
+	color: var(--color-primary);
+	font-variant-numeric: tabular-nums;
+	font-weight: var(--font-weight-semibold);
+}
+
 .kramo-reveal {
 	opacity: var(--opacity-hidden);
 	transform: var(--translate-rise);

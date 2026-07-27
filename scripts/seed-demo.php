@@ -315,6 +315,16 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight
         $product->update_meta_data('_ws_personalization_surcharge', 20);
     }
 
+    if (in_array($index, [0, 1, 2, 3, 4, 5], true)) {
+        $product->update_meta_data(
+            '_ws_size_guide',
+            "Rozmiar :: Obwód klatki (cm) :: Długość (cm)\n"
+                . "S :: 92-96 :: 68\n"
+                . "M :: 98-102 :: 70\n"
+                . 'L :: 104-108 :: 72'
+        );
+    }
+
     if (7 === $index) {
         // Demonstrates the FAQ field feeding FAQPage schema on the product page.
         $product->update_meta_data(
@@ -473,8 +483,8 @@ if (!is_wp_error($local_id) && $local_id) {
 }
 
 
-// Storefront home page: hero, featured products, categories and a local-service
-// call to action, all in native blocks so the client can edit them.
+// Storefront home page: hero, featured products and categories, all in native
+// blocks so the client can edit them.
 $home_slug = 'strona-glowna';
 $home_content = <<<'HTML'
 <!-- wp:group {"tagName":"section","className":"kramo-hero","layout":{"type":"constrained"}} -->
@@ -489,7 +499,7 @@ $home_content = <<<'HTML'
 <div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/sklep/">Zobacz sklep</a></div>
 <!-- /wp:button -->
 <!-- wp:button {"className":"is-style-outline"} -->
-<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/mycie-kostki-brukowej-katowice/">Usługi lokalne</a></div>
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="%%KRAMO_HOME_CATEGORY%%">Dom i wnętrze</a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></section>
 <!-- /wp:group -->
@@ -515,6 +525,18 @@ $home_content = <<<'HTML'
 [products limit="4" columns="4" on_sale="true"]
 <!-- /wp:shortcode -->
 HTML;
+
+$home_category_term = get_term_by('slug', 'dom', 'product_cat');
+$home_category_link = $home_category_term instanceof WP_Term
+    ? get_term_link($home_category_term)
+    : '';
+$home_content = str_replace(
+    '%%KRAMO_HOME_CATEGORY%%',
+    is_string($home_category_link) && '' !== $home_category_link
+        ? esc_url($home_category_link)
+        : wc_get_page_permalink('shop'),
+    $home_content
+);
 
 $home = get_page_by_path($home_slug);
 $home_id = $home

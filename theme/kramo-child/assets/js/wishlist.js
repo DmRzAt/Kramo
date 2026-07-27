@@ -39,6 +39,14 @@
 				screenReader.textContent = label;
 			}
 		});
+		syncCount();
+	};
+
+	const syncCount = () => {
+		document.querySelectorAll("[data-wishlist-count]").forEach((node) => {
+			node.textContent = `(${productIds.length})`;
+			node.hidden = productIds.length === 0;
+		});
 	};
 
 	const syncServer = async () => {

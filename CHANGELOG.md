@@ -60,6 +60,17 @@
 - Trust strip under the header carrying BLIK, InPost and Orlen pickup, the live free-delivery threshold, 14-day returns and Polish workshop.
 - Scroll reveal, sticky-header shadow and hover choreography, all governed by the reduced-motion rule.
 - Self-hosted Bricolage Grotesque and Instrument Sans under SIL OFL, subset to Latin and Polish, with axis pinning in the subset script.
+- Live wishlist counter appended to menu links pointing at the Ulubione page, hidden while the list is empty.
+- Stock and dispatch signals under the product price (inc/availability.php): availability state, low-stock count and a filterable `Wysyłka w 24 h` promise that disappears when nothing can ship.
+- Product size-guide field and front-end table tab (inc/size-guide.php), following the FAQ field pattern, with a seeded example table on the demo clothing.
+
+### Fixed
+
+- Wishlist toggle now meets the 44x44 minimum touch target (`--wishlist-button-size` 2.5rem to 2.75rem); at 40px it was easy to mis-tap on a phone, which read as a broken feature.
+- The wishlist toggle was missing from the `:active` press-scale rule that DESIGN.md requires for interactive controls.
+- The saved wishlist state now switches the glyph from an outline to a filled heart instead of relying on the button background alone.
+- The mobile trust strip no longer stacks into five rows; tighter gaps and smaller type bring it to three rows (90px instead of roughly 150px), so the catalog starts higher.
+- The local-service landing page left the primary menu and the home-page hero, where a paving-stone service sat between linen shirts and blankets. It now lives in the footer as `Przykład strony usługowej`, so the template stays demoable without breaking the storefront story. The freed hero button points at the Dom category, resolved through `get_term_link()` rather than a hard-coded permalink.
 
 ### Changed
 

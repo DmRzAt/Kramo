@@ -282,6 +282,79 @@
 	color: var(--color-on-primary);
 }
 
+.kramo-size-guide {
+	overflow-x: auto;
+}
+
+.kramo-size-guide__table {
+	width: var(--size-full);
+	border-collapse: collapse;
+	font-size: var(--text-sm);
+}
+
+.kramo-size-guide__table th,
+.kramo-size-guide__table td {
+	padding: var(--space-1) var(--space-2);
+	border-bottom: var(--border-width) var(--border-style) var(--color-border);
+	text-align: left;
+	font-variant-numeric: tabular-nums;
+}
+
+.kramo-size-guide__table thead th {
+	color: var(--color-text);
+	font-weight: var(--font-weight-semibold);
+}
+
+.kramo-size-guide__table tbody th {
+	font-weight: var(--font-weight-semibold);
+}
+
+.woocommerce div.product .kramo-availability {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1) var(--space-3);
+	margin: var(--space-0) var(--space-0) var(--space-2);
+	padding: var(--space-0);
+	list-style: none;
+}
+
+.woocommerce div.product .kramo-availability__item {
+	display: inline-flex;
+	gap: var(--space-1);
+	align-items: center;
+	color: var(--color-text-muted);
+	font-size: var(--text-sm);
+}
+
+.woocommerce div.product .kramo-availability__dot {
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: var(--size-full);
+	background-color: currentColor;
+}
+
+.woocommerce div.product .kramo-availability__item--in,
+.woocommerce div.product .kramo-availability__item--backorder {
+	color: var(--color-trust, var(--color-primary));
+}
+
+.woocommerce div.product .kramo-availability__item--low {
+	color: var(--color-primary);
+	font-weight: var(--font-weight-semibold);
+}
+
+.woocommerce div.product .kramo-availability__item--out {
+	color: var(--color-text-muted);
+}
+
+.kramo-wishlist-toggle__icon::before {
+	content: "\2661";
+}
+
+.kramo-wishlist-toggle[aria-pressed="true"] .kramo-wishlist-toggle__icon::before {
+	content: "\2665";
+}
+
 .woocommerce div.product .kramo-wishlist-toggle--single {
 	position: static;
 	display: inline-flex;
@@ -861,6 +934,7 @@
 .woocommerce button.button:active,
 .woocommerce input.button:active,
 .woocommerce div.product form.cart .button:active,
+.kramo-wishlist-toggle:active,
 .kramo-variation-option:active {
 	transform: var(--scale-press);
 }

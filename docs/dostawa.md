@@ -61,7 +61,7 @@ Niezależnie od wtyczki, wybrany punkt jest pokazywany:
 - w e-mailach do klienta i do sklepu,
 - na stronie „podziękowania za zamówienie”.
 
-Szablon czyta klucz `_ws_shipping_point` oraz typowe klucze wtyczek InPost/Orlen.
+Szablon czyta klucz `_kramo_shipping_point` oraz typowe klucze wtyczek InPost/Orlen.
 Jeśli konkretna wersja wtyczki zapisuje punkt pod innym kluczem, wystarczy dodać
 go filtrem:
 

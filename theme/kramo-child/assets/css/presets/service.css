@@ -1,5 +1,5 @@
 /*
- * Service preset: structured hierarchy, restrained accent and bordered cards.
+ * Service preset: editorial hierarchy, restrained accent, photography-led grid.
  * This file intentionally contains variable overrides only.
  */
 :root {
@@ -20,33 +20,37 @@
 	--color-sale: var(--service-sale);
 	--color-on-sale: var(--service-on-primary);
 	--color-header-bg: var(--service-surface);
-	--color-footer-bg: var(--service-surface-alt);
+	--color-footer-bg: var(--service-text);
+	--color-footer-text: var(--service-surface);
+	--color-footer-muted: var(--footer-muted-on-ink);
+	--color-footer-border: var(--ink-border);
+	--color-footer-link: var(--service-surface);
+	--color-footer-link-hover: var(--service-primary);
 	--color-card-bg: var(--service-surface);
 	--color-card-glow: var(--transparent);
 
 	--font-heading-weight: var(--font-weight-bold);
 	--font-display: var(--font-family-display);
-	--color-trust: var(--service-pine);
 	--font-heading-tracking: var(--tracking-normal);
 	--font-body-tracking: var(--tracking-normal);
 	--text-h1: var(--text-3xl);
 	--heading-h2-size: var(--text-xl);
-	--section-gap: var(--space-6);
 	--container-max: var(--size-service-container);
 	--header-padding-block: var(--space-2);
 
-	--card-radius: var(--radius-service);
+	/* Panels, modals and toasts keep a surface; the catalog tile does not, and
+	   its chrome-free defaults live in tokens.css. */
+	--card-radius: var(--radius-sharp);
 	--card-shadow: var(--shadow-none);
 	--card-border-width: var(--border-width);
 	--card-border-color: var(--service-border);
 	--card-padding: var(--space-2);
 	--card-overflow: var(--overflow-hidden);
-	--card-transform-hover: var(--translate-none);
 	--card-glow-height: var(--size-0);
 	--card-glow-opacity: var(--opacity-hidden);
 	--product-image-offset-inline: var(--space-0);
-	--button-radius: var(--radius-service);
-	--input-radius: var(--radius-service);
+	--button-radius: var(--radius-sharp);
+	--input-radius: var(--radius-sharp);
 	--grid-gap: var(--space-3);
 	--nav-indicator-height: var(--border-width-strong);
 	--nav-indicator-color: var(--service-primary);

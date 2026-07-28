@@ -110,9 +110,11 @@ function kramo_inline_critical_css() {
 		return;
 	}
 
-	wp_register_style( 'kramo-critical', false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-	wp_enqueue_style( 'kramo-critical' );
-	wp_add_inline_style( 'kramo-critical', $inlined );
+	// The bundle rides on the first critical handle instead of a new one. A new
+	// handle enqueued here would print after woo.css and invert the cascade:
+	// the generic button rules in base.css would then outrank the component
+	// rules in woo.css at equal specificity.
+	wp_add_inline_style( 'kramo-tokens', $inlined );
 }
 add_action( 'wp_enqueue_scripts', 'kramo_inline_critical_css', 100 );
 

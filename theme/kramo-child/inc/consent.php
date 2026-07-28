@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const KRAMO_CONSENT_COOKIE = 'ws_consent';
+const KRAMO_CONSENT_COOKIE = 'kramo_consent';
 
 function kramo_consent_settings() {
 	return array(

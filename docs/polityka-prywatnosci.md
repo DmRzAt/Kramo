@@ -56,7 +56,7 @@ Ochrony Danych Osobowych.
 | Rodzaj | Cel | Wymaga zgody |
 |---|---|---|
 | Techniczne (sesja, koszyk) | działanie sklepu | nie |
-| Zgody (`ws_consent`) | zapamiętanie wyboru | nie |
+| Zgody (`kramo_consent`) | zapamiętanie wyboru | nie |
 | Analityczne (GA4) | statystyka odwiedzin | tak |
 | Marketingowe (Meta Pixel) | remarketing | tak |
 

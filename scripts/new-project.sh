@@ -198,6 +198,9 @@ checkout_id="$(ensure_page 'Zamówienie' 'zamowienie' '[woocommerce_checkout]')"
 account_id="$(ensure_page 'Moje konto' 'moje-konto' '[woocommerce_my_account]')"
 terms_id="$(ensure_page 'Regulamin' 'regulamin' '')"
 privacy_id="$(ensure_page 'Polityka prywatności' 'polityka-prywatnosci' '')"
+ensure_page 'Dostawa i płatności' 'dostawa-i-platnosci' '<!-- wp:paragraph --><p>Informacje o formach dostawy i płatności uzupełni właściciel sklepu.</p><!-- /wp:paragraph -->'
+ensure_page 'Zwroty i reklamacje' 'zwroty-i-reklamacje' '<!-- wp:paragraph --><p>Zasady zwrotów i reklamacji uzupełni właściciel sklepu.</p><!-- /wp:paragraph -->'
+ensure_page 'Polityka cookies' 'polityka-cookies' '<!-- wp:paragraph --><p>Informacje o plikach cookies uzupełni właściciel sklepu.</p><!-- /wp:paragraph -->'
 
 wp option update woocommerce_shop_page_id "$shop_id"
 wp option update woocommerce_cart_page_id "$cart_id"
@@ -205,6 +208,14 @@ wp option update woocommerce_checkout_page_id "$checkout_id"
 wp option update woocommerce_myaccount_page_id "$account_id"
 wp option update woocommerce_terms_page_id "$terms_id"
 wp option update wp_page_for_privacy_policy "$privacy_id"
+
+# WooCommerce hides account creation by default, which leaves the account page
+# with a login form customers can never sign up for.
+wp option update woocommerce_enable_myaccount_registration yes
+wp option update woocommerce_enable_signup_and_login_from_checkout yes
+wp option update woocommerce_enable_checkout_login_reminder yes
+wp option update woocommerce_enable_guest_checkout yes
+
 wp rewrite flush --hard
 
 echo "Configuring the Polish shipping zone..."

@@ -20,12 +20,20 @@
 	--color-sale: var(--premium-sale);
 	--color-on-sale: var(--premium-on-primary);
 	--color-header-bg: var(--premium-surface);
-	--color-footer-bg: var(--premium-surface);
+	--color-footer-bg: var(--premium-bg);
+	--color-footer-text: var(--premium-text);
+	--color-footer-muted: var(--premium-text-muted);
+	--color-footer-border: var(--premium-border);
+	--color-footer-link: var(--premium-text);
+	--color-footer-link-hover: var(--premium-primary);
 	--color-card-bg: var(--premium-surface-raised);
 	--color-card-glow: var(--premium-primary);
 
-	--font-heading-weight: var(--font-weight-regular);
-	--font-heading-tracking: var(--tracking-snug);
+	--color-skeleton-sheen: var(--sheen-dark);
+	--font-body: var(--font-family-sans);
+	--font-display: var(--font-family-editorial);
+	--font-heading-weight: var(--font-weight-extralight);
+	--font-heading-tracking: var(--tracking-wide);
 	--font-body-tracking: var(--tracking-wide);
 	--heading-h2-size: var(--text-2xl);
 	--section-gap: var(--space-6);
@@ -43,6 +51,18 @@
 	--card-glow-height: var(--border-width);
 	--card-glow-opacity: var(--opacity-hidden);
 	--product-image-offset-inline: var(--space-0);
+
+	/* The flush, chrome-free grid belongs to service. Premium sells calm space,
+	   so its tiles stay raised, rounded and separated. */
+	--catalog-card-padding: var(--space-3);
+	--catalog-card-radius: var(--radius-lg);
+	--catalog-card-bg: var(--premium-surface-raised);
+	--catalog-card-shadow: var(--shadow-premium);
+	--catalog-card-shadow-hover: var(--shadow-premium);
+	--catalog-card-transform-hover: var(--translate-card-hover);
+	--catalog-media-radius: var(--radius-md);
+	--catalog-gap-row: var(--space-4);
+	--catalog-gap-column: var(--space-4);
 	--button-radius: var(--radius-lg);
 	--input-radius: var(--radius-lg);
 	--grid-gap: var(--space-4);

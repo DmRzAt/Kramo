@@ -189,7 +189,8 @@ function kramo_wishlist_shortcode() {
 		<p class="kramo-wishlist__empty" data-wishlist-empty>
 			<?php echo esc_html__( 'Nie masz jeszcze ulubionych produktów.', 'kramo' ); ?>
 		</p>
-		<div class="kramo-wishlist__products" data-wishlist-products aria-live="polite"></div>
+		<p class="screen-reader-text" data-wishlist-status role="status" aria-live="polite"></p>
+		<div class="kramo-wishlist__products" data-wishlist-products></div>
 	</section>
 	<?php
 

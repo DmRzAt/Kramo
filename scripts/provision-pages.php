@@ -34,6 +34,21 @@ $pages = array(
 	'account'  => array( 'Moje konto', 'moje-konto', '[woocommerce_my_account]' ),
 	'terms'    => array( 'Regulamin', 'regulamin', '' ),
 	'privacy'  => array( 'Polityka prywatności', 'polityka-prywatnosci', '' ),
+	'shipping' => array(
+		'Dostawa i płatności',
+		'dostawa-i-platnosci',
+		'<!-- wp:paragraph --><p>Informacje o formach dostawy i płatności uzupełni właściciel sklepu.</p><!-- /wp:paragraph -->',
+	),
+	'returns'  => array(
+		'Zwroty i reklamacje',
+		'zwroty-i-reklamacje',
+		'<!-- wp:paragraph --><p>Zasady zwrotów i reklamacji uzupełni właściciel sklepu.</p><!-- /wp:paragraph -->',
+	),
+	'cookies'  => array(
+		'Polityka cookies',
+		'polityka-cookies',
+		'<!-- wp:paragraph --><p>Informacje o plikach cookies uzupełni właściciel sklepu.</p><!-- /wp:paragraph -->',
+	),
 );
 
 $ids = array();

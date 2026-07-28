@@ -9,7 +9,13 @@ function kramo_security_headers( $headers ) {
 	$headers['X-Content-Type-Options'] = 'nosniff';
 	$headers['Referrer-Policy']        = 'strict-origin-when-cross-origin';
 	$headers['Permissions-Policy']     = 'geolocation=(), microphone=(), camera=(), interest-cohort=()';
-	$headers['Cross-Origin-Opener-Policy'] = 'same-origin';
+
+	// PayPal and the BLIK flows finish in a popup that reports back through
+	// window.opener, which "same-origin" severs. Cart, checkout and account keep
+	// the permissive variant so the payment window can close the order.
+	$headers['Cross-Origin-Opener-Policy'] = kramo_request_is_dynamic_page()
+		? 'same-origin-allow-popups'
+		: 'same-origin';
 
 	if ( is_ssl() ) {
 		$headers['Strict-Transport-Security'] = 'max-age=15768000';
@@ -91,8 +97,8 @@ add_filter( 'rest_endpoints', 'kramo_restrict_user_rest_route' );
 
 function kramo_form_spam_field_names() {
 	return array(
-		'honeypot' => 'ws_website_url',
-		'started'  => 'ws_form_started',
+		'honeypot' => 'kramo_website_url',
+		'started'  => 'kramo_form_started',
 	);
 }
 

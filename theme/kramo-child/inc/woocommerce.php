@@ -84,6 +84,84 @@ function kramo_related_products_args( $args ) {
 add_filter( 'woocommerce_output_related_products_args', 'kramo_related_products_args' );
 
 /**
+ * Check whether the current request renders the product catalog.
+ *
+ * Product search results are a listing too: they share the flush grid, the
+ * filter toolbar and the search field, so they must count as catalog screens.
+ *
+ * @return bool
+ */
+function kramo_is_catalog_screen() {
+	if ( ! function_exists( 'is_shop' ) ) {
+		return false;
+	}
+
+	if ( is_shop() || is_product_taxonomy() ) {
+		return true;
+	}
+
+	return is_search() && 'product' === get_query_var( 'post_type' );
+}
+
+/**
+ * URL paths of the per-customer WooCommerce pages.
+ *
+ * Resolved from the page ids rather than from conditional tags, so callers that
+ * run before the main query is set up - security headers, cache policy - can
+ * still recognise cart, checkout and account requests.
+ *
+ * @return array<int,string>
+ */
+function kramo_dynamic_page_paths() {
+	if ( ! function_exists( 'wc_get_page_id' ) ) {
+		return array();
+	}
+
+	$paths = array();
+
+	foreach ( array( 'cart', 'checkout', 'myaccount' ) as $page ) {
+		$page_id = (int) wc_get_page_id( $page );
+
+		if ( $page_id < 1 ) {
+			continue;
+		}
+
+		$path = wp_parse_url( (string) get_permalink( $page_id ), PHP_URL_PATH );
+
+		if ( $path ) {
+			$paths[] = untrailingslashit( $path );
+		}
+	}
+
+	return array_values( array_unique( array_filter( $paths ) ) );
+}
+
+/**
+ * Whether the current request targets one of the per-customer pages.
+ *
+ * @return bool
+ */
+function kramo_request_is_dynamic_page() {
+	$request = isset( $_SERVER['REQUEST_URI'] )
+		? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) )
+		: '';
+
+	if ( '' === $request ) {
+		return false;
+	}
+
+	$path = untrailingslashit( (string) wp_parse_url( $request, PHP_URL_PATH ) );
+
+	foreach ( kramo_dynamic_page_paths() as $dynamic_path ) {
+		if ( $path === $dynamic_path || 0 === strpos( $path . '/', $dynamic_path . '/' ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Check whether the current request contains WooCommerce content.
  *
  * @return bool

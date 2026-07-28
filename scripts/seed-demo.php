@@ -307,17 +307,17 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight
     $product->set_gallery_image_ids([$gallery_image_id]);
 
     if (0 === $index) {
-        $product->update_meta_data('_ws_personalization_enabled', 'yes');
-        $product->update_meta_data('_ws_personalization_type', 'font');
-        $product->update_meta_data('_ws_personalization_label', 'Imię do haftu');
-        $product->update_meta_data('_ws_personalization_max_length', 20);
-        $product->update_meta_data('_ws_personalization_required', 'yes');
-        $product->update_meta_data('_ws_personalization_surcharge', 20);
+        $product->update_meta_data('_kramo_personalization_enabled', 'yes');
+        $product->update_meta_data('_kramo_personalization_type', 'font');
+        $product->update_meta_data('_kramo_personalization_label', 'Imię do haftu');
+        $product->update_meta_data('_kramo_personalization_max_length', 20);
+        $product->update_meta_data('_kramo_personalization_required', 'yes');
+        $product->update_meta_data('_kramo_personalization_surcharge', 20);
     }
 
     if (in_array($index, [0, 1, 2, 3, 4, 5], true)) {
         $product->update_meta_data(
-            '_ws_size_guide',
+            '_kramo_size_guide',
             "Rozmiar :: Obwód klatki (cm) :: Długość (cm)\n"
                 . "S :: 92-96 :: 68\n"
                 . "M :: 98-102 :: 70\n"
@@ -328,7 +328,7 @@ foreach ($products as $index => [$name, $base_price, $hex, $gallery_hex, $weight
     if (7 === $index) {
         // Demonstrates the FAQ field feeding FAQPage schema on the product page.
         $product->update_meta_data(
-            '_ws_faq',
+            '_kramo_faq',
             "Czy czapka jest ciepła? :: Tak, gruba bawełna z domieszką elastanu.\n"
                 . 'Jak prać? :: Ręcznie lub w pralce w 30 stopniach.'
         );
@@ -467,32 +467,33 @@ $local_id = $local_existing
 
 if (!is_wp_error($local_id) && $local_id) {
     update_post_meta($local_id, '_wp_page_template', 'page-local-service.php');
-    update_post_meta($local_id, '_ws_ls_service', 'Mycie kostki brukowej');
-    update_post_meta($local_id, '_ws_ls_city', 'Katowice');
-    update_post_meta($local_id, '_ws_ls_area', 'Katowice, Sosnowiec, Gliwice, Chorzów');
-    update_post_meta($local_id, '_ws_ls_price', '20–40 zł/m²');
-    update_post_meta($local_id, '_ws_ls_phone', '+48 500 600 700');
-    update_post_meta($local_id, '_ws_ls_cta_text', 'Zamów wycenę');
-    update_post_meta($local_id, '_ws_ls_cta_url', 'tel:+48500600700');
+    update_post_meta($local_id, '_kramo_ls_service', 'Mycie kostki brukowej');
+    update_post_meta($local_id, '_kramo_ls_city', 'Katowice');
+    update_post_meta($local_id, '_kramo_ls_area', 'Katowice, Sosnowiec, Gliwice, Chorzów');
+    update_post_meta($local_id, '_kramo_ls_price', '20–40 zł/m²');
+    update_post_meta($local_id, '_kramo_ls_phone', '+48 500 600 700');
+    update_post_meta($local_id, '_kramo_ls_cta_text', 'Zamów wycenę');
+    update_post_meta($local_id, '_kramo_ls_cta_url', 'tel:+48500600700');
     update_post_meta(
         $local_id,
-        '_ws_ls_faq',
+        '_kramo_ls_faq',
         "Ile trwa usługa? :: Zwykle jeden dzień dla typowego podjazdu.\n"
             . 'Czy impregnacja jest w cenie? :: Tak, w pakiecie podstawowym.'
     );
 }
 
 
-// Storefront home page: hero, featured products and categories, all in native
-// blocks so the client can edit them.
+// Storefront home page: campaign hero, gallery rails and lifestyle tiles —
+// the Rzeczy Same axis Polish craft shoppers recognise, with Kramo trust kept
+// in the header strip rather than buried in the footer.
 $home_slug = 'strona-glowna';
 $home_content = <<<'HTML'
-<!-- wp:group {"tagName":"section","className":"kramo-hero","layout":{"type":"constrained"}} -->
-<section class="wp-block-group kramo-hero"><!-- wp:heading {"level":1} -->
+<!-- wp:cover {"url":"%%KRAMO_HERO_IMAGE%%","dimRatio":46,"overlayColor":"black","isUserOverlayColor":true,"minHeight":68,"minHeightUnit":"vh","contentPosition":"bottom left","align":"full","className":"kramo-hero","layout":{"type":"constrained"}} -->
+<div class="wp-block-cover alignfull has-custom-content-position is-position-bottom-left kramo-hero" style="min-height:68vh"><span aria-hidden="true" class="wp-block-cover__background has-black-background-color has-background-dim-40 has-background-dim"></span><img class="wp-block-cover__image-background" alt="" src="%%KRAMO_HERO_IMAGE%%" data-object-fit="cover"/><div class="wp-block-cover__inner-container"><!-- wp:heading {"level":1} -->
 <h1 class="wp-block-heading">Polskie rzemiosło na co dzień</h1>
 <!-- /wp:heading -->
 <!-- wp:paragraph -->
-<p>Naturalne materiały, prosty krój i wysyłka w 24 godziny. Personalizacja z imieniem lub własnym napisem dostępna przy każdym produkcie.</p>
+<p>Naturalne materiały, prosty krój i wysyłka w 24 godziny.</p>
 <!-- /wp:paragraph -->
 <!-- wp:buttons -->
 <div class="wp-block-buttons"><!-- wp:button -->
@@ -501,28 +502,25 @@ $home_content = <<<'HTML'
 <!-- wp:button {"className":"is-style-outline"} -->
 <div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="%%KRAMO_HOME_CATEGORY%%">Dom i wnętrze</a></div>
 <!-- /wp:button --></div>
-<!-- /wp:buttons --></section>
-<!-- /wp:group -->
+<!-- /wp:buttons --></div></div>
+<!-- /wp:cover -->
 
 <!-- wp:heading -->
-<h2 class="wp-block-heading">Nowości w sklepie</h2>
+<h2 class="wp-block-heading">Nowości</h2>
 <!-- /wp:heading -->
 <!-- wp:shortcode -->
-[products limit="4" columns="4" orderby="date"]
+[products limit="3" columns="3" orderby="date"]
 <!-- /wp:shortcode -->
 
-<!-- wp:heading -->
-<h2 class="wp-block-heading">Kategorie</h2>
-<!-- /wp:heading -->
 <!-- wp:shortcode -->
-[product_categories number="3" columns="3"]
+[kramo_home_tiles]
 <!-- /wp:shortcode -->
 
 <!-- wp:heading -->
 <h2 class="wp-block-heading">Na prezent</h2>
 <!-- /wp:heading -->
 <!-- wp:shortcode -->
-[products limit="4" columns="4" on_sale="true"]
+[products limit="3" columns="3" on_sale="true"]
 <!-- /wp:shortcode -->
 HTML;
 
@@ -530,11 +528,32 @@ $home_category_term = get_term_by('slug', 'dom', 'product_cat');
 $home_category_link = $home_category_term instanceof WP_Term
     ? get_term_link($home_category_term)
     : '';
+
+$hero_image_id = $home_category_term instanceof WP_Term
+    ? (int) get_term_meta($home_category_term->term_id, 'thumbnail_id', true)
+    : 0;
+
+if (!$hero_image_id && !empty($product_ids[10])) {
+    $hero_image_id = (int) get_post_thumbnail_id($product_ids[10]);
+}
+
+$hero_image_url = $hero_image_id
+    ? (string) wp_get_attachment_image_url($hero_image_id, 'full')
+    : '';
+
 $home_content = str_replace(
-    '%%KRAMO_HOME_CATEGORY%%',
-    is_string($home_category_link) && '' !== $home_category_link
-        ? esc_url($home_category_link)
-        : wc_get_page_permalink('shop'),
+    [
+        '%%KRAMO_HOME_CATEGORY%%',
+        '%%KRAMO_HERO_IMAGE%%',
+    ],
+    [
+        is_string($home_category_link) && '' !== $home_category_link
+            ? esc_url($home_category_link)
+            : wc_get_page_permalink('shop'),
+        $hero_image_url !== ''
+            ? esc_url($hero_image_url)
+            : '',
+    ],
     $home_content
 );
 

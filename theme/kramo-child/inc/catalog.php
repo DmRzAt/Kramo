@@ -81,9 +81,59 @@ function kramo_loop_product_thumbnail() {
 	}
 
 	printf(
-		'<span class="kramo-product-media">%1$s%2$s</span>',
+		'<span class="kramo-product-media">%1$s%2$s%3$s</span>',
 		wp_kses_post( $primary ),
-		wp_kses_post( $secondary )
+		wp_kses_post( $secondary ),
+		wp_kses_post( kramo_loop_stock_badge( $product ) )
+	);
+}
+
+/**
+ * Return a product price as plain text for JSON responses.
+ *
+ * get_price_html() carries markup plus a screen-reader duplicate of the range,
+ * and its entities would show literally once the client writes the string with
+ * textContent, so both are removed here.
+ *
+ * @param WC_Product $product Product.
+ * @return string
+ */
+function kramo_plain_price( $product ) {
+	$html = preg_replace(
+		'#<span class="screen-reader-text">.*?</span>#is',
+		'',
+		(string) $product->get_price_html()
+	);
+
+	$text = html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES, 'UTF-8' );
+
+	return trim( preg_replace( '/\s+/u', ' ', $text ) );
+}
+
+/**
+ * Return a catalog stock badge for the states worth acting on.
+ *
+ * Only scarcity and unavailability are shown; a plain "in stock" badge on
+ * every tile would be noise rather than a signal.
+ *
+ * @param WC_Product $product Catalog product.
+ * @return string
+ */
+function kramo_loop_stock_badge( $product ) {
+	if ( ! function_exists( 'kramo_availability_status' ) ) {
+		return '';
+	}
+
+	$status = kramo_availability_status( $product );
+
+	if ( ! in_array( $status['state'], array( 'low', 'out' ), true ) ) {
+		return '';
+	}
+
+	return sprintf(
+		'<span class="kramo-stock-badge kramo-stock-badge--%1$s">%2$s</span>',
+		esc_attr( $status['state'] ),
+		esc_html( $status['label'] )
 	);
 }
 
@@ -124,6 +174,70 @@ function kramo_loop_product_swatches() {
 		return;
 	}
 }
+
+/**
+ * Open the media frame that carries the photo and everything layered on it.
+ *
+ * The frame runs from here to kramo_card_frame_close(), which also closes the
+ * product link, so the buying actions can sit over the bottom of the photo
+ * without nesting a button inside an anchor.
+ */
+function kramo_card_frame_open() {
+	echo '<div class="kramo-card__frame">';
+}
+add_action( 'woocommerce_before_shop_loop_item', 'kramo_card_frame_open', 4 );
+
+/**
+ * Open the product link around the photo only.
+ *
+ * WooCommerce wraps the image, the title and the price in one anchor. Once the
+ * anchor ends at the photo the accessible name would fall back to the image
+ * alt text, which a shop is free to leave empty, so the product name is set
+ * explicitly instead.
+ */
+function kramo_card_media_open() {
+	printf(
+		'<a href="%1$s" class="woocommerce-loop-product__link kramo-card__media-link" aria-label="%2$s">',
+		esc_url( get_permalink() ),
+		esc_attr( get_the_title() )
+	);
+}
+remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
+add_action( 'woocommerce_before_shop_loop_item', 'kramo_card_media_open', 10 );
+
+/**
+ * Close the product link, print the hover actions and close the frame.
+ */
+function kramo_card_frame_close() {
+	echo '</a><div class="kramo-card__actions">';
+	woocommerce_template_loop_add_to_cart();
+
+	/**
+	 * Fires inside the catalog action bar, after the add-to-cart control.
+	 */
+	do_action( 'kramo_card_actions' );
+
+	echo '</div></div>';
+}
+add_action( 'woocommerce_before_shop_loop_item_title', 'kramo_card_frame_close', 20 );
+remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
+remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+
+/**
+ * Print the catalog product name as its own link.
+ *
+ * The card no longer has an anchor wrapped around the caption, so the name
+ * carries the link that used to come from that wrapper.
+ */
+function kramo_loop_product_title() {
+	printf(
+		'<h2 class="woocommerce-loop-product__title"><a href="%1$s">%2$s</a></h2>',
+		esc_url( get_permalink() ),
+		esc_html( get_the_title() )
+	);
+}
+remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
+add_action( 'woocommerce_shop_loop_item_title', 'kramo_loop_product_title', 10 );
 
 /**
  * Replace the default sale badge copy.
@@ -325,4 +439,21 @@ remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_
 remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
 remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
 add_action( 'woocommerce_before_shop_loop_item_title', 'kramo_loop_product_thumbnail', 10 );
-add_action( 'woocommerce_before_shop_loop_item_title', 'kramo_loop_product_swatches', 12 );
+
+// Swatches belong to the caption, under the name and price, not to the photo.
+add_action( 'woocommerce_after_shop_loop_item_title', 'kramo_loop_product_swatches', 20 );
+
+/**
+ * Mark the screens whose grid runs to the edges of the viewport.
+ *
+ * @param array<int, string> $classes Body classes.
+ * @return array<int, string>
+ */
+function kramo_body_classes( $classes ) {
+	if ( kramo_is_catalog_screen() || is_front_page() ) {
+		$classes[] = 'kramo-bleed';
+	}
+
+	return $classes;
+}
+add_filter( 'body_class', 'kramo_body_classes' );

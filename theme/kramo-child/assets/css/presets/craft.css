@@ -20,14 +20,20 @@
 	--color-sale: var(--craft-sale);
 	--color-on-sale: var(--craft-on-primary);
 	--color-header-bg: var(--craft-surface);
-	--color-footer-bg: var(--craft-surface-alt);
+	--color-footer-bg: var(--craft-text);
+	--color-footer-text: var(--craft-surface);
+	--color-footer-muted: var(--footer-muted-on-craft);
+	--color-footer-border: var(--craft-ink-border);
+	--color-footer-link: var(--craft-surface);
+	--color-footer-link-hover: var(--craft-primary);
 	--color-card-bg: var(--transparent);
 	--color-card-glow: var(--transparent);
 
-	--font-body: var(--font-family-humanist);
-	--font-display: var(--font-family-humanist);
-	--font-heading-weight: var(--font-weight-semibold);
-	--font-heading-tracking: var(--tracking-tight);
+	--font-body: var(--font-family-editorial);
+	--font-display: var(--font-family-sans);
+	--font-heading-weight: var(--font-weight-extrabold);
+	--font-heading-tracking: var(--tracking-caps);
+	--font-heading-case: var(--transform-case-upper);
 	--font-body-tracking: var(--tracking-normal);
 	--text-h1: var(--text-hero);
 	--heading-h2-size: var(--text-h2);
@@ -45,6 +51,12 @@
 	--card-glow-height: var(--size-0);
 	--card-glow-opacity: var(--opacity-hidden);
 	--product-image-offset-inline: var(--space-3);
+
+	/* Craft keeps its wide workshop margins between tiles; the flush grid is a
+	   service-preset decision, not a system-wide one. */
+	--catalog-gap-row: var(--space-6);
+	--catalog-gap-column: var(--space-6);
+	--catalog-media-radius: var(--radius-craft);
 	--button-radius: var(--radius-craft);
 	--input-radius: var(--radius-craft);
 	--grid-gap: var(--space-6);

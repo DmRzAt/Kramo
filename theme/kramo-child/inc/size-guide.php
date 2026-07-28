@@ -88,11 +88,12 @@ function kramo_size_guide_product_panel() {
 			<?php
 			woocommerce_wp_textarea_input(
 				array(
-					'id'          => '_ws_size_guide',
+					'id'          => '_kramo_size_guide',
 					'label'       => __( 'Tabela rozmiarów', 'kramo' ),
 					'description' => __( 'Jeden wiersz na linię, komórki rozdzielone ::. Pierwszy wiersz to nagłówek.', 'kramo' ),
 					'desc_tip'    => true,
 					'rows'        => 8,
+					'value'       => kramo_post_meta_value( get_the_ID(), '_kramo_size_guide' ),
 					'placeholder' => "Rozmiar :: Obwód klatki (cm) :: Długość (cm)\nS :: 92-96 :: 68\nM :: 98-102 :: 70\nL :: 104-108 :: 72",
 				)
 			);
@@ -109,12 +110,12 @@ add_action( 'woocommerce_product_data_panels', 'kramo_size_guide_product_panel' 
  * @param WC_Product $product Product being saved.
  */
 function kramo_save_size_guide_field( $product ) {
-	if ( ! isset( $_POST['_ws_size_guide'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$product->update_meta_data( '_ws_size_guide', '' );
+	if ( ! isset( $_POST['_kramo_size_guide'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$product->update_meta_data( '_kramo_size_guide', '' );
 		return;
 	}
 
-	$raw   = sanitize_textarea_field( wp_unslash( $_POST['_ws_size_guide'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$raw   = sanitize_textarea_field( wp_unslash( $_POST['_kramo_size_guide'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	$lines = array();
 	foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
 		$line = trim( $line );
@@ -123,7 +124,7 @@ function kramo_save_size_guide_field( $product ) {
 		}
 	}
 
-	$product->update_meta_data( '_ws_size_guide', implode( "\n", $lines ) );
+	$product->update_meta_data( '_kramo_size_guide', implode( "\n", $lines ) );
 }
 add_action( 'woocommerce_admin_process_product_object', 'kramo_save_size_guide_field' );
 
@@ -140,7 +141,7 @@ function kramo_size_guide_frontend_tab( $tabs ) {
 		return $tabs;
 	}
 
-	$table = kramo_parse_size_guide( $product->get_meta( '_ws_size_guide' ) );
+	$table = kramo_parse_size_guide( kramo_product_meta( $product, '_kramo_size_guide' ) );
 	if ( empty( $table['rows'] ) ) {
 		return $tabs;
 	}
@@ -165,7 +166,7 @@ function kramo_size_guide_tab_content() {
 		return;
 	}
 
-	$table = kramo_parse_size_guide( $product->get_meta( '_ws_size_guide' ) );
+	$table = kramo_parse_size_guide( kramo_product_meta( $product, '_kramo_size_guide' ) );
 	if ( empty( $table['rows'] ) ) {
 		return;
 	}

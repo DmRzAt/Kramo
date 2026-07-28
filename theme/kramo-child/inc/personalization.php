@@ -40,18 +40,18 @@ function kramo_get_personalization_settings( $product_id ) {
 		return array();
 	}
 
-	$type = (string) $product->get_meta( '_ws_personalization_type' );
+	$type = (string) kramo_product_meta( $product, '_kramo_personalization_type' );
 	if ( ! in_array( $type, array( 'text', 'font', 'thread_color' ), true ) ) {
 		$type = 'text';
 	}
 
 	return array(
-		'enabled'    => 'yes' === $product->get_meta( '_ws_personalization_enabled' ),
+		'enabled'    => 'yes' === kramo_product_meta( $product, '_kramo_personalization_enabled' ),
 		'type'       => $type,
-		'label'      => (string) ( $product->get_meta( '_ws_personalization_label' ) ?: __( 'Imię do haftu', 'kramo' ) ),
-		'max_length' => max( 1, absint( $product->get_meta( '_ws_personalization_max_length' ) ?: 30 ) ),
-		'required'   => 'yes' === $product->get_meta( '_ws_personalization_required' ),
-		'surcharge'  => max( 0, (float) wc_format_decimal( $product->get_meta( '_ws_personalization_surcharge' ) ) ),
+		'label'      => (string) ( kramo_product_meta( $product, '_kramo_personalization_label' ) ?: __( 'Imię do haftu', 'kramo' ) ),
+		'max_length' => max( 1, absint( kramo_product_meta( $product, '_kramo_personalization_max_length' ) ?: 30 ) ),
+		'required'   => 'yes' === kramo_product_meta( $product, '_kramo_personalization_required' ),
+		'surcharge'  => max( 0, (float) wc_format_decimal( kramo_product_meta( $product, '_kramo_personalization_surcharge' ) ) ),
 	);
 }
 
@@ -111,16 +111,18 @@ function kramo_personalization_product_panel() {
 			<?php
 			woocommerce_wp_checkbox(
 				array(
-					'id'          => '_ws_personalization_enabled',
+					'id'          => '_kramo_personalization_enabled',
 					'label'       => __( 'Włącz personalizację', 'kramo' ),
 					'description' => __( 'Pokaż pole personalizacji na stronie produktu.', 'kramo' ),
+					'value'       => kramo_post_meta_value( get_the_ID(), '_kramo_personalization_enabled' ),
 				)
 			);
 
 			woocommerce_wp_select(
 				array(
-					'id'      => '_ws_personalization_type',
+					'id'      => '_kramo_personalization_type',
 					'label'   => __( 'Typ pola', 'kramo' ),
+					'value'   => kramo_post_meta_value( get_the_ID(), '_kramo_personalization_type' ) ?: 'text',
 					'options' => array(
 						'text'         => __( 'Tekst', 'kramo' ),
 						'font'         => __( 'Tekst + wybór kroju pisma', 'kramo' ),
@@ -131,18 +133,19 @@ function kramo_personalization_product_panel() {
 
 			woocommerce_wp_text_input(
 				array(
-					'id'          => '_ws_personalization_label',
+					'id'          => '_kramo_personalization_label',
 					'label'       => __( 'Etykieta pola', 'kramo' ),
 					'placeholder' => __( 'Imię do haftu', 'kramo' ),
+					'value'       => kramo_post_meta_value( get_the_ID(), '_kramo_personalization_label' ),
 				)
 			);
 
 			woocommerce_wp_text_input(
 				array(
-					'id'                => '_ws_personalization_max_length',
+					'id'                => '_kramo_personalization_max_length',
 					'label'             => __( 'Maksymalna długość', 'kramo' ),
 					'type'              => 'number',
-					'value'             => get_post_meta( get_the_ID(), '_ws_personalization_max_length', true ) ?: 30,
+					'value'             => kramo_post_meta_value( get_the_ID(), '_kramo_personalization_max_length' ) ?: 30,
 					'custom_attributes' => array(
 						'min'  => 1,
 						'step' => 1,
@@ -152,19 +155,21 @@ function kramo_personalization_product_panel() {
 
 			woocommerce_wp_checkbox(
 				array(
-					'id'          => '_ws_personalization_required',
+					'id'          => '_kramo_personalization_required',
 					'label'       => __( 'Pole obowiązkowe', 'kramo' ),
 					'description' => __( 'Nie pozwalaj dodać produktu bez tekstu.', 'kramo' ),
+					'value'       => kramo_post_meta_value( get_the_ID(), '_kramo_personalization_required' ),
 				)
 			);
 
 			woocommerce_wp_text_input(
 				array(
-					'id'                => '_ws_personalization_surcharge',
+					'id'                => '_kramo_personalization_surcharge',
 					'label'             => __( 'Dopłata', 'kramo' ),
 					'description'       => __( 'Opcjonalna dopłata za personalizację.', 'kramo' ),
 					'desc_tip'          => true,
 					'type'              => 'number',
+					'value'             => kramo_post_meta_value( get_the_ID(), '_kramo_personalization_surcharge' ),
 					'custom_attributes' => array(
 						'min'  => 0,
 						'step' => '0.01',
@@ -185,39 +190,39 @@ add_action( 'woocommerce_product_data_panels', 'kramo_personalization_product_pa
  */
 function kramo_save_personalization_settings( $product ) {
 	$product->update_meta_data(
-		'_ws_personalization_enabled',
-		isset( $_POST['_ws_personalization_enabled'] ) ? 'yes' : 'no'
+		'_kramo_personalization_enabled',
+		isset( $_POST['_kramo_personalization_enabled'] ) ? 'yes' : 'no'
 	);
 	$product->update_meta_data(
-		'_ws_personalization_required',
-		isset( $_POST['_ws_personalization_required'] ) ? 'yes' : 'no'
+		'_kramo_personalization_required',
+		isset( $_POST['_kramo_personalization_required'] ) ? 'yes' : 'no'
 	);
 
-	$type = isset( $_POST['_ws_personalization_type'] )
-		? sanitize_key( wp_unslash( $_POST['_ws_personalization_type'] ) )
+	$type = isset( $_POST['_kramo_personalization_type'] )
+		? sanitize_key( wp_unslash( $_POST['_kramo_personalization_type'] ) )
 		: 'text';
 	$product->update_meta_data(
-		'_ws_personalization_type',
+		'_kramo_personalization_type',
 		in_array( $type, array( 'text', 'font', 'thread_color' ), true ) ? $type : 'text'
 	);
 
-	$label = isset( $_POST['_ws_personalization_label'] )
-		? sanitize_text_field( wp_unslash( $_POST['_ws_personalization_label'] ) )
+	$label = isset( $_POST['_kramo_personalization_label'] )
+		? sanitize_text_field( wp_unslash( $_POST['_kramo_personalization_label'] ) )
 		: '';
 	$product->update_meta_data(
-		'_ws_personalization_label',
+		'_kramo_personalization_label',
 		$label ?: __( 'Imię do haftu', 'kramo' )
 	);
 
-	$max_length = isset( $_POST['_ws_personalization_max_length'] )
-		? absint( wp_unslash( $_POST['_ws_personalization_max_length'] ) )
+	$max_length = isset( $_POST['_kramo_personalization_max_length'] )
+		? absint( wp_unslash( $_POST['_kramo_personalization_max_length'] ) )
 		: 30;
-	$product->update_meta_data( '_ws_personalization_max_length', max( 1, $max_length ) );
+	$product->update_meta_data( '_kramo_personalization_max_length', max( 1, $max_length ) );
 
-	$surcharge = isset( $_POST['_ws_personalization_surcharge'] )
-		? max( 0, (float) wc_format_decimal( wp_unslash( $_POST['_ws_personalization_surcharge'] ) ) )
+	$surcharge = isset( $_POST['_kramo_personalization_surcharge'] )
+		? max( 0, (float) wc_format_decimal( wp_unslash( $_POST['_kramo_personalization_surcharge'] ) ) )
 		: 0;
-	$product->update_meta_data( '_ws_personalization_surcharge', $surcharge );
+	$product->update_meta_data( '_kramo_personalization_surcharge', $surcharge );
 }
 add_action( 'woocommerce_admin_process_product_object', 'kramo_save_personalization_settings' );
 
@@ -255,7 +260,7 @@ function kramo_render_personalization_fields() {
 		<div class="kramo-personalization__input">
 			<input
 				id="ws-personalization-text"
-				name="ws_personalization_text"
+				name="kramo_personalization_text"
 				type="text"
 				maxlength="<?php echo esc_attr( $settings['max_length'] ); ?>"
 				<?php echo $settings['required'] ? 'required' : ''; ?>
@@ -274,7 +279,7 @@ function kramo_render_personalization_fields() {
 			<label for="ws-personalization-choice"><?php echo esc_html( $choice_label ); ?></label>
 			<select
 				id="ws-personalization-choice"
-				name="ws_personalization_choice"
+				name="kramo_personalization_choice"
 				<?php echo $settings['required'] ? 'required' : ''; ?>
 			>
 				<option value=""><?php echo esc_html__( 'Wybierz opcję', 'kramo' ); ?></option>
@@ -331,15 +336,14 @@ function kramo_get_submitted_personalization( $product_id ) {
 		return array();
 	}
 
-	$text    = isset( $_POST['ws_personalization_text'] )
-		? kramo_sanitize_personalization_text(
-			$_POST['ws_personalization_text'],
-			$settings['max_length']
-		)
+	$text_raw = kramo_source_value( $_POST, 'kramo_personalization_text' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$text     = null !== $text_raw
+		? kramo_sanitize_personalization_text( $text_raw, $settings['max_length'] )
 		: '';
-	$choices = kramo_get_personalization_choices( $settings['type'] );
-	$choice  = isset( $_POST['ws_personalization_choice'] )
-		? sanitize_key( wp_unslash( $_POST['ws_personalization_choice'] ) )
+	$choices    = kramo_get_personalization_choices( $settings['type'] );
+	$choice_raw = kramo_source_value( $_POST, 'kramo_personalization_choice' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$choice     = null !== $choice_raw
+		? sanitize_key( wp_unslash( $choice_raw ) )
 		: '';
 
 	if ( ! isset( $choices[ $choice ] ) ) {
@@ -406,16 +410,16 @@ function kramo_add_personalization_to_cart( $cart_item_data, $product_id, $varia
 	}
 
 	$settings = $submitted['settings'];
-	$cart_item_data['_ws_personalization_text']      = $submitted['text'];
-	$cart_item_data['_ws_personalization_label']     = $settings['label'];
-	$cart_item_data['_ws_personalization_type']      = $settings['type'];
-	$cart_item_data['_ws_personalization_surcharge'] = $settings['surcharge'];
+	$cart_item_data['_kramo_personalization_text']      = $submitted['text'];
+	$cart_item_data['_kramo_personalization_label']     = $settings['label'];
+	$cart_item_data['_kramo_personalization_type']      = $settings['type'];
+	$cart_item_data['_kramo_personalization_surcharge'] = $settings['surcharge'];
 
 	if ( $submitted['choice'] ) {
-		$cart_item_data['_ws_personalization_choice'] = $submitted['choice'];
+		$cart_item_data['_kramo_personalization_choice'] = $submitted['choice'];
 	}
 
-	$cart_item_data['_ws_personalization_hash'] = wp_hash(
+	$cart_item_data['_kramo_personalization_hash'] = wp_hash(
 		$submitted['text'] . '|' . $settings['type'] . '|' . $submitted['choice']
 	);
 
@@ -434,20 +438,20 @@ function kramo_apply_personalization_surcharge( $cart ) {
 	}
 
 	foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
-		$surcharge = isset( $cart_item['_ws_personalization_surcharge'] )
-			? (float) $cart_item['_ws_personalization_surcharge']
-			: 0;
+		$surcharge_raw = kramo_cart_item_value( $cart_item, '_kramo_personalization_surcharge' );
+		$surcharge     = null !== $surcharge_raw ? (float) $surcharge_raw : 0;
 		if ( $surcharge <= 0 || empty( $cart_item['data'] ) ) {
 			continue;
 		}
 
-		if ( ! isset( $cart->cart_contents[ $cart_item_key ]['_ws_personalization_base_price'] ) ) {
-			$cart->cart_contents[ $cart_item_key ]['_ws_personalization_base_price'] =
+		$base_raw = kramo_cart_item_value( $cart_item, '_kramo_personalization_base_price' );
+		if ( null === $base_raw ) {
+			$cart->cart_contents[ $cart_item_key ]['_kramo_personalization_base_price'] =
 				(float) $cart_item['data']->get_price();
+			$base_raw = $cart->cart_contents[ $cart_item_key ]['_kramo_personalization_base_price'];
 		}
 
-		$base_price = (float) $cart->cart_contents[ $cart_item_key ]['_ws_personalization_base_price'];
-		$cart->cart_contents[ $cart_item_key ]['data']->set_price( $base_price + $surcharge );
+		$cart->cart_contents[ $cart_item_key ]['data']->set_price( (float) $base_raw + $surcharge );
 	}
 }
 add_action( 'woocommerce_before_calculate_totals', 'kramo_apply_personalization_surcharge', 20 );
@@ -460,31 +464,34 @@ add_action( 'woocommerce_before_calculate_totals', 'kramo_apply_personalization_
  * @return array<int,array<string,string>>
  */
 function kramo_display_personalization_in_cart( $item_data, $cart_item ) {
-	if ( empty( $cart_item['_ws_personalization_text'] ) ) {
+	$text = kramo_cart_item_value( $cart_item, '_kramo_personalization_text' );
+	if ( empty( $text ) ) {
 		return $item_data;
 	}
 
 	$item_data[] = array(
-		'key'   => $cart_item['_ws_personalization_label'],
-		'value' => $cart_item['_ws_personalization_text'],
+		'key'   => kramo_cart_item_value( $cart_item, '_kramo_personalization_label' ),
+		'value' => $text,
 	);
 
-	if ( ! empty( $cart_item['_ws_personalization_choice'] ) ) {
-		$type    = $cart_item['_ws_personalization_type'];
+	$choice = kramo_cart_item_value( $cart_item, '_kramo_personalization_choice' );
+	if ( ! empty( $choice ) ) {
+		$type    = kramo_cart_item_value( $cart_item, '_kramo_personalization_type' );
 		$choices = kramo_get_personalization_choices( $type );
 		$item_data[] = array(
 			'key'   => 'font' === $type
 				? __( 'Krój pisma', 'kramo' )
 				: __( 'Kolor nici', 'kramo' ),
-			'value' => $choices[ $cart_item['_ws_personalization_choice'] ] ?? '',
+			'value' => $choices[ $choice ] ?? '',
 		);
 	}
 
-	if ( ! empty( $cart_item['_ws_personalization_surcharge'] ) ) {
+	$surcharge = kramo_cart_item_value( $cart_item, '_kramo_personalization_surcharge' );
+	if ( ! empty( $surcharge ) ) {
 		$item_data[] = array(
 			'key'     => __( 'Dopłata za personalizację', 'kramo' ),
-			'value'   => wc_price( $cart_item['_ws_personalization_surcharge'] ),
-			'display' => wc_price( $cart_item['_ws_personalization_surcharge'] ),
+			'value'   => wc_price( $surcharge ),
+			'display' => wc_price( $surcharge ),
 		);
 	}
 
@@ -506,30 +513,33 @@ add_filter( 'woocommerce_get_item_data', 'kramo_display_personalization_in_cart'
 function kramo_add_personalization_to_order_item( $item, $cart_item_key, $values, $order ) {
 	unset( $cart_item_key, $order );
 
-	if ( empty( $values['_ws_personalization_text'] ) ) {
+	$text = kramo_cart_item_value( $values, '_kramo_personalization_text' );
+	if ( empty( $text ) ) {
 		return;
 	}
 
 	$item->add_meta_data(
-		(string) $values['_ws_personalization_label'],
-		(string) $values['_ws_personalization_text'],
+		(string) kramo_cart_item_value( $values, '_kramo_personalization_label' ),
+		(string) $text,
 		true
 	);
 
-	if ( ! empty( $values['_ws_personalization_choice'] ) ) {
-		$type    = (string) $values['_ws_personalization_type'];
+	$choice = kramo_cart_item_value( $values, '_kramo_personalization_choice' );
+	if ( ! empty( $choice ) ) {
+		$type    = (string) kramo_cart_item_value( $values, '_kramo_personalization_type' );
 		$choices = kramo_get_personalization_choices( $type );
 		$item->add_meta_data(
 			'font' === $type ? __( 'Krój pisma', 'kramo' ) : __( 'Kolor nici', 'kramo' ),
-			$choices[ $values['_ws_personalization_choice'] ] ?? '',
+			$choices[ $choice ] ?? '',
 			true
 		);
 	}
 
-	if ( ! empty( $values['_ws_personalization_surcharge'] ) ) {
+	$surcharge = kramo_cart_item_value( $values, '_kramo_personalization_surcharge' );
+	if ( ! empty( $surcharge ) ) {
 		$item->add_meta_data(
 			__( 'Dopłata za personalizację', 'kramo' ),
-			wp_strip_all_tags( wc_price( $values['_ws_personalization_surcharge'] ) ),
+			wp_strip_all_tags( wc_price( $surcharge ) ),
 			true
 		);
 	}

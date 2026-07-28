@@ -32,12 +32,12 @@ if ( ! $product instanceof WC_Product_Variable ) {
 	WP_CLI::error( 'Demo variable product DEMO-01 was not found.' );
 }
 
-$product->update_meta_data( '_ws_personalization_enabled', 'yes' );
-$product->update_meta_data( '_ws_personalization_type', 'font' );
-$product->update_meta_data( '_ws_personalization_label', 'Imię do haftu' );
-$product->update_meta_data( '_ws_personalization_max_length', 20 );
-$product->update_meta_data( '_ws_personalization_required', 'yes' );
-$product->update_meta_data( '_ws_personalization_surcharge', 20 );
+$product->update_meta_data( '_kramo_personalization_enabled', 'yes' );
+$product->update_meta_data( '_kramo_personalization_type', 'font' );
+$product->update_meta_data( '_kramo_personalization_label', 'Imię do haftu' );
+$product->update_meta_data( '_kramo_personalization_max_length', 20 );
+$product->update_meta_data( '_kramo_personalization_required', 'yes' );
+$product->update_meta_data( '_kramo_personalization_surcharge', 20 );
 $product->save();
 
 $variation_id = (int) current( $product->get_children() );
@@ -66,8 +66,8 @@ try {
 	$base_price           = (float) $variation->get_price();
 
 	$_POST = array(
-		'ws_personalization_text'   => 'Zażółć & <b>Gęślą</b>',
-		'ws_personalization_choice' => 'classic',
+		'kramo_personalization_text'   => 'Zażółć & <b>Gęślą</b>',
+		'kramo_personalization_choice' => 'classic',
 	);
 	$first_key = WC()->cart->add_to_cart(
 		$product_id,
@@ -77,8 +77,8 @@ try {
 	);
 
 	$_POST = array(
-		'ws_personalization_text'   => 'Anna',
-		'ws_personalization_choice' => 'modern',
+		'kramo_personalization_text'   => 'Anna',
+		'kramo_personalization_choice' => 'modern',
 	);
 	$second_key = WC()->cart->add_to_cart(
 		$product_id,
@@ -188,8 +188,8 @@ try {
 	);
 
 	kramo_personalization_check(
-		isset( $first_item['_ws_personalization_text'] )
-			&& 'Zażółć & Gęślą' === $first_item['_ws_personalization_text'],
+		isset( $first_item['_kramo_personalization_text'] )
+			&& 'Zażółć & Gęślą' === $first_item['_kramo_personalization_text'],
 		'6. Polskie litery i znaki specjalne przechodzą sanitizację',
 		$failures
 	);
@@ -205,8 +205,8 @@ try {
 
 	wc_clear_notices();
 	$_POST = array(
-		'ws_personalization_text'   => '',
-		'ws_personalization_choice' => 'classic',
+		'kramo_personalization_text'   => '',
+		'kramo_personalization_choice' => 'classic',
 	);
 	$required_result = apply_filters(
 		'woocommerce_add_to_cart_validation',
@@ -222,12 +222,12 @@ try {
 		$failures
 	);
 
-	$product->update_meta_data( '_ws_personalization_required', 'no' );
+	$product->update_meta_data( '_kramo_personalization_required', 'no' );
 	$product->save();
 	wc_clear_notices();
 	$_POST = array(
-		'ws_personalization_text'   => '',
-		'ws_personalization_choice' => '',
+		'kramo_personalization_text'   => '',
+		'kramo_personalization_choice' => '',
 	);
 	$optional_result = apply_filters(
 		'woocommerce_add_to_cart_validation',
@@ -246,7 +246,7 @@ try {
 	$_POST = array();
 	wc_clear_notices();
 	WC()->cart->empty_cart();
-	$product->update_meta_data( '_ws_personalization_required', 'yes' );
+	$product->update_meta_data( '_kramo_personalization_required', 'yes' );
 	$product->save();
 
 	if ( $order instanceof WC_Order ) {

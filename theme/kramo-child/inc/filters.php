@@ -18,12 +18,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 function kramo_get_catalog_filters( $source = array() ) {
 	$source = $source ?: $_GET;
 
+	$category  = kramo_source_value( $source, 'kramo_category' );
+	$min_price = kramo_source_value( $source, 'kramo_min_price' );
+	$max_price = kramo_source_value( $source, 'kramo_max_price' );
+	$color     = kramo_source_value( $source, 'kramo_color' );
+	$size      = kramo_source_value( $source, 'kramo_size' );
+
 	return array(
-		'category'  => isset( $source['ws_category'] ) ? sanitize_title( wp_unslash( $source['ws_category'] ) ) : '',
-		'min_price' => isset( $source['ws_min_price'] ) ? wc_format_decimal( wp_unslash( $source['ws_min_price'] ) ) : '',
-		'max_price' => isset( $source['ws_max_price'] ) ? wc_format_decimal( wp_unslash( $source['ws_max_price'] ) ) : '',
-		'color'     => isset( $source['ws_color'] ) ? sanitize_title( wp_unslash( $source['ws_color'] ) ) : '',
-		'size'      => isset( $source['ws_size'] ) ? sanitize_title( wp_unslash( $source['ws_size'] ) ) : '',
+		'search'    => isset( $source['s'] ) ? sanitize_text_field( wp_unslash( $source['s'] ) ) : '',
+		'category'  => null !== $category ? sanitize_title( wp_unslash( $category ) ) : '',
+		'min_price' => null !== $min_price ? wc_format_decimal( wp_unslash( $min_price ) ) : '',
+		'max_price' => null !== $max_price ? wc_format_decimal( wp_unslash( $max_price ) ) : '',
+		'color'     => null !== $color ? sanitize_title( wp_unslash( $color ) ) : '',
+		'size'      => null !== $size ? sanitize_title( wp_unslash( $size ) ) : '',
 		'paged'     => isset( $source['paged'] ) ? max( 1, absint( $source['paged'] ) ) : 1,
 	);
 }
@@ -82,7 +89,28 @@ function kramo_apply_catalog_filters_to_args( $args, $filters ) {
 		$args['meta_query'] = $meta_query;
 	}
 
+	if ( ! empty( $filters['search'] ) ) {
+		$args['s'] = $filters['search'];
+	}
+
 	return $args;
+}
+
+/**
+ * Whether the query renders a product listing the filters apply to.
+ *
+ * Product search results are a listing too, so filtering there keeps the search
+ * term and the filter panel working together instead of cancelling each other.
+ *
+ * @param WP_Query $query Query being prepared.
+ * @return bool
+ */
+function kramo_is_filterable_query( $query ) {
+	if ( is_shop() || is_product_taxonomy() ) {
+		return true;
+	}
+
+	return $query->is_search() && 'product' === $query->get( 'post_type' );
 }
 
 /**
@@ -94,7 +122,7 @@ function kramo_filter_catalog_query( $query ) {
 	if (
 		is_admin()
 		|| ! $query->is_main_query()
-		|| ( ! is_shop() && ! is_product_taxonomy() )
+		|| ! kramo_is_filterable_query( $query )
 	) {
 		return;
 	}
@@ -141,18 +169,20 @@ function kramo_get_filter_terms( $taxonomy ) {
 /**
  * Render a select control for a filter taxonomy.
  *
+ * The visible label is the empty option itself (letterspaced caps in CSS). A
+ * second visible label next to the control would fight the single-line toolbar.
+ *
  * @param string             $name        Request key.
- * @param string             $label       Visible label.
+ * @param string             $label       Accessible label and empty option.
  * @param array<int,WP_Term> $terms       Available terms.
  * @param string             $active      Active slug.
- * @param string             $placeholder Empty option copy.
  */
-function kramo_render_filter_select( $name, $label, $terms, $active, $placeholder ) {
+function kramo_render_filter_select( $name, $label, $terms, $active ) {
 	?>
 	<label class="kramo-filter-field">
-		<span><?php echo esc_html( $label ); ?></span>
+		<span class="screen-reader-text"><?php echo esc_html( $label ); ?></span>
 		<select name="<?php echo esc_attr( $name ); ?>">
-			<option value=""><?php echo esc_html( $placeholder ); ?></option>
+			<option value=""><?php echo esc_html( $label ); ?></option>
 			<?php foreach ( $terms as $term ) : ?>
 				<option value="<?php echo esc_attr( $term->slug ); ?>" <?php selected( $active, $term->slug ); ?>>
 					<?php echo esc_html( $term->name ); ?>
@@ -164,7 +194,25 @@ function kramo_render_filter_select( $name, $label, $terms, $active, $placeholde
 }
 
 /**
- * Render the no-plugin catalog filter form.
+ * Return the current catalog result count for the toolbar.
+ *
+ * @return int
+ */
+function kramo_catalog_result_count() {
+	global $wp_query;
+
+	if ( ! $wp_query instanceof WP_Query ) {
+		return 0;
+	}
+
+	return (int) $wp_query->found_posts;
+}
+
+/**
+ * Render the catalog toolbar: search, text filters, count and density.
+ *
+ * The boxed panel is gone. Controls sit on a single hairline row so the
+ * photography below them stays the loudest thing on the page.
  */
 function kramo_catalog_filters() {
 	if ( wp_doing_ajax() ) {
@@ -180,67 +228,104 @@ function kramo_catalog_filters() {
 		)
 	);
 	$categories = is_wp_error( $categories ) ? array() : $categories;
+	$count      = kramo_catalog_result_count();
+
+	// Filtering from a search results page must stay on that page, otherwise the
+	// term is dropped and the visitor lands on the unfiltered shop.
+	$searching = '' !== $filters['search'];
+	$action    = $searching ? home_url( '/' ) : wc_get_page_permalink( 'shop' );
+	$reset_url = $searching
+		? add_query_arg(
+			array(
+				's'         => $filters['search'],
+				'post_type' => 'product',
+			),
+			home_url( '/' )
+		)
+		: wc_get_page_permalink( 'shop' );
 	?>
-	<form class="kramo-filters" method="get" action="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">
-		<div class="kramo-filters__fields">
-			<?php
-			kramo_render_filter_select(
-				'ws_category',
-				__( 'Kategoria', 'kramo' ),
-				$categories,
-				$filters['category'],
-				__( 'Wszystkie kategorie', 'kramo' )
-			);
-			kramo_render_filter_select(
-				'ws_color',
-				__( 'Kolor', 'kramo' ),
-				kramo_get_filter_terms( 'pa_kolor' ),
-				$filters['color'],
-				__( 'Wszystkie kolory', 'kramo' )
-			);
-			kramo_render_filter_select(
-				'ws_size',
-				__( 'Rozmiar', 'kramo' ),
-				kramo_get_filter_terms( 'pa_rozmiar' ),
-				$filters['size'],
-				__( 'Wszystkie rozmiary', 'kramo' )
-			);
-			?>
-			<fieldset class="kramo-filter-price">
-				<legend><?php echo esc_html__( 'Cena', 'kramo' ); ?></legend>
-				<label>
-					<span class="screen-reader-text"><?php echo esc_html__( 'Cena minimalna', 'kramo' ); ?></span>
-					<input
-						type="number"
-						name="ws_min_price"
-						min="0"
-						step="1"
-						inputmode="decimal"
-						placeholder="<?php echo esc_attr__( 'Od', 'kramo' ); ?>"
-						value="<?php echo esc_attr( $filters['min_price'] ); ?>"
-					>
-				</label>
-				<label>
-					<span class="screen-reader-text"><?php echo esc_html__( 'Cena maksymalna', 'kramo' ); ?></span>
-					<input
-						type="number"
-						name="ws_max_price"
-						min="0"
-						step="1"
-						inputmode="decimal"
-						placeholder="<?php echo esc_attr__( 'Do', 'kramo' ); ?>"
-						value="<?php echo esc_attr( $filters['max_price'] ); ?>"
-					>
-				</label>
-			</fieldset>
+	<div class="kramo-catalog-toolbar">
+		<?php kramo_render_search_form(); ?>
+		<form class="kramo-filters" method="get" action="<?php echo esc_url( $action ); ?>">
+			<?php if ( $searching ) : ?>
+				<input type="hidden" name="s" value="<?php echo esc_attr( $filters['search'] ); ?>">
+				<input type="hidden" name="post_type" value="product">
+			<?php endif; ?>
+			<div class="kramo-filters__fields">
+				<?php
+				kramo_render_filter_select(
+					'kramo_category',
+					__( 'Kategoria', 'kramo' ),
+					$categories,
+					$filters['category']
+				);
+				kramo_render_filter_select(
+					'kramo_color',
+					__( 'Kolor', 'kramo' ),
+					kramo_get_filter_terms( 'pa_kolor' ),
+					$filters['color']
+				);
+				kramo_render_filter_select(
+					'kramo_size',
+					__( 'Rozmiar', 'kramo' ),
+					kramo_get_filter_terms( 'pa_rozmiar' ),
+					$filters['size']
+				);
+				?>
+				<fieldset class="kramo-filter-price">
+					<legend><?php echo esc_html__( 'Cena', 'kramo' ); ?></legend>
+					<label>
+						<span class="screen-reader-text"><?php echo esc_html__( 'Cena minimalna', 'kramo' ); ?></span>
+						<input
+							type="number"
+							name="kramo_min_price"
+							min="0"
+							step="1"
+							inputmode="decimal"
+							placeholder="<?php echo esc_attr__( 'Od', 'kramo' ); ?>"
+							value="<?php echo esc_attr( $filters['min_price'] ); ?>"
+						>
+					</label>
+					<label>
+						<span class="screen-reader-text"><?php echo esc_html__( 'Cena maksymalna', 'kramo' ); ?></span>
+						<input
+							type="number"
+							name="kramo_max_price"
+							min="0"
+							step="1"
+							inputmode="decimal"
+							placeholder="<?php echo esc_attr__( 'Do', 'kramo' ); ?>"
+							value="<?php echo esc_attr( $filters['max_price'] ); ?>"
+						>
+					</label>
+				</fieldset>
+			</div>
+			<div class="kramo-filters__actions">
+				<button type="submit"><?php echo esc_html__( 'Filtruj', 'kramo' ); ?></button>
+				<a class="kramo-filters__reset" href="<?php echo esc_url( $reset_url ); ?>">
+					<?php echo esc_html__( 'Wyczyść', 'kramo' ); ?>
+				</a>
+			</div>
+		</form>
+		<div class="kramo-catalog-view">
+			<p class="kramo-catalog-view__count" data-kramo-catalog-count>
+				<?php
+				echo esc_html(
+					sprintf(
+						/* translators: %d: number of products matching the current filters. */
+						_n( 'Liczba produktów: %d', 'Liczba produktów: %d', $count, 'kramo' ),
+						$count
+					)
+				);
+				?>
+			</p>
+			<div class="kramo-catalog-density" role="group" aria-label="<?php echo esc_attr__( 'Widok siatki', 'kramo' ); ?>">
+				<span><?php echo esc_html__( 'Widok:', 'kramo' ); ?></span>
+				<button type="button" class="kramo-catalog-density__option" data-kramo-density="2" aria-pressed="false">2</button>
+				<button type="button" class="kramo-catalog-density__option" data-kramo-density="4" aria-pressed="true">4</button>
+			</div>
 		</div>
-		<div class="kramo-filters__actions">
-			<button type="submit"><?php echo esc_html__( 'Filtruj', 'kramo' ); ?></button>
-			<a class="kramo-filters__reset" href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">
-				<?php echo esc_html__( 'Wyczyść filtry', 'kramo' ); ?>
-			</a>
-		</div>
-	</form>
+	</div>
 	<?php
 }
 add_action( 'woocommerce_before_shop_loop', 'kramo_catalog_filters', 5 );
@@ -250,7 +335,7 @@ add_action( 'woocommerce_no_products_found', 'kramo_catalog_filters', 5 );
  * Open the replaceable AJAX results region.
  */
 function kramo_catalog_region_open() {
-	echo '<div class="kramo-catalog-results" aria-live="polite" aria-busy="false">';
+	echo '<div class="kramo-catalog-results" data-columns="4" aria-busy="false">';
 }
 add_action( 'woocommerce_before_shop_loop', 'kramo_catalog_region_open', 15 );
 
@@ -340,7 +425,7 @@ function kramo_render_product_query( $query, $pagination_url = '' ) {
 			}
 		}
 	} else {
-		wc_no_products_found();
+		do_action( 'woocommerce_no_products_found' );
 	}
 
 	wp_reset_postdata();
@@ -370,20 +455,23 @@ function kramo_ajax_filter_products() {
 		$filters
 	);
 	$query   = new WP_Query( $args );
+	$base    = '' !== $filters['search'] ? home_url( '/' ) : wc_get_page_permalink( 'shop' );
 	$url     = add_query_arg(
 		array_filter(
 			array(
-				'ws_category'  => $filters['category'],
-				'ws_min_price' => $filters['min_price'],
-				'ws_max_price' => $filters['max_price'],
-				'ws_color'     => $filters['color'],
-				'ws_size'      => $filters['size'],
+				's'            => $filters['search'],
+				'post_type'    => '' !== $filters['search'] ? 'product' : '',
+				'kramo_category'  => $filters['category'],
+				'kramo_min_price' => $filters['min_price'],
+				'kramo_max_price' => $filters['max_price'],
+				'kramo_color'     => $filters['color'],
+				'kramo_size'      => $filters['size'],
 			),
 			static function ( $value ) {
 				return '' !== $value;
 			}
 		),
-		wc_get_page_permalink( 'shop' )
+		$base
 	);
 
 	wp_send_json_success(

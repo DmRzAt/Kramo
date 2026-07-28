@@ -119,7 +119,7 @@ End-to-end оплата через PayPal sandbox пройдена й підтв
 - **Ваги** додані всім 12 демо-товарам (`scripts/seed-demo.php`) — без ваги розрахунок не працює.
 - **Зона «Polska»** (PL) з методами: Paczkomat InPost, Kurier InPost, Orlen Paczka, Darmowa dostawa (від 200 zł). Створюється ідемпотентно в `new-project.sh`; тимчасовий free_shipping із зони «rest of world» прибрано.
 - **`inc/shipping.php`** — правила в коді: вагові тарифи (перший 1 кг у базі, далі +2 zł локер / +3 zł курʼєр за кожен розпочатий кг), локер дешевший за курʼєра, безкоштовна від порогу (платні методи ховаються).
-- **Точка видачі** показується в адмінці замовлення, у листах клієнту/адміну і на сторінці подяки; читається наш ключ `_ws_shipping_point` + типові ключі InPost/Orlen (розширюється фільтром `kramo_pickup_point_meta_keys`).
+- **Точка видачі** показується в адмінці замовлення, у листах клієнту/адміну і на сторінці подяки; читається наш ключ `_kramo_shipping_point` + типові ключі InPost/Orlen (розширюється фільтром `kramo_pickup_point_meta_keys`).
 - Офіційні плагіни InPost/Orlen ставляться в bootstrap (best-effort).
 - `docs/dostawa.md` — польська інструкція: що клієнт вписує (ShipX-токен InPost, дані Orlen), щоб активувати живий вибір точки й друк етикеток.
 
@@ -127,7 +127,7 @@ End-to-end оплата через PayPal sandbox пройдена й підтв
 
 - Вага 1.2 кг → Paczkomat/Orlen 14 zł, Kurier 19 zł; 3.6 кг → 18 zł / 25 zł (локер завжди дешевший).
 - Кошик ≥ 200 zł → лишається тільки «Darmowa dostawa», платні методи відкинуто.
-- Симуляція мета точки (`_ws_shipping_point` і плагінний `_inpost_point_id`) → «Punkt odbioru:» рендериться в адмінці та листах.
+- Симуляція мета точки (`_kramo_shipping_point` і плагінний `_inpost_point_id`) → «Punkt odbioru:» рендериться в адмінці та листах.
 
 Відкладено (як P24): живий **Geowidget InPost** і віджет **Orlen** для вибору точки на checkout + друк етикеток — потребують ShipX/Orlen credentials, які дає клієнт. Тому реальний вибір пачкомату на checkout поки не тестувався end-to-end.
 
@@ -194,7 +194,7 @@ End-to-end оплата через PayPal sandbox пройдена й підтв
 | Ліміт спроб входу | Limit Login Attempts Reloaded |
 | Антиспам | honeypot + перевірка часу, без reCAPTCHA (RODO) |
 
-**RODO** — `inc/consent.php` + `assets/js/consent.js`. Принцип: скрипти аналітики **не з'являються в HTML** до згоди (не «вантажаться й блокуються», а фізично відсутні). Перевірено в браузері: до згоди **нуль** запитів до `googletagmanager.com`; після кліку «Akceptuję» — `gtag` визначено і скрипт вантажиться з правильним ID. Cookie `ws_consent` на 180 днів, `SameSite=Lax`, `Secure` на HTTPS. GA4/Pixel вводяться в Wygląd → Kramo; санітизація відкидає спроби вставити `<script>`.
+**RODO** — `inc/consent.php` + `assets/js/consent.js`. Принцип: скрипти аналітики **не з'являються в HTML** до згоди (не «вантажаться й блокуються», а фізично відсутні). Перевірено в браузері: до згоди **нуль** запитів до `googletagmanager.com`; після кліку «Akceptuję» — `gtag` визначено і скрипт вантажиться з правильним ID. Cookie `kramo_consent` на 180 днів, `SameSite=Lax`, `Secure` на HTTPS. GA4/Pixel вводяться в Wygląd → Kramo; санітизація відкидає спроби вставити `<script>`.
 
 **Бекапи** — UpdraftPlus: база щодня (30 копій), файли щотижня (14). Місце зберігання свідомо не задано — має бути Google Drive / Dropbox **клієнта**, не той самий сервер.
 

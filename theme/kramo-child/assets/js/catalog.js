@@ -186,8 +186,205 @@
 		trigger.replaceWith(media);
 	});
 
+	const wcAjaxUrl = (endpoint) => {
+		const params = window.wc_add_to_cart_params;
+
+		return params && params.wc_ajax_url
+			? params.wc_ajax_url.toString().replace("%%endpoint%%", endpoint)
+			: "";
+	};
+
+	const bindQuickAdd = (form) => {
+		const url = wcAjaxUrl("add_to_cart");
+
+		if (!url) {
+			return;
+		}
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+
+			const button = form.querySelector(".single_add_to_cart_button");
+
+			if (button?.classList.contains("disabled")) {
+				return;
+			}
+
+			const body = new FormData(form);
+			const variationId = Number(body.get("variation_id")) || 0;
+			const productId = variationId || Number(body.get("add-to-cart")) || 0;
+
+			if (!productId) {
+				return;
+			}
+
+			body.set("product_id", String(productId));
+			body.delete("add-to-cart");
+			body.delete("kramo_buy_now");
+
+			button?.classList.add("loading");
+
+			try {
+				const response = await fetch(url, {
+					method: "POST",
+					body,
+					credentials: "same-origin",
+				});
+				const payload = await response.json();
+
+				if (payload && payload.error && payload.product_url) {
+					window.location = payload.product_url;
+					return;
+				}
+
+				form.closest("dialog")?.close();
+
+				if (window.jQuery) {
+					window.jQuery(document.body).trigger(
+						"added_to_cart",
+						[payload && payload.fragments, payload && payload.cart_hash, window.jQuery(button)]
+					);
+				} else {
+					document.dispatchEvent(new CustomEvent("kramo:cart-changed", {
+						detail: { message: kramoQuickView.addedMessage },
+					}));
+				}
+			} catch (error) {
+				document.dispatchEvent(new CustomEvent("kramo:cart-changed", {
+					detail: { message: kramoQuickView.errorMessage, variant: "error" },
+				}));
+			} finally {
+				button?.classList.remove("loading");
+			}
+		});
+	};
+
+	const setupQuickView = () => {
+		const dialog = document.querySelector("[data-kramo-quick-view-dialog]");
+
+		if (!dialog || typeof kramoQuickView === "undefined" || !dialog.showModal) {
+			return;
+		}
+
+		const content = dialog.querySelector("[data-kramo-quick-view-content]");
+		let controller = null;
+
+		const skeleton = () => {
+			content.innerHTML = [
+				'<div class="kramo-quick-view__skeleton" aria-hidden="true">',
+				'<span class="kramo-skeleton kramo-skeleton-card__media"></span>',
+				'<span class="kramo-skeleton kramo-skeleton-card__line"></span>',
+				'<span class="kramo-skeleton kramo-skeleton-card__line kramo-skeleton-card__line--short"></span>',
+				"</div>",
+			].join("");
+		};
+
+		const load = async (productId) => {
+			if (controller) {
+				controller.abort();
+			}
+
+			controller = new AbortController();
+			skeleton();
+
+			const request = new URL(kramoQuickView.ajaxUrl);
+			request.searchParams.set("action", "kramo_quick_view");
+			request.searchParams.set("nonce", kramoQuickView.nonce);
+			request.searchParams.set("product_id", String(productId));
+
+			try {
+				const response = await fetch(request, {
+					credentials: "same-origin",
+					signal: controller.signal,
+				});
+				const payload = await response.json();
+
+				if (!response.ok || !payload.success) {
+					throw new Error("Quick view request failed.");
+				}
+
+				content.innerHTML = payload.data.html;
+				dialog.setAttribute("aria-label", payload.data.title);
+
+				content.querySelectorAll(".variations_form").forEach((form) => {
+					if (window.jQuery && window.jQuery.fn.wc_variation_form) {
+						window.jQuery(form).wc_variation_form();
+					}
+					setupVariationSwatches(form);
+				});
+
+				content.querySelectorAll("form.cart").forEach(bindQuickAdd);
+				content.querySelector("input, select, button")?.focus();
+			} catch (error) {
+				if (error.name === "AbortError") {
+					return;
+				}
+
+				content.innerHTML = `<p class="woocommerce-error">${kramoQuickView.errorMessage}</p>`;
+			}
+		};
+
+		document.addEventListener("click", (event) => {
+			const trigger = event.target.closest("[data-kramo-quick-view]");
+
+			if (!trigger) {
+				return;
+			}
+
+			event.preventDefault();
+			dialog.showModal();
+			load(Number(trigger.dataset.kramoQuickView));
+		});
+
+		dialog.addEventListener("click", (event) => {
+			if (event.target === dialog || event.target.closest("[data-kramo-quick-view-close]")) {
+				dialog.close();
+			}
+		});
+
+		dialog.addEventListener("close", () => {
+			if (controller) {
+				controller.abort();
+			}
+			content.replaceChildren();
+		});
+	};
+
+	const setupStickyCart = () => {
+		const bar = document.querySelector("[data-kramo-sticky-cart]");
+		const form = document.querySelector("form.cart");
+		const anchor = form?.querySelector("button[type='submit'], .single_add_to_cart_button");
+
+		if (!bar || !form || !anchor || !("IntersectionObserver" in window)) {
+			return;
+		}
+
+		const action = bar.querySelector("[data-kramo-sticky-cart-action]");
+
+		action?.addEventListener("click", () => {
+			form.scrollIntoView({
+				behavior: window.kramo && window.kramo.reducedMotion ? "auto" : "smooth",
+				block: "center",
+			});
+
+			if (form.checkValidity()) {
+				form.requestSubmit
+					? form.requestSubmit(anchor)
+					: anchor.click();
+			}
+		});
+
+		new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				bar.hidden = entry.isIntersecting;
+			});
+		}, { rootMargin: "0px 0px -12% 0px" }).observe(anchor);
+	};
+
 	document.addEventListener("DOMContentLoaded", () => {
 		document.querySelectorAll(".variations_form").forEach(setupVariationSwatches);
 		setupProductTabs();
+		setupQuickView();
+		setupStickyCart();
 	});
 })();

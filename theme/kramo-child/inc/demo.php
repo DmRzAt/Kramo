@@ -25,6 +25,43 @@ function kramo_render_demo_badge() {
 }
 add_action( 'wp_body_open', 'kramo_render_demo_badge' );
 
+/**
+ * Keep demo checkouts away from real payment processors.
+ *
+ * The badge promises that no payment is taken, so the demo must not be able to
+ * hand a card to a live gateway even when KRAMO_PAYMENT_MODE is set to live.
+ * Only the offline methods survive: they record the order and charge nothing.
+ *
+ * @param array<string,WC_Payment_Gateway> $gateways Available gateways.
+ * @return array<string,WC_Payment_Gateway>
+ */
+function kramo_demo_payment_gateways( $gateways ) {
+	if ( ! kramo_is_demo() || is_admin() ) {
+		return $gateways;
+	}
+
+	return array_intersect_key(
+		$gateways,
+		array_flip( array( 'bacs', 'cheque', 'cod' ) )
+	);
+}
+add_filter( 'woocommerce_available_payment_gateways', 'kramo_demo_payment_gateways' );
+
+/**
+ * Repeat the demo warning where the money would be taken.
+ */
+function kramo_demo_checkout_notice() {
+	if ( ! kramo_is_demo() || ! function_exists( 'wc_add_notice' ) ) {
+		return;
+	}
+
+	wc_add_notice(
+		__( 'Wersja demonstracyjna: zamówienie nie zostanie zrealizowane, a płatność nie zostanie pobrana.', 'kramo' ),
+		'notice'
+	);
+}
+add_action( 'woocommerce_before_checkout_form', 'kramo_demo_checkout_notice' );
+
 function kramo_block_demo_emails( $args ) {
 	if ( kramo_is_demo() ) {
 		$args['to'] = array();

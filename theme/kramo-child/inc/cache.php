@@ -57,19 +57,7 @@ function kramo_server_is_litespeed() {
  * @return array<int,string>
  */
 function kramo_cache_excluded_paths() {
-	$paths = array();
-
-	foreach ( array( 'cart', 'checkout', 'myaccount' ) as $page ) {
-		$page_id = wc_get_page_id( $page );
-		if ( $page_id > 0 ) {
-			$path = wp_parse_url( get_permalink( $page_id ), PHP_URL_PATH );
-			if ( $path ) {
-				$paths[] = untrailingslashit( $path );
-			}
-		}
-	}
-
-	return array_values( array_unique( array_filter( $paths ) ) );
+	return kramo_dynamic_page_paths();
 }
 
 /**

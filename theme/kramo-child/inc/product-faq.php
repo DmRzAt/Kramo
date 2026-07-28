@@ -40,11 +40,12 @@ function kramo_faq_product_panel() {
 			<?php
 			woocommerce_wp_textarea_input(
 				array(
-					'id'          => '_ws_faq',
+					'id'          => '_kramo_faq',
 					'label'       => __( 'Pytania i odpowiedzi', 'kramo' ),
 					'description' => __( 'Jedna para na linię w formacie: Pytanie :: Odpowiedź', 'kramo' ),
 					'desc_tip'    => true,
 					'rows'        => 8,
+					'value'       => kramo_post_meta_value( get_the_ID(), '_kramo_faq' ),
 					'placeholder' => "Czy produkt jest wodoodporny? :: Tak, materiał jest impregnowany.\nJaki jest czas dostawy? :: Zwykle 1–2 dni robocze.",
 				)
 			);
@@ -61,12 +62,12 @@ add_action( 'woocommerce_product_data_panels', 'kramo_faq_product_panel' );
  * @param WC_Product $product Product being saved.
  */
 function kramo_save_faq_field( $product ) {
-	if ( ! isset( $_POST['_ws_faq'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$product->update_meta_data( '_ws_faq', '' );
+	if ( ! isset( $_POST['_kramo_faq'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$product->update_meta_data( '_kramo_faq', '' );
 		return;
 	}
 
-	$raw   = sanitize_textarea_field( wp_unslash( $_POST['_ws_faq'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$raw   = sanitize_textarea_field( wp_unslash( $_POST['_kramo_faq'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	$lines = array();
 	foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
 		$line = trim( $line );
@@ -75,7 +76,7 @@ function kramo_save_faq_field( $product ) {
 		}
 	}
 
-	$product->update_meta_data( '_ws_faq', implode( "\n", $lines ) );
+	$product->update_meta_data( '_kramo_faq', implode( "\n", $lines ) );
 }
 add_action( 'woocommerce_admin_process_product_object', 'kramo_save_faq_field' );
 
@@ -92,7 +93,7 @@ function kramo_faq_frontend_tab( $tabs ) {
 		return $tabs;
 	}
 
-	if ( empty( kramo_parse_faq( $product->get_meta( '_ws_faq' ) ) ) ) {
+	if ( empty( kramo_parse_faq( kramo_product_meta( $product, '_kramo_faq' ) ) ) ) {
 		return $tabs;
 	}
 
@@ -116,7 +117,7 @@ function kramo_faq_tab_content() {
 		return;
 	}
 
-	$pairs = kramo_parse_faq( $product->get_meta( '_ws_faq' ) );
+	$pairs = kramo_parse_faq( kramo_product_meta( $product, '_kramo_faq' ) );
 	if ( empty( $pairs ) ) {
 		return;
 	}

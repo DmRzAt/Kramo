@@ -37,7 +37,7 @@ do momentu kliknięcia „Akceptuję". Zweryfikowano w przeglądarce: przed zgod
 zero żądań do `googletagmanager.com`, po zgodzie skrypt ładuje się z poprawnym
 identyfikatorem.
 
-Wybór zapisuje cookie `ws_consent` na 180 dni (`SameSite=Lax`, na HTTPS
+Wybór zapisuje cookie `kramo_consent` na 180 dni (`SameSite=Lax`, na HTTPS
 dodatkowo `Secure`).
 
 Szablony dokumentów: `docs/polityka-prywatnosci.md`, `docs/regulamin.md`.

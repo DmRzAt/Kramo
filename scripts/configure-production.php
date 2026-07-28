@@ -83,6 +83,30 @@ $cod['description']  = 'To wersja demonstracyjna — zamówienie nie zostanie zr
 $cod['instructions'] = 'Demo: żadna płatność nie jest pobierana.';
 update_option( 'woocommerce_cod_settings', $cod );
 
+// Customers need a way in: WooCommerce ships with account creation disabled,
+// which leaves the account page showing a login form and no way to register.
+update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
+update_option( 'woocommerce_enable_signup_and_login_from_checkout', 'yes' );
+update_option( 'woocommerce_enable_checkout_login_reminder', 'yes' );
+update_option( 'woocommerce_enable_guest_checkout', 'yes' );
+
+// Customers set their own password during registration. The generated-password
+// flow depends on an e-mail that the demo blocks and that Polish inboxes often
+// treat as spam, which leaves the new account unusable.
+update_option( 'woocommerce_registration_generate_password', 'no' );
+
+// WooCommerce stores both privacy sentences in English. The [privacy_policy]
+// placeholder becomes a link labelled with the page title, which only reads
+// correctly in Polish when it stands as the subject of its own sentence.
+update_option(
+	'woocommerce_registration_privacy_policy_text',
+	'Twoje dane osobowe posłużą do obsługi Twojego konta i zamówień. Szczegóły opisuje [privacy_policy].'
+);
+update_option(
+	'woocommerce_checkout_privacy_policy_text',
+	'Twoje dane osobowe posłużą do realizacji zamówienia i obsługi Twojej wizyty w sklepie. Szczegóły opisuje [privacy_policy].'
+);
+
 update_option( 'rank_math_wizard_completed', true );
 update_option( 'rank_math_registration_skip', true );
 
@@ -121,10 +145,8 @@ if ( class_exists( '\\RankMath\\Sitemap\\Router' ) ) {
 
 // Without an assigned menu WordPress lists every page in the header, which on
 // a store means the legal pages and the account screens all shout at once.
-// The primary menu carries shop navigation only. The local-service landing page
-// demonstrates a kit template rather than shop content, so it sits in the footer
-// under a label that explains what it is instead of shouting about paving stones
-// between the linen shirts.
+// The primary menu carries shop navigation only. Help and legal pages live in
+// the themed footer columns; the old flat footer menu is no longer assigned.
 $menu_spec = array(
 	'primary' => array(
 		'Menu główne',
@@ -133,19 +155,11 @@ $menu_spec = array(
 			'ulubione' => null,
 		),
 	),
-	'footer'  => array(
-		'Menu w stopce',
-		array(
-			'regulamin'                       => null,
-			'polityka-prywatnosci'            => null,
-			'moje-konto'                      => null,
-			'mycie-kostki-brukowej-katowice'  => 'Przykład strony usługowej',
-		),
-	),
 );
 
 $locations = get_theme_mod( 'nav_menu_locations', array() );
 $locations = is_array( $locations ) ? $locations : array();
+unset( $locations['footer'] );
 
 foreach ( $menu_spec as $location => $spec ) {
 	list( $menu_name, $slugs ) = $spec;

@@ -179,7 +179,8 @@ function kramo_pickup_point_meta_keys() {
 	return apply_filters(
 		'kramo_pickup_point_meta_keys',
 		array(
-			'_ws_shipping_point',      // Our normalized key.
+			'_kramo_shipping_point',      // Our normalized key.
+			'_ws_shipping_point',         // Legacy woostarter key.
 			'_inpost_point_id',        // InPost variants.
 			'_inpost_paczkomat_id',
 			'_paczkomat',
@@ -219,10 +220,10 @@ function kramo_store_pickup_point( $order ) {
 		return;
 	}
 
-	foreach ( array( 'ws_shipping_point', 'inpost_point', 'orlen_point' ) as $field ) {
+	foreach ( array( 'kramo_shipping_point', 'ws_shipping_point', 'inpost_point', 'orlen_point' ) as $field ) {
 		if ( ! empty( $_POST[ $field ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$order->update_meta_data(
-				'_ws_shipping_point',
+				'_kramo_shipping_point',
 				sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			);
 			return;

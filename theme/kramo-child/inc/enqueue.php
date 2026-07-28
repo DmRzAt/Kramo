@@ -62,6 +62,50 @@ function kramo_enqueue_assets() {
 			true
 		);
 		wp_script_add_data( 'kramo-catalog', 'strategy', 'defer' );
+		wp_localize_script(
+			'kramo-catalog',
+			'kramoQuickView',
+			array(
+				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'kramo_quick_view' ),
+				'addedMessage' => __( 'Dodano do koszyka', 'kramo' ),
+				'errorMessage' => __( 'Nie udało się załadować podglądu.', 'kramo' ),
+			)
+		);
+
+		wp_enqueue_script(
+			'kramo-recently-viewed',
+			$theme_uri . '/assets/js/recently-viewed.js',
+			array(),
+			kramo_asset_version( 'assets/js/recently-viewed.js' ),
+			true
+		);
+		wp_script_add_data( 'kramo-recently-viewed', 'strategy', 'defer' );
+		wp_localize_script(
+			'kramo-recently-viewed',
+			'kramoRecent',
+			array(
+				'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
+				'nonce'          => wp_create_nonce( 'kramo_recent' ),
+				'limit'          => kramo_recently_viewed_limit(),
+				'currentProduct' => is_product() ? get_queried_object_id() : 0,
+			)
+		);
+
+		if ( kramo_is_catalog_screen() ) {
+			wp_enqueue_script( 'wc-add-to-cart-variation' );
+		}
+
+		if ( is_checkout() ) {
+			wp_enqueue_script(
+				'kramo-checkout',
+				$theme_uri . '/assets/js/checkout.js',
+				array(),
+				kramo_asset_version( 'assets/js/checkout.js' ),
+				true
+			);
+			wp_script_add_data( 'kramo-checkout', 'strategy', 'defer' );
+		}
 
 		wp_enqueue_script(
 			'kramo-wishlist',
@@ -81,10 +125,12 @@ function kramo_enqueue_assets() {
 				'serverIds'    => is_user_logged_in()
 					? kramo_get_customer_wishlist( get_current_user_id() )
 					: array(),
-				'addLabel'     => __( 'Dodaj do ulubionych', 'kramo' ),
-				'removeLabel'  => __( 'Usuń z ulubionych', 'kramo' ),
-				'emptyMessage' => __( 'Nie masz jeszcze ulubionych produktów.', 'kramo' ),
-				'errorMessage' => __( 'Nie udało się zaktualizować ulubionych.', 'kramo' ),
+				'addLabel'       => __( 'Dodaj do ulubionych', 'kramo' ),
+				'removeLabel'    => __( 'Usuń z ulubionych', 'kramo' ),
+				'addedMessage'   => __( 'Dodano do ulubionych', 'kramo' ),
+				'removedMessage' => __( 'Usunięto z ulubionych', 'kramo' ),
+				'emptyMessage'   => __( 'Nie masz jeszcze ulubionych produktów.', 'kramo' ),
+				'errorMessage'   => __( 'Nie udało się zaktualizować ulubionych.', 'kramo' ),
 			)
 		);
 
@@ -111,7 +157,7 @@ function kramo_enqueue_assets() {
 		}
 	}
 
-	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+	if ( kramo_is_catalog_screen() ) {
 		wp_enqueue_script(
 			'kramo-filters',
 			$theme_uri . '/assets/js/filters.js',
@@ -124,10 +170,55 @@ function kramo_enqueue_assets() {
 			'kramo-filters',
 			'kramoFilters',
 			array(
-				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'kramo_catalog' ),
-				'loadingText'  => __( 'Ładowanie produktów…', 'kramo' ),
-				'errorMessage' => __( 'Nie udało się załadować produktów.', 'kramo' ),
+				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
+				'nonce'         => wp_create_nonce( 'kramo_catalog' ),
+				'loadingText'   => __( 'Ładowanie produktów…', 'kramo' ),
+				'resultsText'   => __( 'Liczba produktów: %d', 'kramo' ),
+				'noResultsText' => __( 'Brak produktów dla wybranych filtrów', 'kramo' ),
+				'errorMessage'  => __( 'Nie udało się załadować produktów.', 'kramo' ),
+				'densityKey'    => 'kramoCatalogDensity',
+			)
+		);
+	}
+
+	if ( kramo_has_header_utility() ) {
+		wp_enqueue_script(
+			'kramo-cart',
+			$theme_uri . '/assets/js/cart.js',
+			array(),
+			kramo_asset_version( 'assets/js/cart.js' ),
+			true
+		);
+		wp_script_add_data( 'kramo-cart', 'strategy', 'defer' );
+		wp_localize_script(
+			'kramo-cart',
+			'kramoCart',
+			array(
+				'cookieName'   => KRAMO_CART_COOKIE,
+				'addedMessage' => __( 'Dodano do koszyka', 'kramo' ),
+			)
+		);
+	}
+
+	// The search field only exists in the catalog toolbar, so its suggestions
+	// script has nothing to bind to anywhere else.
+	if ( kramo_has_search() && kramo_is_catalog_screen() ) {
+		wp_enqueue_script(
+			'kramo-search',
+			$theme_uri . '/assets/js/search.js',
+			array(),
+			kramo_asset_version( 'assets/js/search.js' ),
+			true
+		);
+		wp_script_add_data( 'kramo-search', 'strategy', 'defer' );
+		wp_localize_script(
+			'kramo-search',
+			'kramoSearch',
+			array(
+				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
+				'nonce'         => wp_create_nonce( 'kramo_search' ),
+				'noResultsText' => __( 'Brak wyników', 'kramo' ),
+				'errorMessage'  => __( 'Nie udało się wyszukać produktów.', 'kramo' ),
 			)
 		);
 	}

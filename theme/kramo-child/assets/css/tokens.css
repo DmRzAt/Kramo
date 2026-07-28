@@ -65,6 +65,17 @@
 	--swatch-red: #b91c1c;
 	--overlay-soft: rgb(15 23 42 / 0.08);
 	--overlay-strong: rgb(15 23 42 / 0.6);
+	--overlay-scrim: rgb(15 23 42 / 0.44);
+	--sheen-light: rgb(255 255 255 / 0.55);
+	--sheen-dark: rgb(255 255 255 / 0.08);
+
+	/* Trust colour, shared by every preset: DESIGN.md keeps the safety signals
+	   calm rather than promotional, so they never inherit the accent. */
+	--pine: #2f4f3f;
+	--ink-border: #3a3631;
+	--craft-ink-border: #2c3834;
+	--footer-muted-on-ink: #a39e96;
+	--footer-muted-on-craft: #9aa8a3;
 
 	--craft-bg: #edf3f1;
 	--craft-surface: #f8fbfa;
@@ -89,7 +100,6 @@
 	--service-on-primary: #ffffff;
 	--service-focus: #a32d4f;
 	--service-sale: #a32d4f;
-	--service-pine: #2f4f3f;
 
 	--premium-bg: #101827;
 	--premium-surface: #182235;
@@ -105,11 +115,14 @@
 
 	--font-family-sans: "Instrument Sans", "Inter Variable", system-ui, sans-serif;
 	--font-family-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
-	--font-family-humanist: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+	--font-family-editorial: "Inter Variable", "Instrument Sans", system-ui, sans-serif;
+	--font-weight-extralight: 200;
+	--font-weight-light: 300;
 	--font-weight-regular: 400;
 	--font-weight-medium: 500;
 	--font-weight-semibold: 600;
 	--font-weight-bold: 700;
+	--font-weight-extrabold: 800;
 
 	--text-xs: 0.75rem;
 	--text-sm: 0.875rem;
@@ -120,6 +133,7 @@
 	--text-3xl: 2.25rem;
 	--text-4xl: 3rem;
 	--text-hero: clamp(2rem, 5vw + 1rem, 4rem);
+	--text-campaign: clamp(2.5rem, 8vw, 6rem);
 	--text-h1: clamp(var(--text-3xl), 4vw, var(--text-4xl));
 	--text-h2: clamp(var(--text-2xl), 3vw, var(--text-3xl));
 	--text-h3: clamp(var(--text-xl), 2vw, var(--text-2xl));
@@ -131,9 +145,13 @@
 	--tracking-snug: -0.015em;
 	--tracking-normal: 0;
 	--tracking-wide: 0.04em;
+	--tracking-caps: 0.12em;
+	--transform-case-none: none;
+	--transform-case-upper: uppercase;
 
 	--space-0: 0;
 	--space-unit: 0.5rem;
+	--space-half: calc(var(--space-unit) / 2);
 	--space-1: calc(var(--space-unit) * 1);
 	--space-2: calc(var(--space-unit) * 2);
 	--space-3: calc(var(--space-unit) * 3);
@@ -151,7 +169,9 @@
 	--size-premium-narrow: 640px;
 	--text-size-adjust: 100%;
 
+	--radius-none: 0;
 	--radius-craft: 0.1875rem;
+	--radius-sharp: 0.25rem;
 	--radius-service: 0.625rem;
 	--radius-sm: 0.375rem;
 	--radius-md: 0.75rem;
@@ -170,6 +190,7 @@
 
 	--opacity-hidden: 0;
 	--opacity-disabled: 0.38;
+	--opacity-muted: 0.6;
 	--opacity-visible: 1;
 	--scale-hidden: scaleX(0);
 	--scale-visible: scaleX(1);
@@ -178,18 +199,33 @@
 	--translate-rise: translateY(0.5rem);
 	--scale-media-hover: scale(1.04);
 	--scale-press: scale(0.97);
+	--translate-offscreen-block-end: translateY(100%);
+	--translate-offscreen-block-start: translateY(-100%);
 	--overflow-visible: visible;
 	--overflow-hidden: hidden;
 
 	--duration-fast: 150ms;
 	--duration-standard: 250ms;
 	--duration-slow: 420ms;
+	--duration-spin: 640ms;
+	--duration-bump: 360ms;
+	--duration-shake: 240ms;
+	--duration-shimmer: 1400ms;
 	--duration-reduced: 0.01ms;
 	--motion-iteration-reduced: 1;
+	--motion-iteration-infinite: infinite;
 	--ease-standard: cubic-bezier(0.2, 0, 0, 1);
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 	--ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+	--ease-linear: linear;
 	--scroll-behavior-reduced: auto;
+
+	--layer-base: 1;
+	--layer-sticky: 20;
+	--layer-banner: 30;
+	--layer-dropdown: 40;
+	--layer-overlay: 900;
+	--layer-toast: 1100;
 }
 
 /*
@@ -210,6 +246,7 @@
 	--color-link-hover: var(--brand-700);
 	--color-focus: var(--accent-500);
 	--color-price: var(--gray-900);
+	--color-trust: var(--pine);
 	--color-sale: var(--danger-500);
 	--color-on-sale: var(--white);
 	--color-success: var(--success-500);
@@ -218,23 +255,38 @@
 	--color-surface-alt: var(--gray-100);
 	--color-header-bg: var(--color-surface);
 	--color-footer-bg: var(--color-surface);
+	--color-footer-text: var(--color-text);
+	--color-footer-muted: var(--color-text-muted);
+	--color-footer-border: var(--color-border);
+	--color-footer-link: var(--color-footer-text);
+	--color-footer-link-hover: var(--color-primary);
 	--color-card-bg: var(--color-surface);
 	--color-card-glow: var(--transparent);
 	--color-media-bg: var(--color-surface-alt);
 	--color-overlay: var(--overlay-strong);
 	--color-swatch-default: var(--color-border);
+	--color-scrim: var(--overlay-scrim);
+	--color-skeleton: var(--color-surface-alt);
+	--color-skeleton-sheen: var(--sheen-light);
+	--color-badge-bg: var(--color-primary);
+	--color-badge-text: var(--color-on-primary);
 
 	--font-body: var(--font-family-sans);
 	--font-display: var(--font-family-display);
 	--font-heading-weight: var(--font-weight-bold);
 	--font-heading-tracking: var(--tracking-snug);
 	--font-body-tracking: var(--tracking-normal);
+	--font-heading-case: var(--transform-case-none);
 	--heading-h2-size: var(--text-h2);
 
 	--section-gap: clamp(var(--space-8), 8vw, var(--space-12));
 	--container-max: 1280px;
 	--container-narrow: 720px;
-	--container-pad: clamp(var(--space-2), 4vw, var(--space-4));
+	/* 1rem floor matches Apple HIG / Material layout margins (16pt/dp). */
+	--container-pad: clamp(1rem, 5vw, 2rem);
+	--safe-area-left: env(safe-area-inset-left, 0px);
+	--safe-area-right: env(safe-area-inset-right, 0px);
+	--inset-inline: max(var(--container-pad), var(--safe-area-left)) max(var(--container-pad), var(--safe-area-right));
 	--content-width: var(--size-full);
 	--media-max-width: var(--size-full);
 	--media-height: var(--size-auto);
@@ -282,10 +334,32 @@
 	--nav-indicator-opacity: var(--opacity-hidden);
 	--product-summary-bg: var(--transparent);
 	--product-summary-padding: var(--space-0);
-	--catalog-media-ratio: 4 / 5;
+
+	/* The catalog tile is chrome-free: photography carries the grid, so the
+	   card keeps no surface, border, radius or shadow of its own. These are
+	   deliberately separate from the --card-* tokens, which still dress the
+	   panels, modals and toasts. */
+	--catalog-card-padding: var(--space-0);
+	--catalog-card-border-width: var(--size-0);
+	--catalog-card-radius: var(--radius-none);
+	--catalog-card-bg: var(--transparent);
+	--catalog-card-overflow: var(--overflow-visible);
+	--catalog-card-shadow: var(--shadow-none);
+	--catalog-card-shadow-hover: var(--shadow-none);
+
+	/* Nothing lifts off the page: with the tiles flush against each other there
+	   is no gap for a raised card to sit in, so hover belongs to the photo and
+	   to the action bar that rises over it. */
+	--catalog-card-transform-hover: var(--translate-none);
+	--catalog-media-radius: var(--radius-none);
+	--catalog-media-ratio: 3 / 4;
+	--catalog-gap-row: var(--space-3);
+	--catalog-gap-column: var(--space-1);
 	--catalog-columns-mobile: 2;
 	--catalog-columns-tablet: 3;
 	--catalog-columns-desktop: 4;
+	--catalog-actions-bg: var(--color-surface);
+	--catalog-actions-hidden: var(--translate-offscreen-block-end);
 	--gallery-thumbnail-width: 5rem;
 	--variation-summary-min-height: 5.5rem;
 	--wishlist-button-size: 2.75rem;
@@ -293,4 +367,20 @@
 	--video-ratio: 16 / 9;
 	--transition-duration: var(--duration-fast);
 	--transition-easing: var(--ease-standard);
+
+	--skeleton-radius: var(--catalog-media-radius);
+	--skeleton-sheen-width: 40%;
+	--spinner-size: 1.125rem;
+	--spinner-offset: -0.5625rem;
+	--badge-size: 1.25rem;
+	--search-panel-max-height: 26rem;
+	--search-thumb-size: 3rem;
+	--sticky-bar-shadow: 0 -0.25rem 1.5rem rgb(15 23 42 / 0.12);
+	--modal-max-width: 44rem;
+	--modal-media-width: 18rem;
+	--toast-offset: var(--space-3);
+	--progress-track-height: 0.125rem;
+	--shake-distance: 0.25rem;
+	--stock-badge-radius: var(--radius-sm);
+	--recent-card-width: 11rem;
 }

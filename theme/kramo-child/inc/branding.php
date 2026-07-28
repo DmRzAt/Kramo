@@ -4,6 +4,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Allowed tags/attributes for the inlined storefront logo SVG.
+ *
+ * @return array<string, array<string, bool>>
+ */
+function kramo_logo_kses_allowed_html() {
+	return array(
+		'svg'   => array(
+			'xmlns'      => true,
+			'viewbox'    => true,
+			'role'       => true,
+			'aria-label' => true,
+			'class'      => true,
+		),
+		'title' => array(),
+		'g'     => array(
+			'class'           => true,
+			'fill'            => true,
+			'stroke'          => true,
+			'stroke-width'    => true,
+			'stroke-linecap'  => true,
+			'stroke-linejoin' => true,
+		),
+		'path'  => array(
+			'd'     => true,
+			'class' => true,
+		),
+		'text'  => array(
+			'class' => true,
+			'x'     => true,
+			'y'     => true,
+			'fill'  => true,
+		),
+	);
+}
+
 function kramo_logo_markup() {
 	$path = get_stylesheet_directory() . '/assets/img/logo.svg';
 
@@ -27,35 +63,7 @@ function kramo_render_site_branding() {
 		'<a class="kramo-branding" href="%s" rel="home" aria-label="%s">%s</a>',
 		esc_url( home_url( '/' ) ),
 		esc_attr( get_bloginfo( 'name' ) ),
-		wp_kses(
-			$svg,
-			array(
-				'svg'   => array(
-					'xmlns'          => true,
-					'viewbox'        => true,
-					'role'           => true,
-					'aria-label'     => true,
-					'class'          => true,
-				),
-				'title' => array(),
-				'g'     => array(
-					'fill'             => true,
-					'stroke'           => true,
-					'stroke-width'     => true,
-					'stroke-linecap'   => true,
-					'stroke-linejoin'  => true,
-					'font-family'      => true,
-					'font-size'        => true,
-					'font-weight'      => true,
-					'letter-spacing'   => true,
-				),
-				'path'  => array( 'd' => true ),
-				'text'  => array(
-					'x' => true,
-					'y' => true,
-				),
-			)
-		)
+		wp_kses( $svg, kramo_logo_kses_allowed_html() )
 	);
 }
 
@@ -76,15 +84,6 @@ function kramo_hide_site_description( $output ) {
 	return is_admin() ? $output : '';
 }
 add_filter( 'generate_site_description_output', 'kramo_hide_site_description', 20 );
-
-function kramo_footer_credit() {
-	return sprintf(
-		'<span class="kramo-footer-credit">© %1$s %2$s</span>',
-		esc_html( gmdate( 'Y' ) ),
-		esc_html( get_bloginfo( 'name' ) )
-	);
-}
-add_filter( 'generate_copyright', 'kramo_footer_credit' );
 
 function kramo_hide_front_page_title( $show ) {
 	return is_front_page() ? false : $show;

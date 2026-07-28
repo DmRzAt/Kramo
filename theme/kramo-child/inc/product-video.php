@@ -20,6 +20,7 @@ function kramo_product_video_field() {
 			'description' => __( 'Wklej adres YouTube, Vimeo albo wybierz plik MP4 z biblioteki mediów.', 'kramo' ),
 			'desc_tip'    => true,
 			'type'        => 'url',
+			'value'       => kramo_post_meta_value( get_the_ID(), '_kramo_product_video' ),
 		)
 	);
 	?>
@@ -129,7 +130,7 @@ function kramo_product_video_slide() {
 	}
 
 	$url = kramo_sanitize_product_video_url(
-		(string) $product->get_meta( '_kramo_product_video' )
+		(string) kramo_product_meta( $product, '_kramo_product_video' )
 	);
 	if ( ! $url ) {
 		return;

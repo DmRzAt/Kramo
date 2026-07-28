@@ -15,21 +15,29 @@
 		var match = document.cookie.match(
 			new RegExp("(?:^|; )" + config.cookieName + "=([^;]*)")
 		);
+		if (match) {
+			return decodeURIComponent(match[1]);
+		}
 
+		// Legacy woostarter cookie — keep reading until the visitor re-chooses.
+		match = document.cookie.match(/(?:^|; )ws_consent=([^;]*)/);
 		return match ? decodeURIComponent(match[1]) : "";
 	}
 
 	function storeConsent(value) {
 		var expires = new Date();
 		expires.setTime(expires.getTime() + config.cookieDays * 86400000);
-		document.cookie =
-			config.cookieName +
+		var base =
 			"=" +
 			encodeURIComponent(value) +
 			"; expires=" +
 			expires.toUTCString() +
 			"; path=/; SameSite=Lax" +
 			(location.protocol === "https:" ? "; Secure" : "");
+		document.cookie = config.cookieName + base;
+		// Expire the legacy cookie so it does not fight the new one.
+		document.cookie =
+			"ws_consent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax";
 	}
 
 	function loadScript(src) {

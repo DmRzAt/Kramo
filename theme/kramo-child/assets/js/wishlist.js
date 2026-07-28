@@ -26,6 +26,29 @@
 		saveLocal(productIds);
 	}
 
+	const announce = (message) => {
+		const region = document.querySelector("[data-wishlist-status]");
+		if (region) {
+			region.textContent = message;
+		}
+	};
+
+	const skeletonMarkup = (count) => {
+		const cards = [];
+
+		for (let index = 0; index < count; index += 1) {
+			cards.push(
+				'<li class="kramo-skeleton-card">'
+				+ '<span class="kramo-skeleton kramo-skeleton-card__media"></span>'
+				+ '<span class="kramo-skeleton kramo-skeleton-card__line"></span>'
+				+ '<span class="kramo-skeleton kramo-skeleton-card__line kramo-skeleton-card__line--short"></span>'
+				+ "</li>"
+			);
+		}
+
+		return `<ul class="kramo-skeleton-grid" aria-hidden="true">${cards.join("")}</ul>`;
+	};
+
 	const syncButtons = () => {
 		document.querySelectorAll(".kramo-wishlist-toggle").forEach((button) => {
 			const isSaved = productIds.includes(Number(button.dataset.productId));
@@ -90,6 +113,9 @@
 			return;
 		}
 
+		empty.hidden = true;
+		container.innerHTML = skeletonMarkup(Math.min(productIds.length, 8));
+
 		const request = new URL(kramoWishlist.ajaxUrl);
 		request.searchParams.set("action", "kramo_render_wishlist");
 		request.searchParams.set("nonce", kramoWishlist.nonce);
@@ -105,9 +131,14 @@
 			container.innerHTML = payload.data.html;
 			empty.hidden = Boolean(payload.data.html);
 			syncButtons();
+
+			document.dispatchEvent(new CustomEvent("kramo:catalog-updated", {
+				detail: { container },
+			}));
 		} catch (error) {
 			container.textContent = kramoWishlist.errorMessage;
 			empty.hidden = true;
+			announce(kramoWishlist.errorMessage);
 		}
 	};
 
@@ -119,11 +150,21 @@
 
 		event.preventDefault();
 		const productId = Number(button.dataset.productId);
-		productIds = productIds.includes(productId)
+		const wasSaved = productIds.includes(productId);
+		productIds = wasSaved
 			? productIds.filter((id) => id !== productId)
 			: [...productIds, productId];
 		saveLocal(productIds);
 		syncButtons();
+
+		button.classList.add("is-toggled");
+		button.addEventListener(
+			"animationend",
+			() => button.classList.remove("is-toggled"),
+			{ once: true }
+		);
+
+		announce(wasSaved ? kramoWishlist.removedMessage : kramoWishlist.addedMessage);
 		syncServer();
 		renderWishlistPage();
 	});

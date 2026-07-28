@@ -16,12 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
-$ws_ls   = function_exists( 'kramo_get_local_service_data' )
+$kramo_ls   = function_exists( 'kramo_get_local_service_data' )
 	? kramo_get_local_service_data( get_the_ID() )
 	: array();
-$ws_title = trim( ( $ws_ls['service'] ?? '' ) . ' ' . ( $ws_ls['city'] ?? '' ) );
-$ws_faq   = function_exists( 'kramo_parse_faq' )
-	? kramo_parse_faq( $ws_ls['faq_raw'] ?? '' )
+$kramo_title = trim( ( $kramo_ls['service'] ?? '' ) . ' ' . ( $kramo_ls['city'] ?? '' ) );
+$kramo_faq   = function_exists( 'kramo_parse_faq' )
+	? kramo_parse_faq( $kramo_ls['faq_raw'] ?? '' )
 	: array();
 ?>
 <div id="primary" class="content-area kramo-content-area">
@@ -33,15 +33,15 @@ $ws_faq   = function_exists( 'kramo_parse_faq' )
 			<article <?php post_class( 'kramo-local-service__article' ); ?>>
 				<header class="kramo-local-service__header">
 					<h1 class="kramo-local-service__title">
-						<?php echo esc_html( '' !== $ws_title ? $ws_title : get_the_title() ); ?>
+						<?php echo esc_html( '' !== $kramo_title ? $kramo_title : get_the_title() ); ?>
 					</h1>
-					<?php if ( ! empty( $ws_ls['price_range'] ) ) : ?>
+					<?php if ( ! empty( $kramo_ls['price_range'] ) ) : ?>
 						<p class="kramo-local-service__price">
 							<?php
 							printf(
 								/* translators: %s: price range. */
 								esc_html__( 'Cena: %s', 'kramo' ),
-								esc_html( $ws_ls['price_range'] )
+								esc_html( $kramo_ls['price_range'] )
 							);
 							?>
 						</p>
@@ -52,45 +52,45 @@ $ws_faq   = function_exists( 'kramo_parse_faq' )
 					<?php the_content(); ?>
 				</section>
 
-				<?php if ( ! empty( $ws_ls['area_served'] ) ) : ?>
+				<?php if ( ! empty( $kramo_ls['area_served'] ) ) : ?>
 					<section class="kramo-local-service__area">
 						<h2><?php echo esc_html__( 'Obszar obsługi', 'kramo' ); ?></h2>
 						<ul>
-							<?php foreach ( $ws_ls['area_served'] as $ws_area ) : ?>
-								<li><?php echo esc_html( $ws_area ); ?></li>
+							<?php foreach ( $kramo_ls['area_served'] as $kramo_area ) : ?>
+								<li><?php echo esc_html( $kramo_area ); ?></li>
 							<?php endforeach; ?>
 						</ul>
 					</section>
 				<?php endif; ?>
 
-				<?php if ( ! empty( $ws_faq ) ) : ?>
+				<?php if ( ! empty( $kramo_faq ) ) : ?>
 					<section class="kramo-local-service__faq">
 						<h2><?php echo esc_html__( 'Najczęstsze pytania', 'kramo' ); ?></h2>
 						<div class="kramo-faq">
-							<?php foreach ( $ws_faq as $ws_pair ) : ?>
+							<?php foreach ( $kramo_faq as $kramo_pair ) : ?>
 								<details class="kramo-faq__item">
-									<summary class="kramo-faq__question"><?php echo esc_html( $ws_pair['question'] ); ?></summary>
-									<div class="kramo-faq__answer"><?php echo esc_html( $ws_pair['answer'] ); ?></div>
+									<summary class="kramo-faq__question"><?php echo esc_html( $kramo_pair['question'] ); ?></summary>
+									<div class="kramo-faq__answer"><?php echo esc_html( $kramo_pair['answer'] ); ?></div>
 								</details>
 							<?php endforeach; ?>
 						</div>
 					</section>
 				<?php endif; ?>
 
-				<?php if ( ! empty( $ws_ls['cta_url'] ) && ! empty( $ws_ls['cta_text'] ) ) : ?>
+				<?php if ( ! empty( $kramo_ls['cta_url'] ) && ! empty( $kramo_ls['cta_text'] ) ) : ?>
 					<section class="kramo-local-service__cta">
-						<a class="button kramo-local-service__cta-button" href="<?php echo esc_url( $ws_ls['cta_url'] ); ?>">
-							<?php echo esc_html( $ws_ls['cta_text'] ); ?>
+						<a class="button kramo-local-service__cta-button" href="<?php echo esc_url( $kramo_ls['cta_url'] ); ?>">
+							<?php echo esc_html( $kramo_ls['cta_text'] ); ?>
 						</a>
 					</section>
-				<?php elseif ( ! empty( $ws_ls['phone'] ) ) : ?>
+				<?php elseif ( ! empty( $kramo_ls['phone'] ) ) : ?>
 					<section class="kramo-local-service__cta">
-						<a class="button kramo-local-service__cta-button" href="<?php echo esc_attr( 'tel:' . preg_replace( '/\s+/', '', $ws_ls['phone'] ) ); ?>">
+						<a class="button kramo-local-service__cta-button" href="<?php echo esc_attr( 'tel:' . preg_replace( '/\s+/', '', $kramo_ls['phone'] ) ); ?>">
 							<?php
 							printf(
 								/* translators: %s: phone number. */
 								esc_html__( 'Zadzwoń: %s', 'kramo' ),
-								esc_html( $ws_ls['phone'] )
+								esc_html( $kramo_ls['phone'] )
 							);
 							?>
 						</a>

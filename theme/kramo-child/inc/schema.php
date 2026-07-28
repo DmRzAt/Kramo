@@ -173,7 +173,7 @@ function kramo_product_faq_schema() {
 		return;
 	}
 
-	$pairs = kramo_parse_faq( $product->get_meta( '_ws_faq' ) );
+	$pairs = kramo_parse_faq( kramo_product_meta( $product, '_kramo_faq' ) );
 	kramo_print_jsonld( kramo_faq_schema( $pairs ) );
 }
 add_action( 'wp_head', 'kramo_product_faq_schema', 20 );

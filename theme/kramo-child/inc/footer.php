@@ -44,6 +44,7 @@ function kramo_footer_contact() {
 	);
 
 	if ( function_exists( 'kramo_is_demo' ) && kramo_is_demo() ) {
+		$defaults['email'] = 'kontakt@kramo.pl';
 		$defaults['phone'] = '+48 500 600 700';
 		$defaults['city']  = __( 'Kraków, Polska', 'kramo' );
 	}

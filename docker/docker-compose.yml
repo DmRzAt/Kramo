@@ -48,7 +48,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ../theme/kramo-child:/var/www/html/wp-content/themes/kramo-child
-      - ../mu-plugins/kramo-payments-bootstrap.php:/var/www/html/wp-content/mu-plugins/kramo-payments-bootstrap.php:ro
+      - ../mu-plugins:/var/www/html/wp-content/mu-plugins:ro
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -98,7 +98,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ../theme/kramo-child:/var/www/html/wp-content/themes/kramo-child
-      - ../mu-plugins/kramo-payments-bootstrap.php:/var/www/html/wp-content/mu-plugins/kramo-payments-bootstrap.php:ro
+      - ../mu-plugins:/var/www/html/wp-content/mu-plugins:ro
       - ../scripts:/scripts:ro
 
 volumes:

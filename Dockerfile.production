@@ -30,7 +30,7 @@ RUN set -eux; \
 	rm /tmp/generatepress.zip
 
 COPY --chown=www-data:www-data theme/kramo-child /usr/src/wordpress/wp-content/themes/kramo-child
-COPY --chown=www-data:www-data mu-plugins/kramo-payments-bootstrap.php /usr/src/wordpress/wp-content/mu-plugins/kramo-payments-bootstrap.php
+COPY --chown=www-data:www-data mu-plugins/ /usr/src/wordpress/wp-content/mu-plugins/
 COPY --chown=www-data:www-data scripts /scripts
 COPY deployment/production-entrypoint.sh /usr/local/bin/kramo-production-entrypoint
 COPY deployment/kramo-health.conf /etc/apache2/conf-available/kramo-health.conf

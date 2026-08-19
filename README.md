@@ -42,7 +42,7 @@ Railway only routes traffic once `/kramo-health` reports success.
 delivery keeps checkout completable without live gateway keys. Steps and
 variables: [`docs/deployment.md`](docs/deployment.md).
 
-Live: **https://kramo-production.up.railway.app** — Lighthouse mobile 97 on the
+Live: **https://p01--kramo-wp--bpk4d66g4n48.code.run** — Lighthouse mobile 97 on the
 product page, LCP 1.9 s, CLS 0, TBT 0 ms.
 
 ## Layout

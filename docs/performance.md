@@ -22,7 +22,7 @@ całkowicie.
 
 ## Pomiar na publicznym demo
 
-Po wdrożeniu na Railway (`https://kramo-production.up.railway.app`), strona
+Po wdrożeniu na Northflank (`https://p01--kramo-wp--bpk4d66g4n48.code.run`), strona
 produktu, Lighthouse 12 mobile:
 
 | Metryka | Wynik | Cel |

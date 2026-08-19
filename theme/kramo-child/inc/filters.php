@@ -106,6 +106,10 @@ function kramo_apply_catalog_filters_to_args( $args, $filters ) {
  * @return bool
  */
 function kramo_is_filterable_query( $query ) {
+	if ( ! function_exists( 'is_shop' ) ) {
+		return false;
+	}
+
 	if ( is_shop() || is_product_taxonomy() ) {
 		return true;
 	}

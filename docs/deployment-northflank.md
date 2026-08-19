@@ -26,9 +26,8 @@ activates the plugins and seeds 12 variable products in one pass.
 1. New **Combined service** from the GitHub repository, branch `main`.
 2. Build type **Dockerfile**, path `/Dockerfile.production`.
 3. Networking: expose port **80**, protocol HTTP, public.
-4. Health check: HTTP `GET /kramo-health` on port 80, initial delay **600s**.
-   Provisioning finishes before the file appears, so a shorter delay restarts
-   the container mid-install.
+4. Health checks: see the section below. Add them after the first successful
+   deploy, never before it.
 5. Optional: attach a volume at `/var/www/html/wp-content/uploads`. Without it
    the seeded images are regenerated on each redeploy by the idempotent seed
    script, which costs build time but does not break the demo.
@@ -60,7 +59,35 @@ Take the domain from the service networking tab before the first deploy. If it
 is added afterwards, update the variable and redeploy: the site URL is written
 into the database on first install.
 
-## 4. Moving existing content
+## 4. Health checks
+
+`/kramo-health` is a static file served through an Apache alias
+(`deployment/kramo-health.conf`) that the entrypoint writes only after
+provisioning finishes. The probe therefore answers "the site finished setting
+itself up and Apache is alive" without touching PHP or the database. That is
+deliberate: restarting the container fixes a dead Apache, never a dead database.
+
+All three probes are HTTP, port 80, path `/kramo-health`.
+
+| Probe | initialDelaySeconds | periodSeconds | timeoutSeconds | failureThreshold |
+| --- | --- | --- | --- | --- |
+| startup | 60 | 15 | 5 | 60 |
+| readiness | 0 | 15 | 5 | 3 |
+| liveness | 0 | 30 | 10 | 5 |
+
+The startup probe buys a 15 minute window (60 × 15s) and gates the other two,
+so a slow provisioning run cannot be killed halfway and restarted in a loop. A
+full seed on `nf-compute-20` took about 2.5 minutes against a warm database.
+
+Liveness is deliberately slack — 2.5 minutes of consecutive failures before a
+restart — because a brief load spike on 0.2 vCPU must not read as a dead
+container.
+
+If the platform does not offer a startup probe, drop liveness entirely and keep
+readiness alone with `initialDelaySeconds: 600`. Liveness without a startup
+probe is what restarts the container mid-install.
+
+## 5. Moving existing content
 
 The demo provisions itself from scratch, so nothing has to be migrated. If a
 Railway database still holds real orders, export and import it instead:
@@ -76,7 +103,7 @@ Then run a search-replace for the changed domain from the Northflank shell:
 wp search-replace 'https://kramo-production.up.railway.app' "$WORDPRESS_SITE_URL" --all-tables --path=/var/www/html
 ```
 
-## 5. Resetting the demo
+## 6. Resetting the demo
 
 Open the service shell and reset, same as on Railway:
 

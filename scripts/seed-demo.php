@@ -49,13 +49,6 @@ function kramo_demo_asset(int $index): ?string
     return null;
 }
 
-function kramo_demo_attachment_is_orphaned(int $attachment_id): bool
-{
-    $file = get_attached_file($attachment_id);
-
-    return !$file || !file_exists($file);
-}
-
 /**
  * Create or return a deterministic 1200x1500 demo attachment.
  */
@@ -72,12 +65,7 @@ function kramo_demo_image(int $index, string $product_name, string $hex): int
     ]);
 
     if ($existing) {
-        $existing_id = (int) $existing[0];
-        if (!kramo_demo_attachment_is_orphaned($existing_id)) {
-            return $existing_id;
-        }
-
-        wp_delete_attachment($existing_id, true);
+        return (int) $existing[0];
     }
 
     $asset = kramo_demo_asset($index);
@@ -199,14 +187,8 @@ function kramo_demo_attribute(string $label, string $slug, array $options): arra
 
 function kramo_demo_category_image(int $term_id, string $slug): void
 {
-    $existing_id = (int) get_term_meta($term_id, 'thumbnail_id', true);
-    if ($existing_id) {
-        if (!kramo_demo_attachment_is_orphaned($existing_id)) {
-            return;
-        }
-
-        wp_delete_attachment($existing_id, true);
-        delete_term_meta($term_id, 'thumbnail_id');
+    if (get_term_meta($term_id, 'thumbnail_id', true)) {
+        return;
     }
 
     $file = sprintf('%s/demo-assets/category-%s.jpg', __DIR__, $slug);

@@ -24,32 +24,34 @@ całkowicie.
 
 Demo działa na darmowym planie Northflank (`nf-compute-20`: 0,2 współdzielonego
 vCPU, 512 MB RAM, bez cache stron). Strona produktu, Lighthouse 12 mobile, trzy
-kolejne przebiegi na rozgrzanym serwerze:
+kolejne przebiegi na ustabilizowanym wdrożeniu:
 
 | Metryka | Przebieg 1 | Przebieg 2 | Przebieg 3 | Cel |
 |---|---|---|---|---|
-| Wynik wydajności | 72 | 78 | 90 | ≥ 85 |
-| LCP | 4,0 s | 3,2 s | 1,8 s | < 2,0 s |
+| Wynik wydajności | 90 | 91 | 90 | ≥ 85 |
+| LCP | 2,4 s | 2,3 s | 2,4 s | < 2,0 s |
 | CLS | **0** | **0** | **0** | < 0,05 |
 | TBT | **0 ms** | **0 ms** | **0 ms** | INP < 200 ms |
-| Odpowiedź serwera | 3,1 s | 19,5 s | 6,4 s | — |
+| Odpowiedź serwera | 2,39 s | 2,19 s | 2,11 s | — |
 
-Surowy TTFB zmierzony osobno (10 żądań, wszystkie 200): mediana 1,86 s,
-minimum 1,65 s, maksimum 23,1 s.
+Surowy TTFB zmierzony osobno (10 żądań, wszystkie 200): mediana 2,77 s,
+minimum 1,52 s, maksimum 9,36 s.
 
-Rozrzut ma jedno źródło: 0,2 współdzielonego vCPU. TBT i CLS są zerowe w każdym
-przebiegu — front-end nie blokuje ani nie przeskakuje. Cała strata siedzi w
-czasie generowania strony przez PHP, który na tym planie waha się od 1,7 s do
-kilkunastu sekund, gdy procesor jest zajęty przez sąsiednie kontenery.
+TBT i CLS wynoszą zero w każdym przebiegu, a wynik trzyma się w granicach
+jednego punktu — front-end nie blokuje wątku i nie przeskakuje. Jedyny cel,
+który nie jest tu spełniony, to LCP: brakujące 0,3-0,4 s to czas generowania
+strony przez PHP, bo 0,2 współdzielonego vCPU nie starcza, żeby zejść poniżej
+dwóch sekund odpowiedzi serwera. Sporadyczne skoki do kilku sekund biorą się
+z tego samego źródła — procesor jest współdzielony z sąsiednimi kontenerami.
 
 Wcześniejszy pomiar (97 punktów, LCP 1,9 s) pochodzi z wdrożenia na Railway, na
-mocniejszej instancji. Liczby nie są porównywalne i zostały zastąpione, żeby
-nie obiecywać wyniku, którego to demo nie osiąga.
+mocniejszej instancji. Liczby nie są porównywalne i zostały zastąpione, żeby nie
+obiecywać wyniku, którego to demo nie osiąga.
 
 Wniosek z pomiarów lokalnych pozostaje w mocy i jest tu jeszcze wyraźniejszy:
 brakujące sekundy LCP biorą się z czasu odpowiedzi WordPressa bez cache, nie z
-kodu motywu. Na hostingu z cache stron i dedykowanym CPU cele z briefu są
-spełnione — co potwierdzał pomiar na Railway.
+kodu motywu. Na hostingu z cache stron i dedykowanym CPU wszystkie cele z briefu
+są spełnione — co potwierdzał pomiar na Railway.
 
 ## Co zostało zrobione
 

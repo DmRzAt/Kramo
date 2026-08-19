@@ -28,9 +28,9 @@ activates the plugins and seeds 12 variable products in one pass.
 3. Networking: expose port **80**, protocol HTTP, public.
 4. Health checks: see the section below. Add them after the first successful
    deploy, never before it.
-5. Optional: attach a volume at `/var/www/html/wp-content/uploads`. Without it
-   the seeded images are regenerated on each redeploy by the idempotent seed
-   script, which costs build time but does not break the demo.
+5. Volumes are not offered on the free Developer Sandbox, so
+   `wp-content/uploads` lives on the container filesystem and is wiped by every
+   restart. See "Ephemeral uploads" below for how the demo copes.
 
 ## 3. Variables
 
@@ -59,7 +59,26 @@ Take the domain from the service networking tab before the first deploy. If it
 is added afterwards, update the variable and redeploy: the site URL is written
 into the database on first install.
 
-## 4. Health checks
+## 4. Ephemeral uploads
+
+Every restart starts from an empty `wp-content/uploads` while the database
+survives, so attachment rows outlive their files. Two pieces handle that:
+
+- `scripts/seed-demo.php` treats an attachment whose file is gone as missing and
+  uploads it again, instead of trusting the database row alone.
+- `mu-plugins/kramo-demo-image-regeneration.php` switches off WooCommerce's
+  background image regeneration while `KRAMO_DEMO` is set.
+
+The second one is not cosmetic. Without it WooCommerce regenerates thumbnails
+through `admin-ajax.php` at the same time as the seed writes them, and the two
+together exceed 512 MB: the kernel kills wp-cli mid-provisioning, the health file
+is never written, and the pod restarts into the same loop. With regeneration off,
+a full reseed of 24 images fits in the plan.
+
+Startup therefore costs one to two extra minutes, which the startup probe below
+is sized for.
+
+## 5. Health checks
 
 `/kramo-health` is a static file served through an Apache alias
 (`deployment/kramo-health.conf`) that the entrypoint writes only after
@@ -87,7 +106,7 @@ If the platform does not offer a startup probe, drop liveness entirely and keep
 readiness alone with `initialDelaySeconds: 600`. Liveness without a startup
 probe is what restarts the container mid-install.
 
-## 5. Moving existing content
+## 6. Moving existing content
 
 The demo provisions itself from scratch, so nothing has to be migrated. If a
 Railway database still holds real orders, export and import it instead:
@@ -103,7 +122,7 @@ Then run a search-replace for the changed domain from the Northflank shell:
 wp search-replace 'https://kramo-production.up.railway.app' "$WORDPRESS_SITE_URL" --all-tables --path=/var/www/html
 ```
 
-## 6. Resetting the demo
+## 7. Resetting the demo
 
 Open the service shell and reset, same as on Railway:
 

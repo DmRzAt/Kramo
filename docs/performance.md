@@ -22,20 +22,34 @@ całkowicie.
 
 ## Pomiar na publicznym demo
 
-Po wdrożeniu na Northflank (`https://p01--kramo-wp--bpk4d66g4n48.code.run`), strona
-produktu, Lighthouse 12 mobile:
+Demo działa na darmowym planie Northflank (`nf-compute-20`: 0,2 współdzielonego
+vCPU, 512 MB RAM, bez cache stron). Strona produktu, Lighthouse 12 mobile, trzy
+kolejne przebiegi na rozgrzanym serwerze:
 
-| Metryka | Wynik | Cel |
-|---|---|---|
-| Wynik wydajności | **97** | ≥ 85 |
-| LCP | **1,9 s** | < 2,0 s |
-| CLS | **0** | < 0,05 |
-| TBT | **0 ms** | INP < 200 ms |
-| Odpowiedź serwera | 350 ms | — |
+| Metryka | Przebieg 1 | Przebieg 2 | Przebieg 3 | Cel |
+|---|---|---|---|---|
+| Wynik wydajności | 72 | 78 | 90 | ≥ 85 |
+| LCP | 4,0 s | 3,2 s | 1,8 s | < 2,0 s |
+| CLS | **0** | **0** | **0** | < 0,05 |
+| TBT | **0 ms** | **0 ms** | **0 ms** | INP < 200 ms |
+| Odpowiedź serwera | 3,1 s | 19,5 s | 6,4 s | — |
 
-To potwierdza wniosek z pomiarów lokalnych: brakujące 0,9 s LCP wynikało z
-czasu odpowiedzi WordPressa bez cache, a nie z kodu motywu. Na realnym
-hostingu wszystkie cele z briefu są spełnione.
+Surowy TTFB zmierzony osobno (10 żądań, wszystkie 200): mediana 1,86 s,
+minimum 1,65 s, maksimum 23,1 s.
+
+Rozrzut ma jedno źródło: 0,2 współdzielonego vCPU. TBT i CLS są zerowe w każdym
+przebiegu — front-end nie blokuje ani nie przeskakuje. Cała strata siedzi w
+czasie generowania strony przez PHP, który na tym planie waha się od 1,7 s do
+kilkunastu sekund, gdy procesor jest zajęty przez sąsiednie kontenery.
+
+Wcześniejszy pomiar (97 punktów, LCP 1,9 s) pochodzi z wdrożenia na Railway, na
+mocniejszej instancji. Liczby nie są porównywalne i zostały zastąpione, żeby
+nie obiecywać wyniku, którego to demo nie osiąga.
+
+Wniosek z pomiarów lokalnych pozostaje w mocy i jest tu jeszcze wyraźniejszy:
+brakujące sekundy LCP biorą się z czasu odpowiedzi WordPressa bez cache, nie z
+kodu motywu. Na hostingu z cache stron i dedykowanym CPU cele z briefu są
+spełnione — co potwierdzał pomiar na Railway.
 
 ## Co zostało zrobione
 

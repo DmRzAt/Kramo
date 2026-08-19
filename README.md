@@ -42,8 +42,11 @@ Railway only routes traffic once `/kramo-health` reports success.
 delivery keeps checkout completable without live gateway keys. Steps and
 variables: [`docs/deployment.md`](docs/deployment.md).
 
-Live: **https://p01--kramo-wp--bpk4d66g4n48.code.run** — Lighthouse mobile 97 on the
-product page, LCP 1.9 s, CLS 0, TBT 0 ms.
+Live: **https://p01--kramo-wp--bpk4d66g4n48.code.run** — running on a free
+Northflank sandbox (0.2 shared vCPU, 512 MB, no page cache). Lighthouse mobile on
+the product page scores 72-90 across runs with LCP 1.8-4.0 s; TBT 0 ms and CLS 0
+every time, so the variance is server response, not front-end code. Numbers and
+method: [`docs/performance.md`](docs/performance.md).
 
 ## Layout
 

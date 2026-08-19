@@ -24,11 +24,12 @@ function kramo_trust_icon( $name ) {
 function kramo_trust_items() {
 	$threshold = 200;
 
-	if ( function_exists( 'WC' ) && WC()->shipping() ) {
-		$zone = new WC_Shipping_Zone( 1 );
-		foreach ( $zone->get_shipping_methods() as $method ) {
-			if ( 'free_shipping' === $method->id && ! empty( $method->min_amount ) ) {
-				$threshold = (float) $method->min_amount;
+	if ( class_exists( 'WC_Shipping_Zones' ) ) {
+		foreach ( WC_Shipping_Zones::get_zones() as $zone ) {
+			foreach ( $zone['shipping_methods'] as $method ) {
+				if ( 'free_shipping' === $method->id && ! empty( $method->min_amount ) ) {
+					$threshold = (float) $method->min_amount;
+				}
 			}
 		}
 	}

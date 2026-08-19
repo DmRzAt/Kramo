@@ -23,14 +23,24 @@ done
 # probe talks to MySQL directly through PHP.
 db_reachable() {
 	php -r '
+		mysqli_report( MYSQLI_REPORT_OFF );
 		$host = getenv("WORDPRESS_DB_HOST");
 		$port = 3306;
 		if ( false !== strpos( $host, ":" ) ) {
 			list( $host, $port ) = explode( ":", $host, 2 );
 			$port = (int) $port;
 		}
-		$link = @mysqli_connect( $host, getenv("WORDPRESS_DB_USER"), getenv("WORDPRESS_DB_PASSWORD"), getenv("WORDPRESS_DB_NAME"), $port );
-		exit( $link ? 0 : 1 );
+		$ssl = getenv("KRAMO_DB_SSL");
+		$flags = 0;
+		if ( "1" === $ssl || "noverify" === $ssl ) {
+			$flags = MYSQLI_CLIENT_SSL;
+		}
+		if ( "noverify" === $ssl ) {
+			$flags |= MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
+		}
+		$link = mysqli_init();
+		$ok = @mysqli_real_connect( $link, $host, getenv("WORDPRESS_DB_USER"), getenv("WORDPRESS_DB_PASSWORD"), getenv("WORDPRESS_DB_NAME"), $port, NULL, $flags );
+		exit( $ok ? 0 : 1 );
 	'
 }
 

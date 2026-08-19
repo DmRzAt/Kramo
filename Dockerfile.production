@@ -43,7 +43,7 @@ RUN set -eux; \
 
 ENV PORT=80 \
 	WORDPRESS_DEBUG=0 \
-	WORDPRESS_CONFIG_EXTRA="if ( isset( \$_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === \$_SERVER['HTTP_X_FORWARDED_PROTO'] ) { \$_SERVER['HTTPS'] = 'on'; } define( 'FORCE_SSL_ADMIN', true ); define( 'DISALLOW_FILE_EDIT', true ); define( 'WP_ENVIRONMENT_TYPE', 'production' ); define( 'WP_AUTO_UPDATE_CORE', 'minor' );" \
+	WORDPRESS_CONFIG_EXTRA="if ( 'noverify' === getenv( 'KRAMO_DB_SSL' ) ) { define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL | MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT ); } elseif ( getenv( 'KRAMO_DB_SSL' ) ) { define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL ); } if ( isset( \$_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === \$_SERVER['HTTP_X_FORWARDED_PROTO'] ) { \$_SERVER['HTTPS'] = 'on'; } define( 'FORCE_SSL_ADMIN', true ); define( 'DISALLOW_FILE_EDIT', true ); define( 'WP_ENVIRONMENT_TYPE', 'production' ); define( 'WP_AUTO_UPDATE_CORE', 'minor' );" \
 	WP_CLI_CACHE_DIR=/tmp/wp-cli-cache
 
 EXPOSE 80

@@ -1,5 +1,8 @@
 # Public demo deployment (Railway)
 
+For the free Northflank sandbox instead of Railway, see
+`deployment-northflank.md`. The image itself is identical.
+
 The demo runs the real store, not a static copy: catalog, filters, variants,
 personalization, cart, shipping calculation and checkout all work. Railway
 builds `Dockerfile.production`, attaches a managed MySQL service, mounts a
